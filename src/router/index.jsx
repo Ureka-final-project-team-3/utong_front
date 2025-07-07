@@ -8,6 +8,7 @@ import TradePage from '../pages/TradePage/TradePage';
 import HistoryPage from '../pages/HistoryPage/HistoryPage';
 import DefaultLayout from '../layout/DefaultLayout';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
+import TestPage from '../pages/TestPage/TestPage';
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: '/history',
         element: <HistoryPage />,
+      },
+      {
+        path: '/test',
+        element: <TestPage />,
       },
     ],
   },
