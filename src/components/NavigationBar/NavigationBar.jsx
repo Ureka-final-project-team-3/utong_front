@@ -11,10 +11,7 @@ const NavigationBar = () => {
       <div className="absolute top-[15px] left-0 w-full h-[70px] bg-white shadow-[0_-4.9px_29.4px_rgba(0,0,0,0.25)]" />
 
       {/* 차트 아이콘 */}
-      <Link
-        to="/chart"
-        className="absolute left-[16.94%] top-[37.65%] w-[34px] h-[34px] z-10"
-      >
+      <Link to="/chart" className="absolute left-[16.94%] top-[37.65%] w-[34px] h-[34px] z-10">
         <img
           src={graph}
           alt="차트"
@@ -23,10 +20,7 @@ const NavigationBar = () => {
       </Link>
 
       {/* 마이페이지 아이콘 */}
-      <Link
-        to="/mypage"
-        className="absolute left-[75%] top-[36.47%] w-[34px] h-[34px] z-10"
-      >
+      <Link to="/mypage" className="absolute left-[75%] top-[36.47%] w-[34px] h-[34px] z-10">
         <img
           src={user}
           alt="마이페이지"
