@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import TransactionHistory from '@/assets/icon/TransactionHistory.svg';
+import Transcation from '@/assets/icon/Transcation.svg';
 import Couponbox from '@/assets/icon/Couponbox.svg';
 import storagebox from '@/assets/icon/storagebox.svg';
 import Editinformation from '@/assets/icon/Editinformation.svg';
@@ -53,7 +53,7 @@ export default function MyPage() {
       <div className="grid grid-cols-4 gap-y-6 mt-10 text-center text-xs text-black">
         <div className="flex flex-col items-center">
           <div className="w-14 h-14 rounded-full bg-[#1355E0] flex items-center justify-center mb-1">
-            <img src={TransactionHistory} alt="거래 내역" className="w-[22px] h-[22px]" />
+            <img src={Transcation} alt="거래 내역" className="w-[22px] h-[22px]" />
           </div>
           거래 내역
         </div>
