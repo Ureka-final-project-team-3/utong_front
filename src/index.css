@@ -28,6 +28,8 @@
   --red: #FF4343;
   --blue: #2769F6;
 
+  --color-background: #F6F7FC;
+
   --text-xs: 12px;     /* 작은 글씨 */
   --text-base: 14px;   /* 기본 글씨 */
   --text-lg: 20px;     /* 강조 글씨 */
@@ -62,5 +64,8 @@ html, body, #root {
     color: transparent;
   }
 
+  .bg-background {
+    background-color: var(--color-background);
+  }
   
 }

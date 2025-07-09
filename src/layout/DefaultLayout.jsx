@@ -14,14 +14,14 @@ const DefaultLayout = () => {
         <div className="h-[731px] overflow-y-auto">
           <div
             className={`min-h-full px-[30px] pt-[55px] pb-[30px] ${
-              isColoredOutlet ? 'bg-gradient-blue' : ''
+              isColoredOutlet ? 'bg-gradient-blue' : 'bg-background'
             }`}
           >
             <Outlet />
           </div>
         </div>
 
-        <div className="h-[49px]">
+        <div className="h-[49px] flex-shrink-0">
           <NavigationBar />
         </div>
       </div>
