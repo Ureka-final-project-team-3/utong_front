@@ -17,11 +17,10 @@ export default function MyPage() {
   });
 
   return (
-    <div className="min-h-screen text-black">
+    <div className="h-[780px] overflow-hidden text-black">
       {/* Header */}
       <div className="text-center">
         <div className="flex flex-col items-center">
-          <div className="w-32 h-32 bg-white rounded-full mb-2" />
           <h1 className="text-white text-2xl font-bold">{user.name}</h1>
         </div>
       </div>
@@ -51,7 +50,7 @@ export default function MyPage() {
       </div>
 
       {/* 메뉴 버튼들 - 4개 + 3개 분리 */}
-      <div className="grid grid-cols-4 gap-y-6 mt-10  text-center text-xs text-black">
+      <div className="grid grid-cols-4 gap-y-6 mt-10 text-center text-xs text-black">
         <div className="flex flex-col items-center">
           <div className="w-14 h-14 rounded-full bg-[#1355E0] flex items-center justify-center mb-1">
             <img src={TransactionHistory} alt="거래 내역" className="w-[22px] h-[22px]" />
@@ -78,7 +77,7 @@ export default function MyPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-y-6 mt-8 px-10 text-center text-xs text-black">
+      <div className="grid grid-cols-3 gap-y-6 mt-8 px-5 text-center text-xs text-black">
         <div className="flex flex-col items-center">
           <div className="w-14 h-14 rounded-full bg-[#1355E0] flex items-center justify-center mb-1">
             <img src={Notificationbox} alt="알림함" className="w-[22px] h-[22px]" />
