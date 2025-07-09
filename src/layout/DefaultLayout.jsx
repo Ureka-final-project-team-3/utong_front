@@ -13,7 +13,7 @@ const DefaultLayout = () => {
         {/* Outlet 영역 - NavigationBar 높이(49px) 제외한 나머지 */}
         <div className="h-[731px] overflow-y-auto">
           <div
-            className={`min-h-full px-[30px] pt-[20px] pb-[30px] ${
+            className={`min-h-full px-[30px] pt-[55px] pb-[30px] ${
               isColoredOutlet ? 'bg-gradient-blue' : ''
             }`}
           >
