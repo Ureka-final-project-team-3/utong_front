@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import NavigationBar from '../components/NavigationBar/NavigationBar';
+import NavigationBar from '@/components/NavigationBar/NavigationBar';
 
 const DefaultLayout = () => {
   const location = useLocation();

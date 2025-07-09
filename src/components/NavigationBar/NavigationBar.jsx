@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../../assets/logo.svg';
-import user from '../../assets/user.svg';
-import graph from '../../assets/graph.svg';
+import logo from '@/assets/icon/logo.svg';
+import user from '@/assets/icon/user.svg';
+import graph from '@/assets/icon/graph.svg';
 
 const NavigationBar = () => {
   return (
