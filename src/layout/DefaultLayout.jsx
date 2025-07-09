@@ -9,17 +9,21 @@ const DefaultLayout = () => {
 
   return (
     <div className="w-screen h-screen bg-gray-200 flex items-center justify-center">
-      <div className="w-[360px] h-[780px] bg-white shadow-xl flex flex-col overflow-hidden">
-        <div className="h-[695px] overflow-y-auto">
+      <div className="w-[360px] h-[780px] bg-white shadow-xl flex flex-col overflow-hidden relative">
+        {/* Outlet 영역 - NavigationBar 높이(49px) 제외한 나머지 */}
+        <div className="h-[731px] overflow-y-auto">
           <div
-            className={`min-h-full px-[30px] pt-[55px] pb-[30px] ${
+            className={`min-h-full px-[30px] pt-[20px] pb-[30px] ${
               isColoredOutlet ? 'bg-gradient-blue' : ''
             }`}
           >
             <Outlet />
           </div>
         </div>
-        <NavigationBar />
+
+        <div className="h-[49px]">
+          <NavigationBar />
+        </div>
       </div>
     </div>
   );

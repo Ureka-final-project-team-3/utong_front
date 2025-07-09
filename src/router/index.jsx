@@ -9,6 +9,7 @@ import HistoryPage from '../pages/HistoryPage/HistoryPage';
 import DefaultLayout from '../layout/DefaultLayout';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
 import TestPage from '../pages/TestPage/TestPage';
+import AlarmPage from '../pages/AlarmPage/AlarmPage';
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: '/history',
         element: <HistoryPage />,
+      },
+      {
+        path: '/alarm',
+        element: <AlarmPage />,
       },
       {
         path: '/test',
