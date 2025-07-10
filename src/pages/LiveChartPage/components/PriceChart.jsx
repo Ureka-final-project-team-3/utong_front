@@ -33,7 +33,7 @@ const PriceChartContainer = ({ network, range }) => {
     }
   }, [rawData, range]);
   return (
-    <div className="w-[300px] bg-gradient-to-r from-[#2769F6] to-[#757AD0] rounded-[8px] shadow-md overflow-hidden flex flex-col">
+    <div className=" bg-gradient-to-r from-[#2769F6] to-[#757AD0] rounded-[8px] shadow-md overflow-hidden flex flex-col">
       <div className="h-[170px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={filteredData} margin={{ top: 20, right: 20, left: 5, bottom: 10 }}>

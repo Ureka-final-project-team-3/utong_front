@@ -19,7 +19,7 @@ const DefaultLayout = () => {
         {/* Main content (scrollable) */}
         <div
           className={`flex-1 overflow-y-auto px-[30px] pt-[55px] pb-[30px] ${
-            isColoredOutlet ? 'bg-gradient-blue' : ''
+            isColoredOutlet ? 'bg-gradient-blue' : 'bg-background'
           }`}
         >
           <Outlet />
