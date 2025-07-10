@@ -51,7 +51,7 @@ export default function MyPage() {
         </div>
 
         <div className="flex justify-between gap-2 mb-3">
-          <Link to="/trade" className="flex-1">
+          <Link to="/chart" className="flex-1">
             <button className="w-full bg-[#1355E0] text-base text-white py-1 rounded-md cursor-pointer hover:brightness-90 transition">
               거래하기
             </button>
