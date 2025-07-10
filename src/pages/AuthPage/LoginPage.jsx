@@ -3,10 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import BackButton from '../../components/BackButton/BackButton.jsx';
 // import backIcon from '../../assets/icon/back.svg';
 import Button from '../../components/common/Button.jsx';
-import utong2 from '../../assets/image/utong2.png';
-import googleIcon from '../../assets/image/google.png';
-import kakaoIcon from '../../assets/image/kakao.png';
-import naverIcon from '../../assets/image/naver.png';
+import utong2 from '@/assets/image/utong2.png';
+import googleIcon from '@/assets/image/google.png';
+import kakaoIcon from '@/assets/image/kakao.png';
+import naverIcon from '@/assets/image/naver.png';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -37,7 +37,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="h-screen bg-[#F6F7FC] pt-[55px] px-[30px] relative">
+    <div className="h-screen bg-[#F6F7FC] relative">
       <BackButton />
 
       {/* 로고 */}
@@ -89,19 +89,19 @@ const LoginPage = () => {
           href="http://localhost:8080/oauth2/authorization/google"
           className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-white"
         >
-          <img src={googleIcon} alt="Google" className="w-5 h-5" />
+          <img src={googleIcon} alt="Google" className="w-10 h-10" />
         </a>
         <a
           href="http://localhost:8080/oauth2/authorization/kakao"
           className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#FEE500]"
         >
-          <img src={kakaoIcon} alt="Kakao" className="w-5 h-5" />
+          <img src={kakaoIcon} alt="Kakao" className="w-10 h-10" />
         </a>
         <a
           href="http://localhost:8080/oauth2/authorization/naver"
           className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#03C75A]"
         >
-          <img src={naverIcon} alt="Naver" className="w-5 h-5" />
+          <img src={naverIcon} alt="Naver" className="w-10 h-10" />
         </a>
       </div>
     </div>
