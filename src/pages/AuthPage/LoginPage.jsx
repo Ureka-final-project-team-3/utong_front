@@ -1,5 +1,7 @@
-import React from 'react';
-import backIcon from '../../assets/icon/back.svg';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import BackButton from '../../components/BackButton/BackButton.jsx';
+// import backIcon from '../../assets/icon/back.svg';
 import Button from '../../components/common/Button.jsx';
 import utong2 from '../../assets/image/utong2.png';
 import googleIcon from '../../assets/image/google.png';
@@ -7,12 +9,36 @@ import kakaoIcon from '../../assets/image/kakao.png';
 import naverIcon from '../../assets/image/naver.png';
 
 const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.accessToken) {
+        localStorage.setItem('accessToken', data.accessToken);
+        alert('로그인 성공!');
+        navigate('/'); // 로그인 성공 후 메인 페이지로 이동
+      } else {
+        alert(data.message || '로그인 실패');
+      }
+    } catch (err) {
+      console.error('로그인 에러:', err);
+      alert('네트워크 오류');
+    }
+  };
+
   return (
-    <div className="h-screen bg-[#F6F7FC] px-6 pt-6">
-      {/* 상단 뒤로가기 */}
-      <div className="mb-4">
-        <img src={backIcon} alt="뒤로가기" className="w-6 h-6 text-gray-800" />
-      </div>
+    <div className="h-screen bg-[#F6F7FC] pt-[55px] px-[30px] relative">
+      <BackButton />
 
       {/* 로고 */}
       <div className="flex justify-center mb-8">
@@ -27,6 +53,8 @@ const LoginPage = () => {
           <input
             type="email"
             placeholder="이메일 입력"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
           />
         </div>
@@ -37,6 +65,8 @@ const LoginPage = () => {
           <input
             type="password"
             placeholder="비밀번호 입력"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
           />
         </div>
@@ -44,32 +74,35 @@ const LoginPage = () => {
 
       {/* 로그인 버튼 */}
       <div className="flex justify-center mt-6 mb-4">
-        <Button onClick={() => console.log('로그인 클릭')}>로그인</Button>
+        <Button onClick={handleLogin}>로그인</Button>
       </div>
 
-      {/* 하단 링크 */}
       <div className="border-t border-gray-300 pt-4 text-sm text-gray-400 flex justify-center space-x-4 mb-4">
-        <button>아이디 찾기</button>
-        <button>비밀번호 찾기</button>
-        <button>회원가입</button>
+        <Link to="/find-id">아이디 찾기</Link>
+        <Link to="/find-password">비밀번호 찾기</Link>
+        <Link to="/signup">회원가입</Link>
       </div>
 
       {/* 소셜 로그인 */}
       <div className="flex justify-center space-x-6">
-        {/* Google */}
-        <button className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-white">
+        <a
+          href="http://localhost:8080/oauth2/authorization/google"
+          className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-white"
+        >
           <img src={googleIcon} alt="Google" className="w-5 h-5" />
-        </button>
-
-        {/* Kakao */}
-        <button className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#FEE500]">
+        </a>
+        <a
+          href="http://localhost:8080/oauth2/authorization/kakao"
+          className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#FEE500]"
+        >
           <img src={kakaoIcon} alt="Kakao" className="w-5 h-5" />
-        </button>
-
-        {/* Naver */}
-        <button className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#03C75A]">
+        </a>
+        <a
+          href="http://localhost:8080/oauth2/authorization/naver"
+          className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#03C75A]"
+        >
           <img src={naverIcon} alt="Naver" className="w-5 h-5" />
-        </button>
+        </a>
       </div>
     </div>
   );

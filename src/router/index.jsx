@@ -1,7 +1,12 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
 import StartPage from '../pages/StartPage/StartPage';
 import LoginPage from '../pages/AuthPage/LoginPage';
+import FindIdPage from '../pages/AuthPage/FindIdPage.jsx';
+import FindPasswordPage from '../pages/AuthPage/FindPasswordPage.jsx';
+import SignupPage from '../pages/AuthPage/SignUpPage.jsx';
 import MainPage from '../pages/MainPage/MainPage';
+
 import LiveChartPage from '../pages/LiveChartPage/LiveChartPage';
 import MyPage from '../pages/MyPage/MyPage';
 import EventPage from '../pages/EventPage/EventPage';
@@ -12,6 +17,7 @@ import DefaultLayout from '../layout/DefaultLayout';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
 import TestPage from '../pages/TestPage/TestPage';
 import AlarmPage from '../pages/AlarmPage/AlarmPage';
+
 import TradeHistoryPage from '../pages/TradeHistoryPage/TradeHistoryPage';
 import CouponPage from '../pages/CouponPage/CouponPage';
 import StoragePage from '../pages/StoragePage/StoragePage';
@@ -19,6 +25,7 @@ import EditProfilePage from '../pages/EditProfilePage/EditProfilePage';
 import NotificationsPage from '../pages/NotificationsPage/NotificationsPage';
 import ServiceGuidePage from '../pages/ServiceGuidePage/ServiceGuidePage';
 import SignupPage from '../pages/AuthPage/SignupPage';
+
 
 const router = createBrowserRouter([
   {
@@ -32,6 +39,14 @@ const router = createBrowserRouter([
   {
     path: '/signup',
     element: <SignupPage />,
+  },
+  {
+    path: '/find-id',
+    element: <FindIdPage />,
+  },
+  {
+    path: '/find-password',
+    element: <FindPasswordPage />,
   },
   {
     element: <DefaultLayout />,
