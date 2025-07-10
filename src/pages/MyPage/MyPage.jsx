@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-
 import Transcation from '@/assets/icon/Transcation.svg';
 import Couponbox from '@/assets/icon/Couponbox.svg';
 import storagebox from '@/assets/icon/storagebox.svg';
@@ -22,9 +21,9 @@ export default function MyPage() {
   });
 
   return (
-    <div className="max-h-auto overflow-hidden text-black">
+    <div className="h-auto  max-h-[650px]  overflow-hidden text-black">
       {/* Header */}
-      <div className="flex items-center gap-4 pt-15">
+      <div className="flex items-center gap-4 pt-5">
         <img src={utong} alt="데이터 아이콘" className="w-[100px] h-auto" />
         <h1 className="text-white text-2xl font-bold">{user.name}</h1>
       </div>
@@ -52,12 +51,12 @@ export default function MyPage() {
         </div>
 
         <div className="flex justify-between gap-2 mb-3">
-          <Link to="/trade" className="flex-1">
+          <Link to="/chart" className="flex-1">
             <button className="w-full bg-[#1355E0] text-base text-white py-1 rounded-md cursor-pointer hover:brightness-90 transition">
               거래하기
             </button>
           </Link>
-          <Link to="/charge" className="flex-1">
+          <Link to="/chargePage" className="flex-1">
             <button className="w-full bg-[#1355E0] text-base text-white py-1 rounded-md cursor-pointer hover:brightness-90 transition">
               충전하기
             </button>
