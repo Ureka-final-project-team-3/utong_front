@@ -11,7 +11,7 @@ import LiveChartPage from '../pages/LiveChartPage/LiveChartPage';
 import MyPage from '../pages/MyPage/MyPage';
 import EventPage from '../pages/EventPage/EventPage';
 import PointChargePage from '../pages/PointChargePage/PointChargePage';
-import TradePage from '../pages/TradePage/TradePage';
+
 import HistoryPage from '../pages/HistoryPage/HistoryPage';
 import DefaultLayout from '../layout/DefaultLayout';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
@@ -24,6 +24,8 @@ import StoragePage from '../pages/StoragePage/StoragePage';
 import EditProfilePage from '../pages/EditProfilePage/EditProfilePage';
 import NotificationsPage from '../pages/NotificationsPage/NotificationsPage';
 import ServiceGuidePage from '../pages/ServiceGuidePage/ServiceGuidePage';
+import BuyDataPage from '../pages/TradePage/BuyDataPage/BuyDataPage.jsx';
+import SellDataPage from '../pages/TradePage/SellDataPage/SellDataPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -58,6 +60,14 @@ const router = createBrowserRouter([
         element: <LiveChartPage />,
       },
       {
+        path: '/buydata',
+        element: <BuyDataPage />,
+      },
+      {
+        path: '/selldata',
+        element: <SellDataPage />,
+      },
+      {
         path: '/mypage',
         element: <MyPage />,
       },
@@ -68,10 +78,6 @@ const router = createBrowserRouter([
       {
         path: '/charge',
         element: <PointChargePage />,
-      },
-      {
-        path: '/trade',
-        element: <TradePage />,
       },
       {
         path: '/history',
