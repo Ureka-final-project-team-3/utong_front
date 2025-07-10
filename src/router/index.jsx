@@ -9,7 +9,7 @@ import LiveChartPage from '../pages/LiveChartPage/LiveChartPage';
 import MyPage from '../pages/MyPage/MyPage';
 import EventPage from '../pages/EventPage/EventPage';
 import PointChargePage from '../pages/PointChargePage/PointChargePage';
-import TradePage from '../pages/TradePage/TradePage';
+import PointDetailPage from '../pages/PointChargePage/PointDetailPage.jsx';
 import HistoryPage from '../pages/HistoryPage/HistoryPage';
 import DefaultLayout from '../layout/DefaultLayout';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
@@ -21,30 +21,14 @@ import StoragePage from '../pages/StoragePage/StoragePage';
 import EditProfilePage from '../pages/EditProfilePage/EditProfilePage';
 import NotificationsPage from '../pages/NotificationsPage/NotificationsPage';
 import ServiceGuidePage from '../pages/ServiceGuidePage/ServiceGuidePage';
-import SignupPage from '../pages/AuthPage/SignupPage';
 import ChargePage from '../pages/ChargePage/ChargePage';
-import PointDetailPage from '../pages/PointChargePage/PointDetailPage.jsx';
+import BuyDataPage from '../pages/TradePage/BuyDataPage/BuyDataPage.jsx';
+import SellDataPage from '../pages/TradePage/SellDataPage/SellDataPage.jsx';
 
 const router = createBrowserRouter([
   {
     path: '/start',
     element: <StartPage />,
-  },
-  {
-    path: '/login',
-    element: <LoginPage />,
-  },
-  {
-    path: '/signup',
-    element: <SignUpPage />,
-  },
-  {
-    path: '/find-id',
-    element: <FindIdPage />,
-  },
-  {
-    path: '/find-password',
-    element: <FindPasswordPage />,
   },
   {
     element: <DefaultLayout />,
@@ -54,8 +38,32 @@ const router = createBrowserRouter([
         element: <MainPage />,
       },
       {
+        path: '/login',
+        element: <LoginPage />,
+      },
+      {
+        path: '/signup',
+        element: <SignUpPage />,
+      },
+      {
+        path: '/find-id',
+        element: <FindIdPage />,
+      },
+      {
+        path: '/find-password',
+        element: <FindPasswordPage />,
+      },
+      {
         path: '/chart',
         element: <LiveChartPage />,
+      },
+      {
+        path: '/buydata',
+        element: <BuyDataPage />,
+      },
+      {
+        path: '/selldata',
+        element: <SellDataPage />,
       },
       {
         path: '/mypage',
@@ -68,10 +76,6 @@ const router = createBrowserRouter([
       {
         path: '/charge',
         element: <PointChargePage />,
-      },
-      {
-        path: '/trade',
-        element: <TradePage />,
       },
       {
         path: '/history',

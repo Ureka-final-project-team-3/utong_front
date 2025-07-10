@@ -19,7 +19,7 @@ const LiveChartPage = () => {
         onRangeChange={setSelectedRange}
       />
       <PriceChart network={selectedNetwork} range={selectedRange} />
-      <TradeInfoSection />
+      <TradeInfoSection selectedNetwork={selectedNetwork} />
       <TradeActionButtons />
     </div>
   );
