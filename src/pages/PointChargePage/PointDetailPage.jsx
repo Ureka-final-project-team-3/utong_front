@@ -9,7 +9,7 @@ const dummyGifticons = [
     brand: '배스킨라빈스',
     price: 15000,
     image_url: '/public/image/br.png',
-    description: '시원한 베라 파인트 아이스크림으로 무더위를 날리세요!',
+    description: '시원한 베라 파인트로 무더위를 날리세요!',
   },
 ];
 
