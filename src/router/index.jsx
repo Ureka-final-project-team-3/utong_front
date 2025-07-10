@@ -24,8 +24,6 @@ import StoragePage from '../pages/StoragePage/StoragePage';
 import EditProfilePage from '../pages/EditProfilePage/EditProfilePage';
 import NotificationsPage from '../pages/NotificationsPage/NotificationsPage';
 import ServiceGuidePage from '../pages/ServiceGuidePage/ServiceGuidePage';
-import SignupPage from '../pages/AuthPage/SignupPage';
-
 
 const router = createBrowserRouter([
   {
