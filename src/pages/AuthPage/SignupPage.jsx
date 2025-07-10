@@ -50,12 +50,10 @@ const SignupPage = () => {
     <div className="h-screen bg-[#F6F7FC] pt-[55px] px-[30px] relative">
       <BackButton />
 
-      {/* 로고 */}
       <div className="flex justify-center mb-8">
         <img src={utong2} alt="로고" className="w-[100px] h-auto" />
       </div>
 
-      {/* 폼 입력 */}
       <div className="space-y-4">
         <div>
           <label className="block text-gray-500 text-sm font-bold mb-1">아이디</label>
@@ -113,7 +111,6 @@ const SignupPage = () => {
         </div>
       </div>
 
-      {/* 회원가입 버튼 */}
       <div className="flex justify-center mt-6 mb-4">
         <Button onClick={handleSignup}>회원 가입</Button>
       </div>
