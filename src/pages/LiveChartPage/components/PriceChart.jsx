@@ -46,13 +46,13 @@ const PriceChartContainer = ({ network, range }) => {
                   day: '2-digit',
                 })
               }
-              tick={{ fontSize: 8, fill: '#2C2C2C', opacity: 0.6 }}
+              tick={{ fontSize: 8, fill: '#FFFFFF', opacity: 0.6 }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
               domain={['dataMin - 100', 'dataMax + 100']}
-              tick={{ fontSize: 6.5, fill: '#2C2C2C', opacity: 0.6 }}
+              tick={{ fontSize: 6.5, fill: '#FFFFFF', opacity: 0.6 }}
               axisLine={false}
               tickLine={false}
               width={30}
