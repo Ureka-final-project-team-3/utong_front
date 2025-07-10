@@ -23,9 +23,9 @@
   --red: #ff4343;
   --blue: #2769f6;
 
-  --text-xs: 12px; /* 작은 글씨 */
-  --text-base: 14px; /* 기본 글씨 */
-  --text-lg: 20px; /* 강조 글씨 */
+  --text-xs: 12px;
+  --text-base: 14px;
+  --text-lg: 20px;
 }
 
 *,
@@ -42,7 +42,6 @@ body,
   padding: 0;
 }
 
-/* Tailwind Utilities Layer */
 @layer utilities {
   .bg-gradient-blue {
     background: linear-gradient(180deg, #2769f6 0%, #ffffff 60%);
@@ -60,6 +59,10 @@ body,
     color: transparent;
   }
 
+  .BackgroundColor {
+    background-color: #f6f7fc;
+  }
+
   /* ✅ iOS Safe Area 대응 유틸리티 */
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom);
@@ -70,8 +73,7 @@ body,
   }
 
   .safe-area-inset {
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
-      env(safe-area-inset-left);
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
 
   .mb-safe {

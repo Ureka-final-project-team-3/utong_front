@@ -1,4 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import StartPage from '../pages/StartPage/StartPage';
+import LoginPage from '../pages/AuthPage/LoginPage';
 import MainPage from '../pages/MainPage/MainPage';
 import LiveChartPage from '../pages/LiveChartPage/LiveChartPage';
 import MyPage from '../pages/MyPage/MyPage';
@@ -16,8 +18,21 @@ import StoragePage from '../pages/StoragePage/StoragePage';
 import EditProfilePage from '../pages/EditProfilePage/EditProfilePage';
 import NotificationsPage from '../pages/NotificationsPage/NotificationsPage';
 import ServiceGuidePage from '../pages/ServiceGuidePage/ServiceGuidePage';
+import SignupPage from '../pages/AuthPage/SignupPage';
 
 const router = createBrowserRouter([
+  {
+    path: '/start',
+    element: <StartPage />,
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/signup',
+    element: <SignupPage />,
+  },
   {
     element: <DefaultLayout />,
     children: [
