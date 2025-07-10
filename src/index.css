@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 :root {
   --gray-10: #fdfdfd;
   --gray-20: #fbfbfb;
@@ -23,14 +28,15 @@
   --red: #ff4343;
   --blue: #2769f6;
 
-  --text-xs: 12px;
-  --text-base: 14px;
-  --text-lg: 20px;
+  --color-background: #F6F7FC;
+
+  --text-xs: 12px;     /* 작은 글씨 */
+  --text-base: 14px;   /* 기본 글씨 */
+  --text-lg: 20px;     /* 강조 글씨 */
 }
 
-*,
-*::before,
-*::after {
+
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
@@ -59,9 +65,11 @@ body,
     color: transparent;
   }
 
-  .BackgroundColor {
-    background-color: #f6f7fc;
+  .bg-background {
+    background-color: var(--color-background);
   }
+  
+  
 
   /* ✅ iOS Safe Area 대응 유틸리티 */
   .safe-area-bottom {
