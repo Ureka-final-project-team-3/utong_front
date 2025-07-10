@@ -24,6 +24,8 @@ import StoragePage from '../pages/StoragePage/StoragePage';
 import EditProfilePage from '../pages/EditProfilePage/EditProfilePage';
 import NotificationsPage from '../pages/NotificationsPage/NotificationsPage';
 import ServiceGuidePage from '../pages/ServiceGuidePage/ServiceGuidePage';
+import SignupPage from '../pages/AuthPage/SignupPage';
+import ChargePage from '../pages/ChargePage/ChargePage';
 
 const router = createBrowserRouter([
   {
@@ -108,6 +110,10 @@ const router = createBrowserRouter([
       {
         path: '/guide',
         element: <ServiceGuidePage />,
+      },
+      {
+        path: '/chargePage',
+        element: <ChargePage />,
       },
     ],
   },
