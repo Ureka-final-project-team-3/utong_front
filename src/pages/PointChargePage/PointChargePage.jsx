@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '@/components/BackButton/BackButton';
 
 const PointChargePage = () => {
-  const [userPoint, setUserPoint] = useState(3000);
+  const [userPoint] = useState(3000); // ✅ setUserPoint 제거
   const [gifticons, setGifticons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,64 +21,63 @@ const PointChargePage = () => {
     { value: 'shopping', label: '쇼핑' },
   ];
 
-  const getDummyGifticons = () => {
-    return [
-      {
-        id: 1,
-        name: '배라 파인트',
-        brand: '배스킨라빈스',
-        price: 15000,
-        image_url: '/public/image/br.png',
-        category: 'food',
-      },
-      {
-        id: 2,
-        name: '영화 5000원 관람권',
-        brand: 'CGV',
-        price: 15000,
-        image_url: '/images/cgv.png',
-        category: 'movie',
-      },
-      {
-        id: 3,
-        name: '카페라떼',
-        brand: '메가커피',
-        price: 4000,
-        image_url: '/images/mega.png',
-        category: 'cafe',
-      },
-      {
-        id: 4,
-        name: '영화 5000원 관람권',
-        brand: '메가박스',
-        price: 100,
-        image_url: '/images/megabox.png',
-        category: 'movie',
-      },
-      {
-        id: 5,
-        name: '스타벅스 아메리카노',
-        brand: '스타벅스',
-        price: 4500,
-        image_url: '/images/starbucks.png',
-        category: 'cafe',
-      },
-      {
-        id: 6,
-        name: '맥도날드 빅맥세트',
-        brand: '맥도날드',
-        price: 7000,
-        image_url: '/images/mcdonalds.png',
-        category: 'food',
-      },
-    ];
-  };
+  const getDummyGifticons = () => [
+    {
+      id: 1,
+      name: '배라 파인트',
+      brand: '배스킨라빈스',
+      price: 15000,
+      image_url: '/public/image/br.png', // ✅ '/public' 제거
+      category: 'food',
+    },
+    {
+      id: 2,
+      name: '영화 5000원 관람권',
+      brand: 'CGV',
+      price: 15000,
+      image_url: '/images/cgv.png',
+      category: 'movie',
+    },
+    {
+      id: 3,
+      name: '카페라떼',
+      brand: '메가커피',
+      price: 4000,
+      image_url: '/images/mega.png',
+      category: 'cafe',
+    },
+    {
+      id: 4,
+      name: '영화 5000원 관람권',
+      brand: '메가박스',
+      price: 100,
+      image_url: '/images/megabox.png',
+      category: 'movie',
+    },
+    {
+      id: 5,
+      name: '스타벅스 아메리카노',
+      brand: '스타벅스',
+      price: 4500,
+      image_url: '/images/starbucks.png',
+      category: 'cafe',
+    },
+    {
+      id: 6,
+      name: '맥도날드 빅맥세트',
+      brand: '맥도날드',
+      price: 7000,
+      image_url: '/images/mcdonalds.png',
+      category: 'food',
+    },
+  ];
 
-  const fetchGifticons = async (category = '', page = 1, size = 10) => {
+  // ✅ useCallback으로 래핑
+  const fetchGifticons = useCallback(async (category = '', page = 1, size = 10) => {
     try {
       setLoading(true);
       setError(null);
-      await new Promise((resolve) => setTimeout(resolve, 300)); // 로딩 시뮬레이션
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       const allGifticons = getDummyGifticons();
       const filtered = category
@@ -94,18 +93,18 @@ const PointChargePage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchGifticons(selectedCategory, currentPage);
-  }, [selectedCategory, currentPage]);
+  }, [fetchGifticons, selectedCategory, currentPage]); // ✅ 의존성 추가
 
   const handleViewDetails = (gifticonId) => {
     navigate(`/point-shop/${gifticonId}`);
   };
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
       {/* 헤더 */}
       <div className="relative flex items-center justify-between mb-6">
         <BackButton />

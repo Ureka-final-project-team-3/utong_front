@@ -37,7 +37,6 @@ const ServiceGuidePage = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const navigate = useNavigate();
 
-  // 드래그 상태 관리
   const dragStartX = useRef(null);
   const dragStartTime = useRef(null);
   const sliderRef = useRef(null);
@@ -47,8 +46,6 @@ const ServiceGuidePage = () => {
       setIsTransitioning(true);
       setCurrentSlide(n);
       setDragOffset(0);
-
-      // 트랜지션 완료 후 상태 초기화
       setTimeout(() => {
         setIsTransitioning(false);
       }, 300);
@@ -59,81 +56,64 @@ const ServiceGuidePage = () => {
     navigate('/mypage');
   };
 
-  // 드래그 시작
   const handleDragStart = (clientX) => {
     if (isTransitioning) return;
-
     dragStartX.current = clientX;
     dragStartTime.current = Date.now();
     setIsDragging(true);
     setDragOffset(0);
   };
 
-  // 드래그 중
   const handleDragMove = (clientX) => {
     if (!isDragging || dragStartX.current === null || isTransitioning) return;
-
     const diff = clientX - dragStartX.current;
     const containerWidth = sliderRef.current?.offsetWidth || 300;
-
-    // 드래그 저항 적용 (경계에서 저항감 추가)
     let resistance = 1;
     if ((currentSlide === 1 && diff > 0) || (currentSlide === totalSlides && diff < 0)) {
-      resistance = 0.3; // 첫 번째/마지막 슬라이드에서 저항
+      resistance = 0.3;
     }
-
     const offset = ((diff * resistance) / containerWidth) * 100;
-    setDragOffset(Math.max(-30, Math.min(30, offset))); // 최대 30% 이동 제한
+    setDragOffset(Math.max(-30, Math.min(30, offset)));
   };
 
-  // 드래그 종료
   const handleDragEnd = (clientX) => {
     if (!isDragging || dragStartX.current === null) return;
-
     const diff = clientX - dragStartX.current;
     const timeDiff = Date.now() - dragStartTime.current;
-    const velocity = Math.abs(diff) / timeDiff; // 속도 계산
+    const velocity = Math.abs(diff) / timeDiff;
     const containerWidth = sliderRef.current?.offsetWidth || 300;
 
     setIsDragging(false);
 
-    // 스와이프 감지 (거리 또는 속도 기준)
-    const threshold = containerWidth * 0.2; // 20% 이상 드래그
-    const velocityThreshold = 0.5; // 빠른 스와이프
+    const threshold = containerWidth * 0.2;
+    const velocityThreshold = 0.5;
 
     if (Math.abs(diff) > threshold || velocity > velocityThreshold) {
       if (diff > 0) {
-        goToSlide(currentSlide - 1); // 오른쪽 스와이프 (이전 슬라이드)
+        goToSlide(currentSlide - 1);
       } else {
-        goToSlide(currentSlide + 1); // 왼쪽 스와이프 (다음 슬라이드)
+        goToSlide(currentSlide + 1);
       }
     } else {
-      // 스와이프 취소 - 원래 위치로 돌아가기
       setDragOffset(0);
     }
 
-    // 초기화
     dragStartX.current = null;
     dragStartTime.current = null;
   };
 
-  // 터치 이벤트
   const handleTouchStart = (e) => {
-    e.preventDefault();
     handleDragStart(e.touches[0].clientX);
   };
 
   const handleTouchMove = (e) => {
-    e.preventDefault();
     handleDragMove(e.touches[0].clientX);
   };
 
   const handleTouchEnd = (e) => {
-    e.preventDefault();
     handleDragEnd(e.changedTouches[0].clientX);
   };
 
-  // 마우스 이벤트
   const handleMouseDown = (e) => {
     e.preventDefault();
     handleDragStart(e.clientX);
@@ -149,12 +129,10 @@ const ServiceGuidePage = () => {
     handleDragEnd(e.clientX);
   };
 
-  // 마우스 이벤트 리스너 등록/해제
   useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
-
       return () => {
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
@@ -166,7 +144,6 @@ const ServiceGuidePage = () => {
 
   return (
     <div className="relative min-h-auto bg-white flex flex-col items-center justify-center select-none">
-      {/* 닫기 버튼 */}
       <button
         onClick={handleClose}
         className="absolute top-4 right-0 text-gray-400 hover:text-gray-600 text-lg font-light z-10 w-8 h-8 flex items-center justify-center"
@@ -174,7 +151,6 @@ const ServiceGuidePage = () => {
         ✕
       </button>
 
-      {/* 설명 영역 */}
       <div className="flex flex-col items-center mt-4 mb-6 text-center whitespace-pre-line">
         {currentContent.type === 'image' ? (
           <>
@@ -195,7 +171,6 @@ const ServiceGuidePage = () => {
         )}
       </div>
 
-      {/* 이미지 영역 - 드래그 가능 */}
       <div
         ref={sliderRef}
         className="relative w-full max-w-sm overflow-hidden"
@@ -205,7 +180,7 @@ const ServiceGuidePage = () => {
         onMouseDown={handleMouseDown}
         style={{
           cursor: isDragging ? 'grabbing' : 'grab',
-          touchAction: 'pan-y pinch-zoom', // 수직 스크롤은 허용, 수평 스크롤은 방지
+          touchAction: 'pan-y pinch-zoom',
         }}
       >
         <div
@@ -222,17 +197,15 @@ const ServiceGuidePage = () => {
                 alt={`서비스 가이드 ${index + 1}`}
                 className="w-[70%] h-auto object-contain rounded-lg"
                 onError={(e) => {
-                  console.error(`가이드 이미지 로드 실패: guide${index + 1}.png`);
                   e.target.src = '/image/default-guide.png';
                 }}
-                draggable={false} // 이미지 드래그 방지
+                draggable={false}
               />
             </div>
           ))}
         </div>
       </div>
 
-      {/* 인디케이터 */}
       <div className="flex gap-2 mt-6">
         {[...Array(totalSlides)].map((_, i) => (
           <button
