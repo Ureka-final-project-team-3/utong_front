@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import StartPage from '../pages/StartPage/StartPage';
 import MainPage from '../pages/MainPage/MainPage';
 import LiveChartPage from '../pages/LiveChartPage/LiveChartPage';
 import MyPage from '../pages/MyPage/MyPage';
@@ -12,6 +13,10 @@ import TestPage from '../pages/TestPage/TestPage';
 import AlarmPage from '../pages/AlarmPage/AlarmPage';
 
 const router = createBrowserRouter([
+  {
+    path: '/start',
+    element: <StartPage />,
+  },
   {
     element: <DefaultLayout />,
     children: [
