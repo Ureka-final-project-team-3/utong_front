@@ -17,11 +17,12 @@ const TradeInfoSection = ({ selectedNetwork = '5G' }) => {
       case 'buy':
         return mockBuyBids.filter((item) => item.dataCode === selectedNetwork);
       case 'settled':
-      default:
+      default: {
         const settled = mockSellBids
           .filter((item) => item.dataCode === selectedNetwork)
           .map(({ price, createdAt }) => ({ price, createdAt }));
         return settled;
+      }
     }
   };
 
