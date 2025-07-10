@@ -10,15 +10,13 @@ const PriceChartInfo = ({ selectedNetwork, selectedRange, onNetworkChange, onRan
   }, [selectedNetwork]);
 
   return (
-    <div className="relative w-full max-w-[300px] mt-[30px] px-4 mb-[10px]">
-      <div className="mb-2">
-        <div className="text-[20px] leading-[24px] text-[#2C2C2C]">최근 거래가</div>
-        <div className="flex items-end gap-2 mt-1">
-          <span className="text-[30px] leading-[36px] font-bold text-[#EB008B]">
-            {latestPrice?.toLocaleString() ?? '-'}
-          </span>
-          <span className="text-[12px] leading-[15px] text-[#2C2C2C]">원 (1GB)</span>
-        </div>
+    <div className="relative w-full max-w-[300px] mt-[20px]  mb-[10px]">
+      <div className="text-[20px] leading-[24px] text-[#2C2C2C]">최근 거래가</div>
+      <div className="flex items-end gap-2 mt-1">
+        <span className="text-[30px] leading-[36px] font-bold text-[#EB008B]">
+          {latestPrice?.toLocaleString() ?? '-'}
+        </span>
+        <span className="text-[12px] leading-[15px] text-[#2C2C2C]">원 (1GB)</span>
       </div>
 
       {/* 네트워크 선택 */}
@@ -46,7 +44,7 @@ const PriceChartInfo = ({ selectedNetwork, selectedRange, onNetworkChange, onRan
       </div>
 
       {/* 시세 범위 선택 */}
-      <div className="mt-6 flex justify-center items-center gap-4">
+      <div className="mt-5 flex justify-center items-center gap-4">
         <span
           className={`text-[14px] cursor-pointer ${
             selectedRange === 'today' ? 'text-[#EB008B] font-bold' : 'text-[#2C2C2C]'
