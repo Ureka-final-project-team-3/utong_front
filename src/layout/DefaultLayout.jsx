@@ -8,20 +8,32 @@ const DefaultLayout = () => {
   const isColoredOutlet = bgPages.includes(location.pathname);
 
   return (
-    <div className="w-screen h-screen bg-gray-200 flex items-center justify-center">
-      <div className="w-[360px] h-[780px] bg-white shadow-xl flex flex-col overflow-hidden relative">
-        {/* Outlet 영역 - NavigationBar 높이(49px) 제외한 나머지 */}
-        <div className="h-[731px] overflow-y-auto">
-          <div
-            className={`min-h-full px-[30px] pt-[20px] pb-[30px] ${
-              isColoredOutlet ? 'bg-gradient-blue' : ''
-            }`}
-          >
-            <Outlet />
-          </div>
+    <div className="w-screen min-h-[100dvh] bg-gray-200 flex justify-center items-center">
+      <div
+        className={`
+          w-full h-[100dvh]
+          sm:w-[360px] sm:h-[780px]
+          bg-white shadow-xl relative flex flex-col
+        `}
+      >
+        {/* Main content (scrollable) */}
+        <div
+          className={`flex-1 overflow-y-auto px-[30px] pt-[20px] pb-[70px] ${
+            isColoredOutlet ? 'bg-gradient-blue' : ''
+          }`}
+        >
+          <Outlet />
         </div>
 
-        <div className="h-[49px]">
+        {/* NavigationBar (fixed on mobile, static on desktop) */}
+        <div
+          className="
+  h-[49px] w-full
+  fixed bottom-0 left-1/2 -translate-x-1/2
+  sm:static sm:left-auto sm:translate-x-0
+  z-10
+"
+        >
           <NavigationBar />
         </div>
       </div>

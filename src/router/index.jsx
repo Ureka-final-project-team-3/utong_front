@@ -12,6 +12,12 @@ import DefaultLayout from '../layout/DefaultLayout';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
 import TestPage from '../pages/TestPage/TestPage';
 import AlarmPage from '../pages/AlarmPage/AlarmPage';
+import TradeHistoryPage from '../pages/TradeHistoryPage/TradeHistoryPage';
+import CouponPage from '../pages/CouponPage/CouponPage';
+import StoragePage from '../pages/StoragePage/StoragePage';
+import EditProfilePage from '../pages/EditProfilePage/EditProfilePage';
+import NotificationsPage from '../pages/NotificationsPage/NotificationsPage';
+import ServiceGuidePage from '../pages/ServiceGuidePage/ServiceGuidePage';
 import SignupPage from '../pages/AuthPage/SignupPage';
 
 const router = createBrowserRouter([
@@ -65,6 +71,30 @@ const router = createBrowserRouter([
       {
         path: '/test',
         element: <TestPage />,
+      },
+      {
+        path: '/tradehistory',
+        element: <TradeHistoryPage />,
+      },
+      {
+        path: '/coupon',
+        element: <CouponPage />,
+      },
+      {
+        path: '/storage',
+        element: <StoragePage />,
+      },
+      {
+        path: '/edit-profile',
+        element: <EditProfilePage />,
+      },
+      {
+        path: '/notifications',
+        element: <NotificationsPage />,
+      },
+      {
+        path: '/guide',
+        element: <ServiceGuidePage />,
       },
     ],
   },
