@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { mockSellBids, mockBuyBids } from '../mock/mockTradeData';
 
-const TradeInfoSection = () => {
+const TradeInfoSection = ({ selectedNetwork = '5G' }) => {
   const [tab, setTab] = useState('settled');
 
   const tabs = [
@@ -13,18 +13,24 @@ const TradeInfoSection = () => {
   const getCurrentData = () => {
     switch (tab) {
       case 'sell':
-        return mockSellBids;
+        return mockSellBids.filter((item) => item.dataCode === selectedNetwork);
       case 'buy':
-        return mockBuyBids;
+        return mockBuyBids.filter((item) => item.dataCode === selectedNetwork);
+      case 'settled':
       default:
-        return mockSellBids.map(({ price, createdAt }) => ({ price, createdAt }));
+        const settled = mockSellBids
+          .filter((item) => item.dataCode === selectedNetwork)
+          .map(({ price, createdAt }) => ({ price, createdAt }));
+        return settled;
     }
   };
 
-  const getMaxQuantity = (data) => (data.length > 0 ? Math.max(...data.map((d) => d.quantity)) : 1);
-
   const currentData = getCurrentData();
-  const maxQuantity = getMaxQuantity([...mockSellBids, ...mockBuyBids]);
+  const maxQuantity = Math.max(
+    ...[...mockSellBids, ...mockBuyBids]
+      .filter((d) => d.dataCode === selectedNetwork)
+      .map((d) => d.quantity || 0)
+  );
 
   return (
     <div className="w-full pt-5">
@@ -53,7 +59,7 @@ const TradeInfoSection = () => {
         </div>
       </div>
 
-      {/* 거래 정보 리스트 (항상 4개까지만 보이고 스크롤) */}
+      {/* 거래 정보 리스트 */}
       <div className="max-h-[132px] overflow-y-auto flex flex-col divide-y divide-[#EEE] px-2">
         {currentData.map((item, index) => (
           <div key={index} className="flex py-[6px] text-[12px] text-[#777777] min-h-[33px]">
