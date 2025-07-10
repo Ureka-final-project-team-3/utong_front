@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../../components/BackButton/BackButton.jsx';
 import Button from '../../components/common/Button.jsx';
-import utong2 from '../../assets/image/utong2.png';
+import utong2 from '@/assets/image/utong2.png';
 
 const SignupPage = () => {
   const navigate = useNavigate();
