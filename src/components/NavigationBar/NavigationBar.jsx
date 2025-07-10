@@ -23,7 +23,7 @@ const NavIcon = ({ to, src, alt }) => (
 
 const NavigationBar = () => {
   return (
-    <div className="w-[360px] h-[49px] bg-white shadow-[0_0_10px_rgba(0,0,0,0.25)] flex items-center justify-between px-[30px]">
+    <div className="w-full sm:w-[360px] h-[49px] bg-white shadow-[0_0_10px_rgba(0,0,0,0.25)] flex items-center justify-between px-[30px]">
       {icons.map((icon) => (
         <NavIcon key={icon.to} {...icon} />
       ))}
