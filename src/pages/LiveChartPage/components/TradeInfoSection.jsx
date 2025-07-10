@@ -27,7 +27,7 @@ const TradeInfoSection = () => {
   const maxQuantity = getMaxQuantity([...mockSellBids, ...mockBuyBids]);
 
   return (
-    <div className="w-full  pt-5">
+    <div className="w-full pt-5">
       {/* 탭 */}
       <div className="flex justify-center gap-x-[30px] w-full border-y-[2px] border-[#D9D9D9] py-2">
         {tabs.map(({ key, label }) => (
@@ -53,10 +53,10 @@ const TradeInfoSection = () => {
         </div>
       </div>
 
-      {/* 거래 정보 리스트 */}
-      <div className="flex flex-col divide-y divide-[#EEE]">
+      {/* 거래 정보 리스트 (항상 4개까지만 보이고 스크롤) */}
+      <div className="max-h-[132px] overflow-y-auto flex flex-col divide-y divide-[#EEE] px-2">
         {currentData.map((item, index) => (
-          <div key={index} className="flex py-[6px] text-[12px] text-[#777777]">
+          <div key={index} className="flex py-[6px] text-[12px] text-[#777777] min-h-[33px]">
             {/* 거래가 */}
             <div className="w-1/2 flex justify-center items-center">
               {item.price.toLocaleString()}P
@@ -65,7 +65,6 @@ const TradeInfoSection = () => {
             {/* 날짜 or 그래프 */}
             <div className="w-1/2 flex justify-center items-center">
               {tab === 'settled' ? (
-                // ✅ 색상과 크기 동일하게 수정
                 <span className="text-[#777777] text-[12px]">
                   {item.createdAt.replace('T', ' ').slice(0, 16)}
                 </span>
