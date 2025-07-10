@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+
 import backIcon from '../../assets/icon/back.svg';
 import Button from '../../components/common/Button.jsx';
 import utong2 from '../../assets/image/utong2.png';
@@ -47,11 +49,10 @@ const LoginPage = () => {
         <Button onClick={() => console.log('로그인 클릭')}>로그인</Button>
       </div>
 
-      {/* 하단 링크 */}
       <div className="border-t border-gray-300 pt-4 text-sm text-gray-400 flex justify-center space-x-4 mb-4">
-        <button>아이디 찾기</button>
-        <button>비밀번호 찾기</button>
-        <button>회원가입</button>
+        <Link to="/find-id">아이디 찾기</Link>
+        <Link to="/find-password">비밀번호 찾기</Link>
+        <Link to="/register">회원가입</Link>
       </div>
 
       {/* 소셜 로그인 */}
