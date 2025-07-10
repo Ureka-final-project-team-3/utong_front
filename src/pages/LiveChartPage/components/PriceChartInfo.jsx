@@ -10,17 +10,18 @@ const PriceChartInfo = ({ selectedNetwork, selectedRange, onNetworkChange, onRan
   }, [selectedNetwork]);
 
   return (
-    <div className="relative w-full max-w-[300px] mt-[20px]  mb-[10px]">
-      <div className="text-[20px] leading-[24px] text-[#2C2C2C]">최근 거래가</div>
+    <div className="relative w-full max-w-full sm:max-w-[300px] mt-[20px] mb-[10px] px-4 sm:px-0">
+      {/* 제목 + 가격 */}
+      <div className="text-[18px] sm:text-[20px] leading-[24px] text-[#2C2C2C]">최근 거래가</div>
       <div className="flex items-end gap-2 mt-1">
-        <span className="text-[30px] leading-[36px] font-bold text-[#EB008B]">
+        <span className="text-[26px] sm:text-[30px] leading-[32px] sm:leading-[36px] font-bold text-[#EB008B]">
           {latestPrice?.toLocaleString() ?? '-'}
         </span>
         <span className="text-[12px] leading-[15px] text-[#2C2C2C]">원 (1GB)</span>
       </div>
 
-      {/* 네트워크 선택 */}
-      <div className="absolute right-2 top-2 flex flex-col gap-[10px]">
+      {/* 네트워크 선택 (오른쪽 상단) */}
+      <div className="absolute right-2 top-2 sm:top-2 flex flex-col gap-[10px]">
         {['5G', 'LTE'].map((type) => (
           <div
             key={type}
@@ -33,7 +34,7 @@ const PriceChartInfo = ({ selectedNetwork, selectedRange, onNetworkChange, onRan
               }`}
             />
             <span
-              className={`text-[14px] font-bold ${
+              className={`text-[13px] sm:text-[14px] font-bold ${
                 selectedNetwork === type ? 'text-[#2C2C2C]' : 'text-[#6A6666]'
               }`}
             >
@@ -44,9 +45,9 @@ const PriceChartInfo = ({ selectedNetwork, selectedRange, onNetworkChange, onRan
       </div>
 
       {/* 시세 범위 선택 */}
-      <div className="mt-5 flex justify-center items-center gap-4">
+      <div className="mt-5 flex justify-center items-center gap-4 sm:gap-4">
         <span
-          className={`text-[14px] cursor-pointer ${
+          className={`text-[13px] sm:text-[14px] cursor-pointer ${
             selectedRange === 'today' ? 'text-[#EB008B] font-bold' : 'text-[#2C2C2C]'
           }`}
           onClick={() => onRangeChange?.('today')}
@@ -55,7 +56,7 @@ const PriceChartInfo = ({ selectedNetwork, selectedRange, onNetworkChange, onRan
         </span>
         <div className="w-[2px] h-[20px] bg-[#D9D9D9]" />
         <span
-          className={`text-[14px] cursor-pointer ${
+          className={`text-[13px] sm:text-[14px] cursor-pointer ${
             selectedRange === 'all' ? 'text-[#EB008B] font-bold' : 'text-[#2C2C2C]'
           }`}
           onClick={() => onRangeChange?.('all')}
