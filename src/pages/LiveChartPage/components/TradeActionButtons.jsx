@@ -3,14 +3,14 @@ import React from 'react';
 
 const TradeActionButtons = () => {
   return (
-    <div className="relative w-[300px]  mt-5 flex justify-between">
+    <div className="w-full  mt-5 flex justify-between gap-2">
       {/* 구매하기 버튼 */}
-      <button className="w-[140px] h-[50px] bg-[var(--blue)] rounded-[8px] text-white text-[18px] leading-[23px] font-normal">
+      <button className="w-1/2 h-[50px] bg-[var(--blue)] rounded-[8px] text-white text-[18px] leading-[23px] font-normal">
         구매하기
       </button>
 
       {/* 판매하기 버튼 */}
-      <button className="w-[140px] h-[50px] bg-[var(--red)] rounded-[8px] text-white text-[18px] leading-[23px] font-normal">
+      <button className="w-1/2 h-[50px] bg-[var(--red)] rounded-[8px] text-white text-[18px] leading-[23px] font-normal">
         판매하기
       </button>
     </div>
