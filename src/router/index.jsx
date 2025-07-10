@@ -4,7 +4,7 @@ import StartPage from '../pages/StartPage/StartPage';
 import LoginPage from '../pages/AuthPage/LoginPage';
 import FindIdPage from '../pages/AuthPage/FindIdPage.jsx';
 import FindPasswordPage from '../pages/AuthPage/FindPasswordPage.jsx';
-import SignupPage from '../pages/AuthPage/SignUpPage.jsx';
+import SignUpPage from '../pages/AuthPage/SignUpPage.jsx';
 import MainPage from '../pages/MainPage/MainPage';
 
 import LiveChartPage from '../pages/LiveChartPage/LiveChartPage';
@@ -36,7 +36,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/signup',
-    element: <SignupPage />,
+    element: <SignUpPage />,
   },
   {
     path: '/find-id',
