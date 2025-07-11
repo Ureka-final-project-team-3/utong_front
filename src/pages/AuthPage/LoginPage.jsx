@@ -14,6 +14,8 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    console.log('handleLogin 실행됨'); // <- 이거 추가
+
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
         method: 'POST',
@@ -23,12 +25,18 @@ const LoginPage = () => {
 
       const data = await response.json();
 
-      if (response.ok && data.accessToken) {
-        localStorage.setItem('accessToken', data.accessToken);
-        alert('로그인 성공!');
-        navigate('/'); // 로그인 성공 후 메인 페이지로 이동
+      if (response.ok && data.data.accessToken) {
+        // console.log('토큰 저장 시작');
+        localStorage.setItem('accessToken', data.data.accessToken);
+        // localStorage.setItem('refreshToken', data.refreshToken);
+        // localStorage.setItem('user', JSON.stringify(data.user));
+        // console.log('토큰 저장 완료');
+        // console.log('navigate("/") 호출');
+
+        alert('로그인성공!');
+        navigate('/');
       } else {
-        alert(data.message || '로그인 실패');
+        alert(data.data.message || '로그인 실패');
       }
     } catch (err) {
       console.error('로그인 에러:', err);
@@ -86,19 +94,19 @@ const LoginPage = () => {
       {/* 소셜 로그인 */}
       <div className="flex justify-center space-x-6">
         <a
-          href="http://localhost:8080/oauth2/authorization/google"
+          href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/google`}
           className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-white"
         >
           <img src={googleIcon} alt="Google" className="w-10 h-10" />
         </a>
         <a
-          href="http://localhost:8080/oauth2/authorization/kakao"
+          href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/kakao`}
           className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#FEE500]"
         >
           <img src={kakaoIcon} alt="Kakao" className="w-10 h-10" />
         </a>
         <a
-          href="http://localhost:8080/oauth2/authorization/naver"
+          href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/naver`}
           className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#03C75A]"
         >
           <img src={naverIcon} alt="Naver" className="w-10 h-10" />
