@@ -40,23 +40,39 @@ const PriceChartContainer = ({ network, range }) => {
             <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} />
             <XAxis
               dataKey="timestamp"
-              tickFormatter={(value) =>
-                new Date(value).toLocaleDateString('ko-KR', {
-                  month: '2-digit',
-                  day: '2-digit',
-                })
-              }
-              tick={{ fontSize: 8, fill: '#FFFFFF', opacity: 0.6 }}
+              tickFormatter={(value) => {
+                const date = new Date(value);
+                return range === 'today'
+                  ? date.toLocaleTimeString('ko-KR', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false,
+                    })
+                  : date.toLocaleDateString('ko-KR', {
+                      month: '2-digit',
+                      day: '2-digit',
+                    });
+              }}
+              tick={{
+                fontSize: 8,
+                fill: '#FFFFFF',
+                opacity: 0.6,
+              }}
               axisLine={false}
               tickLine={false}
+              interval="preserveStartEnd"
+              textAnchor="end"
             />
+
             <YAxis
               domain={['dataMin - 100', 'dataMax + 100']}
+              tickFormatter={(value) => Math.round(value / 100) * 100}
               tick={{ fontSize: 6.5, fill: '#FFFFFF', opacity: 0.6 }}
               axisLine={false}
               tickLine={false}
               width={30}
             />
+
             <Tooltip
               content={({ label, payload }) => {
                 if (!payload || payload.length === 0) return null;
@@ -70,16 +86,19 @@ const PriceChartContainer = ({ network, range }) => {
                   minute: '2-digit',
                   hour12: true,
                 });
-                const price = payload[0].value;
+
+                const rawPrice = payload[0].value;
+                const roundedPrice = Math.round(rawPrice / 100) * 100;
 
                 return (
                   <div className="bg-white text-black text-[10px] rounded px-2 py-1 shadow-md">
                     <div>{formattedDate}</div>
-                    <div>{`${price.toLocaleString()}원`}</div>
+                    <div>{`${roundedPrice.toLocaleString()}원`}</div>
                   </div>
                 );
               }}
             />
+
             <Line type="monotone" dataKey="price" stroke="#FFFFFF" strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
