@@ -3,7 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import BackButton from '../../components/BackButton/BackButton.jsx';
 // import backIcon from '../../assets/icon/back.svg';
 import Button from '../../components/common/Button.jsx';
+<<<<<<< HEAD
 import utong2 from '../../assets/image/utong2.png';
+=======
+import utong2 from '@/assets/image/utong2.png';
+>>>>>>> cc329cd002dabde77d2e58fcd3b235743b82dc72
 import googleIcon from '@/assets/image/google.png';
 import kakaoIcon from '@/assets/image/kakao.png';
 import naverIcon from '@/assets/image/naver.png';
@@ -45,7 +49,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="h-screen bg-[#F6F7FC] pt-[55px] px-[30px] relative">
+    <div className="h-screen bg-[#F6F7FC] relative">
       <BackButton />
 
       {/* 로고 */}
