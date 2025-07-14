@@ -139,7 +139,8 @@ const BuyDataPage = () => {
             <button
               key={option}
               onClick={() => addDataGB(option)}
-              className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center"
+              className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center
+           hover:border-[#386DEE] hover:bg-[#E6EEFF] hover:text-[#386DEE]"
             >
               {option}
             </button>
