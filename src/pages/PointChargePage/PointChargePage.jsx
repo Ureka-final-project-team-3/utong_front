@@ -27,7 +27,7 @@ const PointChargePage = () => {
       name: '배라 파인트',
       brand: '배스킨라빈스',
       price: 15000,
-      image_url: '/public/image/br.png', // ✅ '/public' 제거
+      image_url: '/public/image/br.png',
       category: 'food',
     },
     {
@@ -97,7 +97,7 @@ const PointChargePage = () => {
 
   useEffect(() => {
     fetchGifticons(selectedCategory, currentPage);
-  }, [fetchGifticons, selectedCategory, currentPage]); // ✅ 의존성 추가
+  }, [fetchGifticons, selectedCategory, currentPage]);
 
   const handleViewDetails = (gifticonId) => {
     navigate(`/point-shop/${gifticonId}`);
