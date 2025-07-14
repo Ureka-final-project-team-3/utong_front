@@ -28,3 +28,13 @@ export const chargePoint = async (chargedAmount) => {
   const res = await API.post('/points/charge', { chargedAmount });
   return res.data.data;
 };
+
+export const fetchGifticons = async () => {
+  const res = await API.get('/gifticons');
+  return res.data?.data ?? []; // undefined 방지
+};
+
+export const fetchGifticonDetail = async (gifticonId) => {
+  const res = await API.post('/gifticons/detail', { gifticonId });
+  return res.data.data;
+};
