@@ -181,11 +181,7 @@ const SellDataPage = () => {
             <button
               key={option}
               onClick={() => handleSelectData(option)}
-              className={`w-[60px] h-[25px] rounded-[10px] border text-[12px] font-medium flex items-center justify-center ${
-                selectedData === option
-                  ? 'border-[#FF4343] bg-[#FFEEEE] text-[#FF4343]'
-                  : 'border-[#B1B1B1] bg-[#F6F7FB] text-[#777]'
-              }`}
+              className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center"
             >
               {option}
             </button>

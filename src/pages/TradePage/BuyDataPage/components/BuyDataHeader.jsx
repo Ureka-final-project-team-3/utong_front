@@ -24,7 +24,7 @@ const BuyDataHeader = () => {
         />
       </div>
 
-      {showModal && <ModalInfo onClose={() => setShowModal(false)} />}
+      {showModal && <ModalInfo onClose={() => setShowModal(false)} color="blue" />}
     </>
   );
 };

@@ -21,7 +21,7 @@ const SellDataHeader = () => {
           onClick={() => setShowModal(true)}
         />
       </div>
-      {showModal && <ModalInfo onClose={() => setShowModal(false)} />}
+      {showModal && <ModalInfo onClose={() => setShowModal(false)} color="red" />}
     </>
   );
 };
