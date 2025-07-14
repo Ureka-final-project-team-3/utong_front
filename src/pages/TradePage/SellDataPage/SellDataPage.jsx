@@ -25,7 +25,6 @@ const SellDataPage = () => {
   const dataOptions = ['1GB', '5GB', '10GB', '20GB'];
 
   const [dataAmount, setDataAmount] = useState(1);
-  const [selectedData, setSelectedData] = useState(dataOptions[0]);
 
   const priceNum = Number(price) || 0;
   const minPrice = Math.floor(avgPrice * 0.7);
@@ -40,7 +39,6 @@ const SellDataPage = () => {
 
   const [hasWarned, setHasWarned] = useState(false);
 
-  // ✅ 가격 범위 벗어났을 때 경고 토스트
   useEffect(() => {
     if (!isPriceValid && price.length > 0 && !hasWarned) {
       toast.error(
@@ -54,7 +52,6 @@ const SellDataPage = () => {
     }
   }, [price, isPriceValid, hasWarned, minPrice, maxPriceAllowed]);
 
-  // ✅ 페이지 진입 시 정보 안내 토스트
   useEffect(() => {
     toast.info('거래중개 등 제반 서비스 이용료가 포함됩니다.', {
       autoClose: 4000,
@@ -72,7 +69,6 @@ const SellDataPage = () => {
   const handleSelectData = (option) => {
     const val = Number(option.replace('GB', ''));
     setDataAmount((prev) => prev + val);
-    setSelectedData(option);
   };
 
   return (
@@ -181,7 +177,8 @@ const SellDataPage = () => {
             <button
               key={option}
               onClick={() => handleSelectData(option)}
-              className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center"
+              className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center
+                hover:border-[#FF4343] hover:bg-[#FFEEEE] hover:text-[#FF4343]"
             >
               {option}
             </button>
