@@ -19,7 +19,7 @@ const iconMap = {
 const ModalInfo = ({ onClose }) => {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.5)]"
       onClick={onClose}
     >
       <div
