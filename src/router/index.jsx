@@ -31,28 +31,29 @@ const router = createBrowserRouter([
     element: <StartPage />,
   },
   {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/signup',
+    element: <SignUpPage />,
+  },
+  {
+    path: '/find-id',
+    element: <FindIdPage />,
+  },
+  {
+    path: '/find-password',
+    element: <FindPasswordPage />,
+  },
+  {
     element: <DefaultLayout />,
     children: [
       {
         path: '/',
         element: <MainPage />,
       },
-      {
-        path: '/login',
-        element: <LoginPage />,
-      },
-      {
-        path: '/signup',
-        element: <SignUpPage />,
-      },
-      {
-        path: '/find-id',
-        element: <FindIdPage />,
-      },
-      {
-        path: '/find-password',
-        element: <FindPasswordPage />,
-      },
+
       {
         path: '/chart',
         element: <LiveChartPage />,
