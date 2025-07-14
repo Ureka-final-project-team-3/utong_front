@@ -24,6 +24,7 @@ import ServiceGuidePage from '../pages/ServiceGuidePage/ServiceGuidePage';
 import ChargePage from '../pages/ChargePage/ChargePage';
 import BuyDataPage from '../pages/TradePage/BuyDataPage/BuyDataPage.jsx';
 import SellDataPage from '../pages/TradePage/SellDataPage/SellDataPage.jsx';
+import MyGifticonDetail from '@/pages/StoragePage/MyGifticonDetail';
 
 const router = createBrowserRouter([
   {
@@ -75,7 +76,7 @@ const router = createBrowserRouter([
         element: <EventPage />,
       },
       {
-        path: '/charge',
+        path: '/shop',
         element: <PointChargePage />,
       },
       {
@@ -121,6 +122,10 @@ const router = createBrowserRouter([
       {
         path: '/point-shop/:id',
         element: <PointDetailPage />,
+      },
+      {
+        path: '/gifticons/:gifticonId',
+        element: <MyGifticonDetail />,
       },
     ],
   },

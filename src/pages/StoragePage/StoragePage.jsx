@@ -1,50 +1,34 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import BackButton from '@/components/BackButton/BackButton';
-
-const mockGifticons = [
-  {
-    id: 1,
-    name: '배라 파인트',
-    brand: '배스킨라빈스',
-    price: 15000,
-    image_url: '/images/br.png',
-    status: '사용 가능',
-  },
-  {
-    id: 2,
-    name: 'CGV 영화 관람권',
-    brand: 'CGV',
-    price: 15000,
-    image_url: '/images/cgv.png',
-    status: '사용 완료',
-  },
-  {
-    id: 3,
-    name: '메가커피 라떼',
-    brand: '메가커피',
-    price: 4000,
-    image_url: '/images/mega.png',
-    status: '유효기간 만료',
-  },
-];
+import { fetchGifticons } from '@/apis/mypageApi';
 
 const StoragePage = () => {
   const [gifticons, setGifticons] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setTimeout(() => {
-      setGifticons(mockGifticons);
-      setLoading(false);
-    }, 500);
+    fetchGifticons()
+      .then((data) => {
+        setGifticons(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('기프티콘 목록 조회 실패:', err);
+        setGifticons([]);
+        setLoading(false);
+      });
   }, []);
 
   return (
     <div className="min-h-screen bg-[#F6F7FC]">
       {/* 헤더 */}
-      <div className="relative flex items-center justify-between px-4 py-3">
+      <div className="relative flex items-center justify-between  mb-4">
         <BackButton />
-        <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold">보관함</h2>
+        <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold pb-0">
+          보관함
+        </h2>
         <div className="w-8" />
       </div>
 
@@ -56,9 +40,9 @@ const StoragePage = () => {
           {gifticons.map((item) => (
             <div
               key={item.id}
-              className="relative bg-white rounded-2xl p-3 shadow-sm overflow-hidden"
+              className="relative bg-white rounded-2xl p-3 shadow-sm overflow-hidden cursor-pointer"
+              onClick={() => navigate(`/gifticons/${item.id}`)}
             >
-              {/* 콘텐츠 */}
               <div className="flex flex-col items-start relative z-10">
                 <div className="w-20 h-20 rounded-xl flex items-center justify-center mb-3">
                   <img src={item.image_url} alt={item.brand} className="w-16 h-16 object-contain" />
