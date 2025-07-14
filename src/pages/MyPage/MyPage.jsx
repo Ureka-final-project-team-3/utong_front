@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Transcation from '@/assets/icon/Transcation.svg';
 import Couponbox from '@/assets/icon/Couponbox.svg';
@@ -11,20 +11,31 @@ import dataIcon from '@/assets/image/data.svg';
 import pointIcon from '@/assets/image/point.svg';
 import utong from '@/assets/image/MyPageutong.svg';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import { fetchMyInfo } from '@/apis/mypageApi';
+
 export default function MyPage() {
-  const [user] = useState({
-    name: '유동석',
-    email: 'example@example.com',
-    mileage: 10000,
-    phoneNumber: '010-1234-5678',
-    remainingData: 50,
-  });
+  const [user, setUser] = useState();
+  useEffect(() => {
+    fetchMyInfo()
+      .then((data) => setUser(data))
+      .catch((error) => {
+        console.error('유저 정보 불러오기 실패:', error);
+        console.log('상세 응답:', error.response?.data); // 🔍 백엔드 에러 메시지 확인
+      });
+  }, []);
+
+  if (!user) {
+    return <div className="text-center mt-10 text-gray-600">유저 정보를 불러오는 중..</div>;
+  }
 
   return (
-    <div className="h-auto  max-h-[650px]  overflow-hidden text-black">
+    <div className="h-auto max-h-[650px] overflow-hidden text-black">
       {/* Header */}
       <div className="flex items-center gap-4 pt-5">
-        <img src={utong} alt="데이터 아이콘" className="w-[100px] h-auto" />
+        <img src={utong} alt="유통이" className="w-[100px] h-auto" />
         <h1 className="text-white text-2xl font-bold">{user.name}</h1>
       </div>
 
@@ -37,7 +48,7 @@ export default function MyPage() {
               <img src={dataIcon} alt="데이터 아이콘" className="w-5 h-5" />
               <div className="text-base">판매 가능 데이터</div>
             </div>
-            <div className="text-base text-right">{user.remainingData}GB</div>
+            <div className="text-base text-right">{user.remainingData ?? 0}GB</div>
           </div>
 
           {/* 포인트 */}
@@ -46,18 +57,18 @@ export default function MyPage() {
               <img src={pointIcon} alt="포인트 아이콘" className="w-5 h-5" />
               <div className="text-base">포인트</div>
             </div>
-            <div className="text-base text-right">{user.mileage.toLocaleString()}P</div>
+            <div className="text-base text-right">{(user.mileage ?? 0).toLocaleString()}P</div>
           </div>
         </div>
 
         <div className="flex justify-between gap-2 mb-3">
           <Link to="/chart" className="flex-1">
-            <button className="w-full bg-[#1355E0] text-base text-white py-1 rounded-md cursor-pointer hover:brightness-90 transition">
+            <button className="w-full bg-[#1355E0] text-base text-white py-1 rounded-md hover:brightness-90 transition">
               거래하기
             </button>
           </Link>
           <Link to="/chargePage" className="flex-1">
-            <button className="w-full bg-[#1355E0] text-base text-white py-1 rounded-md cursor-pointer hover:brightness-90 transition">
+            <button className="w-full bg-[#1355E0] text-base text-white py-1 rounded-md hover:brightness-90 transition">
               충전하기
             </button>
           </Link>
@@ -66,7 +77,7 @@ export default function MyPage() {
         <div className="flex w-full">
           <img src={dataIcon} alt="데이터 아이콘" className="w-5 h-5" />
           <div className="w-full text-base pl-1">전체 데이터</div>
-          <div className="w-full text-base text-right">100 GB</div>
+          <div className="w-full text-base text-right">{user.remainingData ?? 0}GB</div>
         </div>
       </div>
 
@@ -93,7 +104,7 @@ export default function MyPage() {
         {[
           { icon: Notificationbox, label: '알림함', path: '/notifications' },
           { icon: ServiceGuide, label: '서비스 가이드', path: '/guide' },
-          { icon: Notificationsettings, label: '알림 설정', path: '/notification-settings' }, // 페이지 있으면 연결
+          { icon: Notificationsettings, label: '알림 설정', path: '/notification-settings' },
         ].map(({ icon, label, path }) => (
           <Link to={path} key={label}>
             <div className="flex flex-col items-center cursor-pointer hover:opacity-80 transition">
@@ -108,10 +119,20 @@ export default function MyPage() {
 
       {/* 로그아웃 */}
       <div className="mt-20 text-center">
-        <button className="text-blue-600 cursor-pointer hover:underline transition">
+        <button
+          className="text-blue-600 cursor-pointer hover:underline transition"
+          onClick={() => {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            window.location.href = '/login'; // 필요시 라우팅
+          }}
+        >
           로그아웃
         </button>
       </div>
+
+      <ToastContainer position="top-center" autoClose={2000} />
     </div>
   );
 }
