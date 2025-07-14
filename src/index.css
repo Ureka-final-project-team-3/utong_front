@@ -4,7 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   --gray-10: #fdfdfd;
   --gray-20: #fbfbfb;
@@ -28,15 +27,16 @@
   --red: #ff4343;
   --blue: #2769f6;
 
-  --color-background: #F6F7FC;
+  --color-background: #f6f7fc;
 
-  --text-xs: 12px;     /* 작은 글씨 */
-  --text-base: 14px;   /* 기본 글씨 */
-  --text-lg: 20px;     /* 강조 글씨 */
+  --text-xs: 12px; /* 작은 글씨 */
+  --text-base: 14px; /* 기본 글씨 */
+  --text-lg: 20px; /* 강조 글씨 */
 }
 
-
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -68,8 +68,9 @@ body,
   .bg-background {
     background-color: var(--color-background);
   }
-  
-  
+  .bg-gradient-market-price {
+    background: linear-gradient(135deg, #2769f6 0%, #757ad0 100%);
+  }
 
   /* ✅ iOS Safe Area 대응 유틸리티 */
   .safe-area-bottom {
@@ -81,7 +82,8 @@ body,
   }
 
   .safe-area-inset {
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+      env(safe-area-inset-left);
   }
 
   .mb-safe {
