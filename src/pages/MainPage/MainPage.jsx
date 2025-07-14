@@ -61,38 +61,43 @@ const MainPage = () => {
           </p>
         </div>
       </div>
-      <div className="bg-white rounded-t-3xl mt-6 pt-4 w-[300px]">
-        <div className="divide-y divide-gray-200 rounded-xl overflow-hidden shadow">
-          <Link to="/chart" className="block">
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center space-x-3">
-                <img src={trade} alt="거래하기" className="w-5 h-5" />
-                <span className="font-medium text-sm">데이터 거래하기</span>
-              </div>
-              <span className="text-gray-400">{'>'}</span>
+      <div
+        className="w-[300px] mx-auto mt-6 rounded-3xl overflow-hidden bg-white"
+        style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.25)' }}
+      >
+        <Link to="/chart" className="block">
+          <div className="flex items-center justify-between pl-6 pr-4 py-4">
+            <div className="flex items-center space-x-3">
+              <img src={trade} alt="거래하기" className="w-5 h-5" />
+              <span className="font-bold text-[16px] leading-[20px] pl-2">데이터 거래하기</span>
             </div>
-          </Link>
+            <span className="text-gray-400 pr-4">{'>'}</span>
+          </div>
+        </Link>
 
-          <Link to="/event" className="block">
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center space-x-3">
-                <img src={event} alt="이벤트" className="w-5 h-5" />
-                <span className="font-medium text-sm">이벤트</span>
-              </div>
-              <span className="text-gray-400">{'>'}</span>
-            </div>
-          </Link>
+        <div className="border-t border-gray-200" />
 
-          <Link to="/charge" className="block">
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center space-x-3">
-                <img src={shop} alt="상점" className="w-5 h-5" />
-                <span className="font-medium text-sm">포인트 상점</span>
-              </div>
-              <span className="text-gray-400">{'>'}</span>
+        <Link to="/event" className="block">
+          <div className="flex items-center justify-between pl-6 pr-4 py-4">
+            <div className="flex items-center space-x-3">
+              <img src={event} alt="이벤트" className="w-5 h-5" />
+              <span className="font-bold text-[16px] leading-[20px] pl-2">이벤트</span>
             </div>
-          </Link>
-        </div>
+            <span className="text-gray-400 pr-4">{'>'}</span>
+          </div>
+        </Link>
+
+        <div className="border-t border-gray-200" />
+
+        <Link to="/charge" className="block">
+          <div className="flex items-center justify-between pl-6 pr-4 py-4">
+            <div className="flex items-center space-x-3">
+              <img src={shop} alt="상점" className="w-5 h-5" />
+              <span className="font-bold text-[16px] leading-[20px] pl-2">포인트 상점</span>
+            </div>
+            <span className="text-gray-400 pr-4">{'>'}</span>
+          </div>
+        </Link>
       </div>
     </div>
   );

@@ -10,9 +10,30 @@ import naverIcon from '@/assets/image/naver.png';
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
+  const validate = () => {
+    const newErrors = {};
+    if (!email) {
+      newErrors.email = '아이디를 입력해주세요.';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = '유효한 이메일 형식을 입력해주세요.';
+    }
+
+    if (!password) {
+      newErrors.password = '비밀번호를 입력해주세요.';
+    } else if (password.length < 8) {
+      newErrors.password = '비밀번호는 8자 이상이어야 합니다.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleLogin = async () => {
+    if (!validate()) return;
+
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
         method: 'POST',
@@ -27,7 +48,6 @@ const LoginPage = () => {
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
 
-        // ✅ 여기서 /api/auth/me 호출해서 최신 사용자 정보 가져오기
         const meResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
           method: 'GET',
           headers: {
@@ -42,7 +62,7 @@ const LoginPage = () => {
           console.log('meData', meData);
         }
 
-        alert('로그인 성공!');
+        // alert('로그인 성공!');
         navigate('/');
       } else {
         alert(data.data.message || '로그인 실패');
@@ -62,29 +82,30 @@ const LoginPage = () => {
           bg-white shadow-xl relative flex flex-col
         "
       >
-        {/* Main content (scrollable) */}
         <div className="flex-1 overflow-y-auto px-[30px] pt-[55px] pb-[30px] bg-background">
-          {/* Back button */}
           <BackButton />
 
-          {/* 로고 */}
           <div className="flex justify-center mb-8">
             <img src={utong2} alt="로고" className="w-[100px] h-auto" />
           </div>
 
-          {/* 폼 입력 */}
           <div className="space-y-4">
+            {/* 이메일 입력 */}
             <div>
               <label className="block text-gray-500 text-sm font-bold mb-1">아이디</label>
               <input
                 type="email"
-                placeholder="이메일 입력"
+                placeholder="이메일형식 입력"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
               />
+              <p className="min-h-[5px] text-red-500 text-xs mt-[2px]">
+                {errors.email || '\u00A0'}
+              </p>
             </div>
 
+            {/* 비밀번호 입력 */}
             <div>
               <label className="block text-gray-500 text-sm font-bold mb-1">비밀번호</label>
               <input
@@ -94,15 +115,16 @@ const LoginPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
               />
+              <p className="min-h-[5px] text-red-500 text-xs mt-[2px]">
+                {errors.password || '\u00A0'}
+              </p>
             </div>
           </div>
 
-          {/* 로그인 버튼 */}
           <div className="flex justify-center mt-6 mb-4">
             <Button onClick={handleLogin}>로그인</Button>
           </div>
 
-          {/* 링크 */}
           <div className="border-t border-gray-300 pt-4 text-sm text-gray-400 flex justify-center space-x-4 mb-4">
             <Link to="/find-id">아이디 찾기</Link>
             <Link to="/find-password">비밀번호 찾기</Link>
