@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import BackButton from '../../components/BackButton/BackButton.jsx';
-// import backIcon from '../../assets/icon/back.svg';
 import Button from '../../components/common/Button.jsx';
 import utong2 from '@/assets/image/utong2.png';
 import googleIcon from '@/assets/image/google.png';
@@ -14,8 +13,6 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    console.log('handleLogin 실행됨'); // <- 이거 추가
-
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
         method: 'POST',
@@ -26,14 +23,26 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (response.ok && data.data.accessToken) {
-        // console.log('토큰 저장 시작');
-        localStorage.setItem('accessToken', data.data.accessToken);
-        // localStorage.setItem('refreshToken', data.refreshToken);
-        // localStorage.setItem('user', JSON.stringify(data.user));
-        // console.log('토큰 저장 완료');
-        // console.log('navigate("/") 호출');
+        const { accessToken, refreshToken } = data.data;
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
 
-        alert('로그인성공!');
+        // ✅ 여기서 /api/auth/me 호출해서 최신 사용자 정보 가져오기
+        const meResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const meData = await meResponse.json();
+
+        if (meResponse.ok && meData.data) {
+          localStorage.setItem('account', JSON.stringify(meData.data));
+          console.log('meData', meData);
+        }
+
+        alert('로그인 성공!');
         navigate('/');
       } else {
         alert(data.data.message || '로그인 실패');
@@ -45,72 +54,83 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="h-screen bg-[#F6F7FC] relative">
-      <BackButton />
+    <div className="w-screen min-h-[100dvh] bg-gray-200 flex justify-center items-center">
+      <div
+        className="
+          w-full h-[100dvh]
+          sm:w-[360px] sm:h-[780px]
+          bg-white shadow-xl relative flex flex-col
+        "
+      >
+        {/* Main content (scrollable) */}
+        <div className="flex-1 overflow-y-auto px-[30px] pt-[55px] pb-[30px] bg-background">
+          {/* Back button */}
+          <BackButton />
 
-      {/* 로고 */}
-      <div className="flex justify-center mb-8">
-        <img src={utong2} alt="로고" className="w-[100px] h-auto" />
-      </div>
+          {/* 로고 */}
+          <div className="flex justify-center mb-8">
+            <img src={utong2} alt="로고" className="w-[100px] h-auto" />
+          </div>
 
-      {/* 폼 입력 */}
-      <div className="space-y-4">
-        {/* 아이디 */}
-        <div>
-          <label className="block text-gray-500 text-sm font-bold mb-1">아이디</label>
-          <input
-            type="email"
-            placeholder="이메일 입력"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
-          />
+          {/* 폼 입력 */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-gray-500 text-sm font-bold mb-1">아이디</label>
+              <input
+                type="email"
+                placeholder="이메일 입력"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-500 text-sm font-bold mb-1">비밀번호</label>
+              <input
+                type="password"
+                placeholder="비밀번호 입력"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* 로그인 버튼 */}
+          <div className="flex justify-center mt-6 mb-4">
+            <Button onClick={handleLogin}>로그인</Button>
+          </div>
+
+          {/* 링크 */}
+          <div className="border-t border-gray-300 pt-4 text-sm text-gray-400 flex justify-center space-x-4 mb-4">
+            <Link to="/find-id">아이디 찾기</Link>
+            <Link to="/find-password">비밀번호 찾기</Link>
+            <Link to="/signup">회원가입</Link>
+          </div>
+
+          {/* 소셜 로그인 */}
+          <div className="flex justify-center space-x-6">
+            <a
+              href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/google`}
+              className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-white"
+            >
+              <img src={googleIcon} alt="Google" className="w-10 h-10" />
+            </a>
+            <a
+              href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/kakao`}
+              className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#FEE500]"
+            >
+              <img src={kakaoIcon} alt="Kakao" className="w-10 h-10" />
+            </a>
+            <a
+              href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/naver`}
+              className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#03C75A]"
+            >
+              <img src={naverIcon} alt="Naver" className="w-10 h-10" />
+            </a>
+          </div>
         </div>
-
-        {/* 비밀번호 */}
-        <div>
-          <label className="block text-gray-500 text-sm font-bold mb-1">비밀번호</label>
-          <input
-            type="password"
-            placeholder="비밀번호 입력"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
-          />
-        </div>
-      </div>
-
-      {/* 로그인 버튼 */}
-      <div className="flex justify-center mt-6 mb-4">
-        <Button onClick={handleLogin}>로그인</Button>
-      </div>
-
-      <div className="border-t border-gray-300 pt-4 text-sm text-gray-400 flex justify-center space-x-4 mb-4">
-        <Link to="/find-id">아이디 찾기</Link>
-        <Link to="/find-password">비밀번호 찾기</Link>
-        <Link to="/signup">회원가입</Link>
-      </div>
-
-      {/* 소셜 로그인 */}
-      <div className="flex justify-center space-x-6">
-        <a
-          href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/google`}
-          className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-white"
-        >
-          <img src={googleIcon} alt="Google" className="w-10 h-10" />
-        </a>
-        <a
-          href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/kakao`}
-          className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#FEE500]"
-        >
-          <img src={kakaoIcon} alt="Kakao" className="w-10 h-10" />
-        </a>
-        <a
-          href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/naver`}
-          className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#03C75A]"
-        >
-          <img src={naverIcon} alt="Naver" className="w-10 h-10" />
-        </a>
       </div>
     </div>
   );

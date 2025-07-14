@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import tongtong2 from '@/assets/image/tongtong2.png';
 import trade from '@/assets/icon/trade.png';
@@ -8,11 +8,20 @@ import wifi from '@/assets/icon/wifi.png';
 import coin from '@/assets/icon/coin.png';
 
 const MainPage = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const accountData = localStorage.getItem('account');
+    if (accountData && accountData !== 'undefined') {
+      setUser(JSON.parse(accountData));
+    }
+  }, []);
+
   return (
     <div>
       <div className="flex w-[300px] mt-8 items-start">
         <div className="text-white text-left mr-2">
-          <p className="text-[24px] font-semibold leading-tight">이채민님,</p>
+          <p className="text-[24px] font-semibold leading-tight">{user?.nickname || '게스트'}님,</p>
           <p className="text-[24px] font-semibold leading-tight">안녕하세요!</p>
         </div>
 
