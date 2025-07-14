@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { fetchPoint, chargePoint } from '@/apis/mypageApi';
 import BackButton from '@/components/BackButton/BackButton';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ChargePage = () => {
   const [mileage, setMileage] = useState(null);
   const [amount, setAmount] = useState('');
-  const [result, setResult] = useState(null);
   const [couponApplied, setCouponApplied] = useState(false);
-  const [couponDiscount, setCouponDiscount] = useState(600); // 예시 할인
+  const [couponDiscount] = useState(600); // 예시 할인
   const numericAmount = Number(amount) || 0;
   const fee = Math.floor(numericAmount * 0.025); // 수수료 2.5%
   const discountedFee = Math.max(fee - (couponApplied ? couponDiscount : 0), 0);
@@ -26,8 +25,7 @@ const ChargePage = () => {
 
   const handleCharge = async () => {
     try {
-      const data = await chargePoint(Number(amount));
-      setResult(data);
+      await chargePoint(Number(amount));
       loadMileage();
     } catch (e) {
       console.error(e);
@@ -56,25 +54,21 @@ const ChargePage = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">충전 금액</label>
           <div className="relative">
             <input
-              type="text" // ← 중요! number 대신 text 로 해야 제한이 정확히 동작
+              type="text"
               inputMode="numeric"
               className="appearance-none w-full px-10 py-2 border border-gray-300 rounded-lg text-right text-lg font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               placeholder="0"
               value={amount}
               onChange={(e) => {
                 const value = e.target.value;
-
                 if (value === '') {
                   setAmount('');
                   return;
                 }
-
                 if (!/^\d+$/.test(value)) return;
-
                 setAmount(value);
               }}
             />
-
             <span className="absolute right-6 top-6.5 transform -translate-y-1/2 text-gray-500">
               P
             </span>
@@ -132,7 +126,7 @@ const ChargePage = () => {
 
             <div className="flex justify-between items-center py-2">
               <span className="text-base text-gray-600">총 포인트</span>
-              <span className="font-medium  text-base">{totalPrice().toLocaleString()} P</span>
+              <span className="font-medium text-base">{totalPrice().toLocaleString()} P</span>
             </div>
           </div>
 
@@ -164,7 +158,7 @@ const ChargePage = () => {
         </div>
       </div>
 
-      {/* ✅ Toast 메시지 출력용 컨테이너 */}
+      {/* Toast 메시지 출력용 컨테이너 */}
       <ToastContainer position="top-center" autoClose={2000} />
     </div>
   );

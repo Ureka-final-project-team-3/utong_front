@@ -20,11 +20,10 @@ export default function MyPage() {
   const [user, setUser] = useState();
   useEffect(() => {
     fetchMyInfo()
-      .then((data) => {
-        setUser(data);
-      })
+      .then((data) => setUser(data))
       .catch((error) => {
         console.error('유저 정보 불러오기 실패:', error);
+        console.log('상세 응답:', error.response?.data); // 🔍 백엔드 에러 메시지 확인
       });
   }, []);
 

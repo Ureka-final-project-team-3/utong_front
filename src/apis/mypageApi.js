@@ -1,18 +1,21 @@
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL + '/api/mypage',
   withCredentials: true,
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-  },
+});
+
+// ✅ 요청 인터셉터 추가
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem('accessToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 export const fetchMyInfo = async () => {
   const res = await API.get('/info');
-
   return res.data.data;
 };
 

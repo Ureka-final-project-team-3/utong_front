@@ -1,37 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import BackButton from '@/components/BackButton/BackButton';
 
+const mockGifticons = [
+  {
+    id: 1,
+    name: '배라 파인트',
+    brand: '배스킨라빈스',
+    price: 15000,
+    image_url: '/images/br.png',
+    status: '사용 가능',
+  },
+  {
+    id: 2,
+    name: 'CGV 영화 관람권',
+    brand: 'CGV',
+    price: 15000,
+    image_url: '/images/cgv.png',
+    status: '사용 완료',
+  },
+  {
+    id: 3,
+    name: '메가커피 라떼',
+    brand: '메가커피',
+    price: 4000,
+    image_url: '/images/mega.png',
+    status: '유효기간 만료',
+  },
+];
+
 const StoragePage = () => {
   const [gifticons, setGifticons] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // 목데이터
-  const mockGifticons = [
-    {
-      id: 1,
-      name: '배라 파인트',
-      brand: '배스킨라빈스',
-      price: 15000,
-      image_url: '/images/br.png',
-      status: '사용 가능',
-    },
-    {
-      id: 2,
-      name: 'CGV 영화 관람권',
-      brand: 'CGV',
-      price: 15000,
-      image_url: '/images/cgv.png',
-      status: '사용 완료',
-    },
-    {
-      id: 3,
-      name: '메가커피 라떼',
-      brand: '메가커피',
-      price: 4000,
-      image_url: '/images/mega.png',
-      status: '유효기간 만료',
-    },
-  ];
 
   useEffect(() => {
     setTimeout(() => {
@@ -46,7 +45,7 @@ const StoragePage = () => {
       <div className="relative flex items-center justify-between px-4 py-3">
         <BackButton />
         <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold">보관함</h2>
-        <div className="w-8" /> {/* 오른쪽 여백 */}
+        <div className="w-8" />
       </div>
 
       {/* 로딩 */}

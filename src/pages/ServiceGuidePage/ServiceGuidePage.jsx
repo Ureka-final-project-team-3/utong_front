@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '@/assets/icon/logo.svg';
 
@@ -88,14 +88,29 @@ const ServiceGuidePage = () => {
     const threshold = containerWidth * 0.2;
     const velocityThreshold = 0.5;
 
+    const isFirst = currentSlide === 1;
+    const isLast = currentSlide === totalSlides;
+
     if (Math.abs(diff) > threshold || velocity > velocityThreshold) {
-      if (diff > 0) {
+      if (diff > 0 && !isFirst) {
         goToSlide(currentSlide - 1);
-      } else {
+      } else if (diff < 0 && !isLast) {
         goToSlide(currentSlide + 1);
+      } else {
+        // 끝인데 잘못된 방향 → 되돌림
+        setIsTransitioning(true);
+        setDragOffset(0);
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 300);
       }
     } else {
+      // 임계치 못 넘김 → 되돌림
+      setIsTransitioning(true);
       setDragOffset(0);
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 300);
     }
 
     dragStartX.current = null;
@@ -119,15 +134,21 @@ const ServiceGuidePage = () => {
     handleDragStart(e.clientX);
   };
 
-  const handleMouseMove = (e) => {
-    e.preventDefault();
-    handleDragMove(e.clientX);
-  };
+  const handleMouseMove = useCallback(
+    (e) => {
+      e.preventDefault();
+      handleDragMove(e.clientX);
+    },
+    [isDragging, currentSlide, isTransitioning]
+  );
 
-  const handleMouseUp = (e) => {
-    e.preventDefault();
-    handleDragEnd(e.clientX);
-  };
+  const handleMouseUp = useCallback(
+    (e) => {
+      e.preventDefault();
+      handleDragEnd(e.clientX);
+    },
+    [isDragging, currentSlide]
+  );
 
   useEffect(() => {
     if (isDragging) {
@@ -138,7 +159,7 @@ const ServiceGuidePage = () => {
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging]);
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   const currentContent = slideContents[currentSlide - 1];
 
@@ -184,7 +205,7 @@ const ServiceGuidePage = () => {
         }}
       >
         <div
-          className="flex transition-transform duration-300 ease-out"
+          className="flex"
           style={{
             transform: `translateX(calc(-${(currentSlide - 1) * 100}% + ${dragOffset}%))`,
             transition: isDragging ? 'none' : 'transform 0.3s ease-out',
