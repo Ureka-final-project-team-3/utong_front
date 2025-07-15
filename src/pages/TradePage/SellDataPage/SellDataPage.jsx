@@ -5,11 +5,14 @@ import SellDataHeader from './components/SellDataHeader';
 import Button from '../../../components/common/Button';
 import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData';
 
-const SellDataPage = () => {
-  const userName = '동석';
-  const [point, setPoint] = useState(3000);
-  const data = 30;
+import { fetchMyInfo, fetchPoint } from '@/apis/mypageApi';
 
+const SellDataPage = () => {
+  const [userName, setUserName] = useState('');
+  const [point, setPoint] = useState(0);
+  const [data, setData] = useState(0);
+
+  // 데이터 코드 및 mock 데이터 필터링
   const dataCode = '5G';
   const sellBids = mockSellBids.filter((bid) => bid.dataCode === dataCode);
 
@@ -38,6 +41,23 @@ const SellDataPage = () => {
   const isDataValid = dataAmount > 0;
 
   const [hasWarned, setHasWarned] = useState(false);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const userInfo = await fetchMyInfo();
+        const userPoint = await fetchPoint();
+
+        setUserName(userInfo?.name ?? '');
+        setData(userInfo?.remainingData ?? 0);
+        setPoint(userPoint?.mileage ?? 0);
+      } catch (error) {
+        console.error('유저 정보 로딩 실패:', error);
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   useEffect(() => {
     if (!isPriceValid && price.length > 0 && !hasWarned) {
