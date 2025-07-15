@@ -4,6 +4,7 @@ import Button from '../../../components/common/Button';
 
 import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData';
 import { fetchMyInfo, fetchPoint } from '@/apis/mypageApi';
+import SellSuccessModal from '../components/BuySuccessModal';
 
 const BuyDataPage = () => {
   const [userName, setUserName] = useState('');
@@ -45,7 +46,11 @@ const BuyDataPage = () => {
   const minPrice = sellBids.length ? Math.min(...sellBids.map((b) => b.price)) : 0;
 
   const dataOptions = ['1GB', '5GB', '10GB', '20GB'];
-  const [selectedDataGB, setSelectedDataGB] = useState(1);
+
+  // 누적 GB를 숫자 상태로 관리
+  const [selectedDataGB, setSelectedDataGB] = useState(1); // 기본 1GB
+  const [showModal, setShowModal] = useState(false);
+  // 구매 가격 상태
   const [buyPrice, setBuyPrice] = useState(avgPrice.toString());
 
   const buyPriceNum = Number(buyPrice) || 0;
@@ -65,10 +70,17 @@ const BuyDataPage = () => {
       return prevNum + gbNum;
     });
   };
-
+  const handleSellClick = () => {
+    setShowModal(true);
+    setTimeout(() => {
+      setShowModal(false);
+    }, 2000);
+  };
   return (
     <div>
       <BuyDataHeader />
+
+      <SellSuccessModal show={showModal} />
 
       <div className="mt-6 text-[20px] font-bold text-[#2C2C2C]">{userName}님</div>
       <div className="text-[#565656] text-[12px] text-right">(1GB)</div>
@@ -174,16 +186,7 @@ const BuyDataPage = () => {
       </div>
 
       <div className="mt-auto pt-6">
-        <Button
-          onClick={() =>
-            alert(
-              `구매 요청!\n가격: ${buyPriceNum.toLocaleString()} P\n수량: ${
-                selectedDataGB || 0
-              } GB\n총 결제: ${(buyPriceNum * (Number(selectedDataGB) || 0)).toLocaleString()} P`
-            )
-          }
-          className="bg-[#386DEE] hover:bg-[#2f5bd9] w-full"
-        >
+        <Button onClick={handleSellClick} className="bg-[#386DEE] hover:bg-[#2f5bd9] w-full">
           구매하기
         </Button>
       </div>

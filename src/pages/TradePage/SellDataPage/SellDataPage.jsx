@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import SellDataHeader from './components/SellDataHeader';
 import Button from '../../../components/common/Button';
 import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData';
+import SellSuccessModal from '../components/SellSuccessModal';
 
 import { fetchMyInfo, fetchPoint } from '@/apis/mypageApi';
 
@@ -26,7 +27,6 @@ const SellDataPage = () => {
 
   const [price, setPrice] = useState(avgPrice.toString());
   const dataOptions = ['1GB', '5GB', '10GB', '20GB'];
-
   const [dataAmount, setDataAmount] = useState(1);
 
   const priceNum = Number(price) || 0;
@@ -41,6 +41,7 @@ const SellDataPage = () => {
   const isDataValid = dataAmount > 0;
 
   const [hasWarned, setHasWarned] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -80,10 +81,13 @@ const SellDataPage = () => {
   }, []);
 
   const handleSellClick = () => {
-    alert(
-      `판매 요청! 가격: ${priceNum.toLocaleString()} P × ${dataAmount}GB\n총액: ${totalPrice.toLocaleString()} P\n수수료: ${totalFee.toLocaleString()} P 제외 후: ${totalAfterPoint.toLocaleString()} P 수령`
-    );
+    if (!isPriceValid || !isDataValid) return;
+
     setPoint((prev) => prev + totalAfterPoint);
+    setShowModal(true);
+    setTimeout(() => {
+      setShowModal(false);
+    }, 2000);
   };
 
   const handleSelectData = (option) => {
@@ -109,6 +113,8 @@ const SellDataPage = () => {
           pointerEvents: 'auto',
         }}
       />
+
+      <SellSuccessModal show={showModal} />
 
       <div className="mt-6 text-[20px] font-bold text-[#2C2C2C]">{userName}님</div>
       <div className="text-[#565656] text-[12px] text-right">(1GB)</div>
