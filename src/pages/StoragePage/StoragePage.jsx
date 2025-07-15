@@ -12,6 +12,7 @@ const StoragePage = () => {
     fetchGifticons()
       .then((data) => {
         setGifticons(data);
+        console.log('기프티콘', data);
         setLoading(false);
       })
       .catch((err) => {
@@ -36,30 +37,28 @@ const StoragePage = () => {
       {loading ? (
         <div className="text-center text-gray-400 py-10">불러오는 중...</div>
       ) : gifticons.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 ">
           {gifticons.map((item) => (
             <div
               key={item.id}
-              className="relative  rounded-2xl p-2 overflow-hidden cursor-pointer"
+              className="relative  rounded-2xl p-2 overflow-hidden cursor-pointer bg-white border-1 border-gray-300 "
               onClick={() => navigate(`/gifticons/${item.id}`)}
             >
               <div className="flex flex-col items-start relative z-10">
-                <div className="w-20 h-20 rounded-xl flex items-center justify-center mb-3">
+                <div className="w-20 h-20 rounded-xl flex items-center justify-center mb-3 self-center">
                   <img
                     src={item.imageUrl}
                     alt={item.brand}
-                    className="w-auto h-auto object-contain"
+                    className="w-full h-auto object-contain"
                   />
                 </div>
                 <div className="text-xs text-gray-600">{item.brand}</div>
                 <div className="text-xs text-gray-800 leading-tight mb-1 line-clamp-2">
                   {item.name}
                 </div>
-
                 <div className="text-base font-bold text-gray-800">
                   {item.price.toLocaleString()}P
                 </div>
-
                 {item.status === '사용 가능' && item.daysRemaining !== -1 && (
                   <div className="text-xs text-gray-500 mt-1">
                     {item.expiredAt ? `유효기간: ${item.expiredAt}` : `D-${item.daysRemaining}`}
@@ -67,7 +66,6 @@ const StoragePage = () => {
                 )}
               </div>
 
-              {/* 상태 오버레이 */}
               {item.status !== '사용 가능' && (
                 <>
                   <div className="absolute inset-0 bg-white/70 z-20 rounded-base" />

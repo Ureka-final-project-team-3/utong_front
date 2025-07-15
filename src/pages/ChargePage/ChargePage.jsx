@@ -16,6 +16,7 @@ const ChargePage = () => {
   const loadMileage = () => {
     fetchPoint()
       .then((data) => setMileage(data.mileage))
+
       .catch(console.error);
   };
 

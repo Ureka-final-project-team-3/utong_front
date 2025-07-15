@@ -9,14 +9,21 @@ const StartPage = () => {
     const timer = setTimeout(() => {
       navigate('/login');
     }, 2000);
-
-    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 클리어
+    return () => clearTimeout(timer);
   }, [navigate]);
 
   return (
-    <div className="h-screen flex flex-col justify-center items-center bg-[#F6F7FC]">
-      <img src={utong2} alt="유통 로고" className="w-[120px] h-auto mb-5" />
-      <p className="text-[25px] text-gray-500 font-medium">너로 통하다</p>
+    <div className="w-screen min-h-[100dvh] bg-gray-200 flex justify-center items-center">
+      <div
+        className="
+          w-full h-[100dvh]
+          sm:w-[360px] sm:h-[780px]
+          bg-background shadow-xl flex flex-col justify-center items-center
+        "
+      >
+        <img src={utong2} alt="유통 로고" className="w-[120px] h-auto mb-5" />
+        <p className="text-[25px] text-gray-500 font-medium">너로 통하다</p>
+      </div>
     </div>
   );
 };

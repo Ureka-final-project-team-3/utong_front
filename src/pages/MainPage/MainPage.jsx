@@ -56,7 +56,7 @@ const MainPage = () => {
 
           <p className="text-right leading-5 self-end">
             <span className="text-[10px]">현재 </span>
-            <span className="text-[24px] font-bold">1200원</span>
+            <span className="text-[24px] font-bold">8700원</span>
             <span className="text-[10px]"> (1GB)</span>
           </p>
         </div>
@@ -89,7 +89,7 @@ const MainPage = () => {
 
         <div className="border-t border-gray-200" />
 
-        <Link to="/charge" className="block">
+        <Link to="/shop" className="block">
           <div className="flex items-center justify-between pl-6 pr-4 py-4">
             <div className="flex items-center space-x-3">
               <img src={shop} alt="상점" className="w-5 h-5" />
