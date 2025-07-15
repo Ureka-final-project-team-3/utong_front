@@ -19,7 +19,6 @@ import TradeHistoryPage from '../pages/TradeHistoryPage/TradeHistoryPage';
 import CouponPage from '../pages/CouponPage/CouponPage';
 import StoragePage from '../pages/StoragePage/StoragePage';
 import EditProfilePage from '../pages/EditProfilePage/EditProfilePage';
-import NotificationsPage from '../pages/NotificationsPage/NotificationsPage';
 import ServiceGuidePage from '../pages/ServiceGuidePage/ServiceGuidePage';
 import ChargePage from '../pages/ChargePage/ChargePage';
 import BuyDataPage from '../pages/TradePage/BuyDataPage/BuyDataPage.jsx';
@@ -107,10 +106,7 @@ const router = createBrowserRouter([
         path: '/edit-profile',
         element: <EditProfilePage />,
       },
-      {
-        path: '/notifications',
-        element: <NotificationsPage />,
-      },
+
       {
         path: '/guide',
         element: <ServiceGuidePage />,

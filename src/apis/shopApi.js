@@ -23,3 +23,8 @@ export const fetchGifticonDetail = async (gifticonId) => {
   const res = await API.get(`/gifticons/${gifticonId}`);
   return res.data.data; // 응답 구조에 따라 조정
 };
+
+export const exchangeGifticon = async (gifticonId) => {
+  const res = await API.post(`/gifticons/${gifticonId}/exchange`);
+  return res.data.data; // 응답 구조에 따라 필요 시 조정
+};

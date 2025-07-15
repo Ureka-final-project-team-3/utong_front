@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import BackButton from '@/components/BackButton/BackButton';
-import { fetchGifticonDetail } from '@/apis/shopApi';
+import { fetchGifticonDetail, exchangeGifticon } from '@/apis/shopApi';
 import { fetchMyInfo } from '@/apis/mypageApi';
 
 const PointDetailPage = () => {
@@ -9,7 +9,7 @@ const PointDetailPage = () => {
   const navigate = useNavigate();
 
   const [gifticon, setGifticon] = useState(null);
-  const [userPoint, setUserPoint] = useState(null); // ← fetchMyInfo로 받은 포인트
+  const [userPoint, setUserPoint] = useState(null);
   const [loading, setLoading] = useState(true);
   const availableCoupons = 0;
 
@@ -88,10 +88,17 @@ const PointDetailPage = () => {
       </div>
 
       {/* 버튼 */}
+
       <button
-        onClick={() => {
-          alert('포인트로 교환이 완료되었습니다!');
-          navigate('/shop');
+        onClick={async () => {
+          try {
+            await exchangeGifticon(id);
+            alert('포인트로 교환이 완료되었습니다!');
+            navigate('/shop'); // 필요 시 다른 경로로 이동
+          } catch (err) {
+            console.error('교환 실패:', err);
+            alert('교환 중 오류가 발생했습니다.');
+          }
         }}
         className="w-full mt-2 py-3 bg-blue-600 text-white text-base font-semibold rounded-xl hover:bg-blue-700"
       >
