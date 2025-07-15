@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import BackButton from '@/components/BackButton/BackButton';
 import { fetchAllGifticons } from '@/apis/shopApi';
 import { fetchMyInfo } from '@/apis/mypageApi';
+import coinIcon from '@/assets/icon/coin.png';
 
 const PointChargePage = () => {
   const [user, setUser] = useState(null);
@@ -68,7 +69,9 @@ const PointChargePage = () => {
         <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold">
           포인트 상점
         </h2>
-        <span className="text-lg text-blue-600 font-bold">
+
+        <span className="flex items-center gap-1 text-base text-blue-600 font-bold">
+          <img src={coinIcon} alt="코인 아이콘" className="w-4 h-4" />
           {user?.mileage?.toLocaleString() ?? '...'}P
         </span>
       </div>
@@ -94,7 +97,21 @@ const PointChargePage = () => {
       </div>
 
       {/* 상태 */}
-      {loading && <div className="text-center text-gray-400 py-10">로딩 중...</div>}
+      {loading && (
+        <div className="grid grid-cols-2 gap-4 mb-6 animate-pulse">
+          {[...Array(4)].map((_, idx) => (
+            <div key={idx} className="bg-white rounded-2xl p-2 shadow-sm">
+              <div className="flex flex-col items-start">
+                <div className="w-full h-20 rounded-xl bg-gray-100 mb-3" />
+                <div className="h-3 w-1/2 bg-gray-100 rounded mb-2" />
+                <div className="h-3 w-3/4 bg-gray-100 rounded mb-2" />
+                <div className="h-4 w-1/3 bg-gray-200 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {error && (
         <div className="text-center text-red-500 py-4">
           {error}
