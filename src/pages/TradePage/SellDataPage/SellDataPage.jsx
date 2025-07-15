@@ -18,11 +18,12 @@ const SellDataPage = () => {
   const sellBids = mockSellBids.filter((bid) => bid.dataCode === dataCode);
 
   const avgPrice = sellBids.length
-    ? Math.floor(
-        sellBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
-          sellBids.reduce((sum, b) => sum + b.quantity, 0)
-      )
-    : 0;
+  ? Math.round(
+      sellBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
+        sellBids.reduce((sum, b) => sum + b.quantity, 0) / 100
+    ) * 100
+  : 0;
+
   const maxPrice = sellBids.length ? Math.max(...sellBids.map((b) => b.price)) : 0;
 
   const [price, setPrice] = useState(avgPrice.toString());
@@ -38,7 +39,7 @@ const SellDataPage = () => {
   const totalAfterPoint = totalPrice - totalFee;
 
   const isPriceValid = priceNum >= minPrice && priceNum <= maxPriceAllowed;
-  const isDataValid = dataAmount > 0;
+  const isDataValid = dataAmount > 0 && dataAmount <= data;
 
   const [hasWarned, setHasWarned] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -73,9 +74,18 @@ const SellDataPage = () => {
     }
   }, [price, isPriceValid, hasWarned, minPrice, maxPriceAllowed]);
 
+  // **보유 데이터 초과 입력 시 토스트 띄우기**
+  useEffect(() => {
+    if (dataAmount > data && data !== 0) {
+      toast.error(`보유 데이터(${data}GB)보다 많은 양을 판매할 수 없어요.`, {
+        autoClose: 3000,
+      });
+    }
+  }, [dataAmount, data]);
+
   useEffect(() => {
     toast.info('거래중개 등 제반 서비스 이용료가 포함됩니다.', {
-      autoClose: 4000,
+      autoClose: 3000,
       position: 'top-center',
     });
   }, []);
