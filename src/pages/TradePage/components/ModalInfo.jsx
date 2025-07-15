@@ -87,20 +87,23 @@ const ModalInfo = ({ onClose, color = 'blue' }) => {
 };
 
 const RuleItem = ({ type, text, sub, color }) => {
-  const Icon = iconMap[type][color]; // 색상 조건 분기
+  const Icon = iconMap[type][color];
 
   return (
-    <div className="flex items-start gap-2">
+    <div className="flex gap-3">
+      {/* 숫자 아이콘만 왼쪽 상단에 고정 */}
       <div className="w-5 h-5 shrink-0 mt-[2px]">
         <img src={Icon} alt={`${type} icon`} className="w-full h-full" />
       </div>
 
+      {/* 텍스트 영역 */}
       <div className="flex flex-col">
-        <p className="text-[12px] text-[#2C2C2C] leading-[15px]">{text}</p>
-        <div className="flex items-center gap-1 mt-[4px]">
-          <img src={ArrowIcon} alt="arrow" className="w-3 h-3" />
-          <p className="text-[10px] text-[#777777] leading-[12px]">{sub}</p>
-        </div>
+        <p className="text-[12px] text-[#2C2C2C] leading-[15px] font-medium">{text}</p>
+
+        <p className="text-[12px] text-[#777777] leading-[15px] mt-1 whitespace-pre-line flex items-start gap-1">
+          <img src={ArrowIcon} alt="arrow" className="w-3 h-3 mt-[2px] flex-shrink-0" />
+          <span>{sub}</span>
+        </p>
       </div>
     </div>
   );

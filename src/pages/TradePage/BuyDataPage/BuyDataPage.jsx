@@ -5,7 +5,7 @@ import Button from '../../../components/common/Button';
 import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData';
 import { fetchMyInfo, fetchPoint } from '@/apis/mypageApi';
 import PointRechargeModal from '../components/PointRechargeModal';
-import SellSuccessModal from '../components/SellSuccessModal';
+import BuySuccessModal from '../components/BuySuccessModal';
 import ReservationModal from '../components/ReservationModal';
 import PaymentCompleteModal from '../components/PaymentCompleteModal'; // 모달 import 추가
 
@@ -117,7 +117,7 @@ const BuyDataPage = () => {
       <BuyDataHeader />
 
       <PointRechargeModal show={showRechargeModal} onClose={() => setShowRechargeModal(false)} />
-      <SellSuccessModal show={showSuccessModal} />
+      <BuySuccessModal show={showSuccessModal} />
       {showReservationModal && (
         <ReservationModal onConfirm={() => setShowReservationModal(false)} />
       )}
