@@ -1,9 +1,9 @@
 export const mockSellBids = [
   // 5G
-  { price: 8600, quantity: 20, dataCode: '5G', createdAt: '2025-07-11T10:00:00' },
+  { price: 8600, quantity: 2, dataCode: '5G', createdAt: '2025-07-11T10:00:00' },
   { price: 8500, quantity: 1, dataCode: '5G', createdAt: '2025-07-11T09:30:00' },
   { price: 8400, quantity: 4, dataCode: '5G', createdAt: '2025-07-11T09:00:00' },
-  { price: 8300, quantity: 40, dataCode: '5G', createdAt: '2025-07-11T08:30:00' },
+  { price: 8300, quantity: 1, dataCode: '5G', createdAt: '2025-07-11T08:30:00' },
   { price: 8200, quantity: 10, dataCode: '5G', createdAt: '2025-07-11T08:00:00' },
   { price: 8100, quantity: 3, dataCode: '5G', createdAt: '2025-07-11T07:30:00' },
   { price: 8000, quantity: 2, dataCode: '5G', createdAt: '2025-07-11T07:00:00' },

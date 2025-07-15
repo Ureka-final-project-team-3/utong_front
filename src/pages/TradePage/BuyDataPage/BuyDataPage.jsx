@@ -4,53 +4,55 @@ import Button from '../../../components/common/Button';
 
 import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData';
 import { fetchMyInfo, fetchPoint } from '@/apis/mypageApi';
-import SellSuccessModal from '../components/BuySuccessModal';
+import PointRechargeModal from '../components/PointRechargeModal';
+import SellSuccessModal from '../components/SellSuccessModal';
+import ReservationModal from '../components/ReservationModal';
+import PaymentCompleteModal from '../components/PaymentCompleteModal'; // 모달 import 추가
 
 const BuyDataPage = () => {
   const [userName, setUserName] = useState('');
   const [point, setPoint] = useState(0);
   const [data, setData] = useState(0);
+  const [showRechargeModal, setShowRechargeModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showReservationModal, setShowReservationModal] = useState(false);
+  const [showPaymentCompleteModal, setShowPaymentCompleteModal] = useState(false); // 구매대기 모달 상태
 
   const dataCode = '5G';
 
   useEffect(() => {
-  const loadUserInfo = async () => {
-    try {
-      const userInfo = await fetchMyInfo();
-      const userPoint = await fetchPoint();
+    const loadUserInfo = async () => {
+      try {
+        const userInfo = await fetchMyInfo();
+        const userPoint = await fetchPoint();
 
-      console.log('👉 userInfo:', userInfo);
-      console.log('👉 userPoint:', userPoint);
+        setUserName(userInfo?.name ?? '');
+        setData(userInfo?.remainingData ?? 0);
+        setPoint(userPoint?.mileage ?? 0);
+      } catch (err) {
+        console.error('❌ 유저 정보 로딩 실패:', err);
+      }
+    };
 
-      setUserName(userInfo?.name ?? '');
-      setData(userInfo?.remainingData ?? 0); // remainingData가 실제 보유 데이터
-      setPoint(userPoint?.mileage ?? 0);     // mileage가 포인트
-    } catch (err) {
-      console.error('❌ 유저 정보 로딩 실패:', err);
-    }
-  };
-
-  loadUserInfo();
-}, []);
-
+    loadUserInfo();
+  }, []);
 
   const sellBids = mockSellBids.filter((bid) => bid.dataCode === dataCode);
 
   const avgPrice = sellBids.length
-    ? Math.floor(
+    ? Math.round(
         sellBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
-          sellBids.reduce((sum, b) => sum + b.quantity, 0)
-      )
+          sellBids.reduce((sum, b) => sum + b.quantity, 0) /
+          100
+      ) * 100
     : 0;
 
   const minPrice = sellBids.length ? Math.min(...sellBids.map((b) => b.price)) : 0;
 
   const dataOptions = ['1GB', '5GB', '10GB', '20GB'];
 
-  // 누적 GB를 숫자 상태로 관리
-  const [selectedDataGB, setSelectedDataGB] = useState(1); // 기본 1GB
-  const [showModal, setShowModal] = useState(false);
-  // 구매 가격 상태
+  // selectedDataGB는 항상 숫자(>=0)로 관리
+  const [selectedDataGB, setSelectedDataGB] = useState(1);
   const [buyPrice, setBuyPrice] = useState(avgPrice.toString());
 
   const buyPriceNum = Number(buyPrice) || 0;
@@ -58,8 +60,8 @@ const BuyDataPage = () => {
   const handleGBInputChange = (e) => {
     const val = e.target.value;
     if (/^\d*$/.test(val)) {
-      const numVal = val === '' ? '' : Math.max(1, Number(val));
-      setSelectedDataGB(numVal === '' ? '' : numVal);
+      const numVal = val === '' ? 0 : Math.max(0, Number(val)); // 0 이상 숫자만 허용
+      setSelectedDataGB(numVal);
     }
   };
 
@@ -70,21 +72,61 @@ const BuyDataPage = () => {
       return prevNum + gbNum;
     });
   };
-  const handleSellClick = () => {
-    setShowModal(true);
+
+  const handleBuyClick = () => {
+    const selectedQty = Number(selectedDataGB) || 0;
+    const totalPrice = buyPriceNum * selectedQty;
+
+    // 사용자가 입력한 가격 이하 매물들 필터링
+    const matchedBids = sellBids.filter((bid) => bid.price <= buyPriceNum);
+    // 해당 매물 수량 합산
+    const matchedQuantity = matchedBids.reduce((sum, b) => sum + b.quantity, 0);
+
+    console.log('구매 요청 수량:', selectedQty);
+    console.log('선택 가격 이하 총 매물 수량:', matchedQuantity);
+
+    if (point < totalPrice) {
+      setShowRechargeModal(true);
+      return;
+    }
+
+    if (buyPriceNum < minPrice) {
+      setShowReservationModal(true);
+      return;
+    }
+
+    if (selectedQty > matchedQuantity) {
+      setShowPaymentCompleteModal(true);
+      setTimeout(() => {
+        setShowPaymentCompleteModal(false);
+      }, 2000);
+      return;
+    }
+
+    // 전체 구매 가능 시
+    const updatedPoint = point - totalPrice;
+    setPoint(updatedPoint);
+    setShowSuccessModal(true);
     setTimeout(() => {
-      setShowModal(false);
+      setShowSuccessModal(false);
     }, 2000);
   };
+
   return (
     <div>
       <BuyDataHeader />
 
-      <SellSuccessModal show={showModal} />
+      <PointRechargeModal show={showRechargeModal} onClose={() => setShowRechargeModal(false)} />
+      <SellSuccessModal show={showSuccessModal} />
+      {showReservationModal && (
+        <ReservationModal onConfirm={() => setShowReservationModal(false)} />
+      )}
+      {showPaymentCompleteModal && <PaymentCompleteModal point={point} />}
 
       <div className="mt-6 text-[20px] font-bold text-[#2C2C2C]">{userName}님</div>
       <div className="text-[#565656] text-[12px] text-right">(1GB)</div>
 
+      {/* 사용자 정보 영역 */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex-1 space-y-2 text-[13px] text-[#5D5D5D]">
           <div className="flex justify-between">
@@ -120,6 +162,7 @@ const BuyDataPage = () => {
         </div>
       </div>
 
+      {/* 가격 입력 */}
       <div className="mt-6 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
         <div className="text-[15px] text-[#2C2C2C] mb-2">구매할 가격</div>
         <div className="flex justify-end items-center">
@@ -144,6 +187,7 @@ const BuyDataPage = () => {
         최저가보다 낮은 금액은 구매대기됩니다.
       </div>
 
+      {/* 데이터 양 입력 */}
       <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
         <div className="text-[15px] text-[#2C2C2C] mb-2">데이터</div>
         <div className="flex justify-between items-center mb-2">
@@ -176,6 +220,7 @@ const BuyDataPage = () => {
         최저가의 모든 데이터 양보다 수량이 작으면 구매대기됩니다.
       </div>
 
+      {/* 총 가격 */}
       <div className="mt-6 border-t border-gray-300 pt-4 space-y-2">
         <div className="flex justify-between text-[16px] text-[#5D5D5D]">
           <span>총 결제 포인트</span>
@@ -186,7 +231,11 @@ const BuyDataPage = () => {
       </div>
 
       <div className="mt-auto pt-6">
-        <Button onClick={handleSellClick} className="bg-[#386DEE] hover:bg-[#2f5bd9] w-full">
+        <Button
+          onClick={handleBuyClick}
+          className="bg-[#386DEE] hover:bg-[#2f5bd9] w-full"
+          disabled={buyPriceNum <= 0 || (Number(selectedDataGB) || 0) <= 0}
+        >
           구매하기
         </Button>
       </div>
