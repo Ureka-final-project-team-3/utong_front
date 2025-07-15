@@ -104,7 +104,7 @@ const PointChargePage = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div>
       {/* 헤더 */}
       <div className="relative flex items-center justify-between mb-6">
         <BackButton />

@@ -9,7 +9,7 @@ import shop from '@/assets/icon/shop.svg';
 
 const icons = [
   { to: '/chart', src: graph, alt: '차트' },
-  { to: '/charge', src: shop, alt: '포인트 상점' },
+  { to: '/shop', src: shop, alt: '포인트 상점' },
   { to: '/', src: logo, alt: '홈' },
   { to: '/alarm', src: alarm, alt: '알람' },
   { to: '/mypage', src: user, alt: '마이페이지' },
