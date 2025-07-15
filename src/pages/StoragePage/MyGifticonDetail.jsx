@@ -4,7 +4,7 @@ import { fetchGifticonDetail } from '@/apis/mypageApi';
 import BackButton from '@/components/BackButton/BackButton';
 
 const MyGifticonDetail = () => {
-  const { gifticonId } = useParams(); // URL 파라미터에서 id 추출
+  const { gifticonId } = useParams();
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -26,39 +26,56 @@ const MyGifticonDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F6F7FC] p ">
-      <div className="relative flex items-center justify-between mb-4">
+    <div className="min-h-screen bg-[#F6F7FC] ">
+      {/* 헤더 */}
+      <div className="relative flex items-center justify-between mb-6">
         <BackButton onClick={() => navigate(-1)} />
-        <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold">
-          상세 정보
+        <h2 className="absolute left-1/2 transform -translate-x-1/2 text-lg font-semibold">
+          기프티콘 사용
         </h2>
-        <div className="w-8" />
+        <div className="w-6" />
       </div>
 
-      {detail.imageUrl && (
-        <img
-          src={detail.imageUrl}
-          alt={detail.name}
-          className="w-40 h-auto object-contain mx-auto mb-6"
-        />
-      )}
+      {/* 기프티콘 정보 카드 */}
+      <div className="bg-white rounded-xl p-5 shadow-md mb-6">
+        {/* 이미지 */}
+        {detail.imageUrl && (
+          <img
+            src={detail.imageUrl}
+            alt={detail.name}
+            className="w-32 h-auto object-contain mx-auto mb-4"
+          />
+        )}
 
-      <div className="bg-white rounded-xl p-5 shadow-sm space-y-2 text-sm text-gray-800">
-        <p>
-          <strong>이름:</strong> {detail.name}
-        </p>
-        <p>
-          <strong>설명:</strong> {detail.description}
-        </p>
-        <p>
-          <strong>가격:</strong> {detail.price.toLocaleString()}원
-        </p>
-        <p>
-          <strong>상태:</strong> {detail.status}
-        </p>
-        <p>
-          <strong>유효기간:</strong> {detail.expiredAt} (D{detail.daysRemaining})
-        </p>
+        {/* 텍스트 정보 */}
+        <div className="text-center space-y-1 mb-4">
+          <p className="text-xs text-gray-500">[{detail.brand}]</p>
+          <p className="text-base font-semibold">{detail.name}</p>
+          <p className="text-sm font-bold text-gray-700">
+            {detail.point?.toLocaleString() || detail.price?.toLocaleString()}P
+          </p>
+        </div>
+
+        {/* 바코드 */}
+        {detail.barcode && (
+          <div className="text-center mt-4">
+            <img
+              src={detail.barcodeImageUrl || '/images/sample-barcode.png'}
+              alt="바코드"
+              className="w-full max-w-xs mx-auto"
+            />
+            <p className="mt-2 text-base font-semibold tracking-widest">{detail.barcode}</p>
+          </div>
+        )}
+      </div>
+
+      {/* 유의사항 박스 */}
+      <div className="bg-white rounded-xl p-4 text-[10px] text-gray-700 shadow-sm whitespace-pre-line">
+        <p className="font-semibold text-xs mb-1">[유의사항]</p>- 문의는 상품권 구매처에 문의해
+        주시기 바랍니다.{'\n'}- 본 디지털상품권은 현금과 교환되지 않습니다.{'\n'}- 타 쿠폰
+        중복사용이나 포인트 적립 및 제휴카드 할인은 브랜드사 정책에 따릅니다.{'\n'}- 본 상품은
+        유효기간 연장이 불가합니다.{'\n'}- 교환품 구매하실 때 현금 영수증이 발행되지 않으며, 본
+        쿠폰은 본 게시물 또는 서비스 교환 시 사용처의 매장에서 발행됩니다.
       </div>
     </div>
   );
