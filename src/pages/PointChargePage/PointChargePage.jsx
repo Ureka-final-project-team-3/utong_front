@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '@/components/BackButton/BackButton';
+import { fetchAllGifticons } from '@/apis/shopApi';
+import { fetchMyInfo } from '@/apis/mypageApi';
 
 const PointChargePage = () => {
-  const [userPoint] = useState(3000); // ✅ setUserPoint 제거
+  const [user, setUser] = useState(null);
   const [gifticons, setGifticons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,65 +23,12 @@ const PointChargePage = () => {
     { value: 'shopping', label: '쇼핑' },
   ];
 
-  const getDummyGifticons = () => [
-    {
-      id: 1,
-      name: '배라 파인트',
-      brand: '배스킨라빈스',
-      price: 15000,
-      image_url: '/public/image/br.png',
-      category: 'food',
-    },
-    {
-      id: 2,
-      name: '영화 5000원 관람권',
-      brand: 'CGV',
-      price: 15000,
-      image_url: '/images/cgv.png',
-      category: 'movie',
-    },
-    {
-      id: 3,
-      name: '카페라떼',
-      brand: '메가커피',
-      price: 4000,
-      image_url: '/images/mega.png',
-      category: 'cafe',
-    },
-    {
-      id: 4,
-      name: '영화 5000원 관람권',
-      brand: '메가박스',
-      price: 100,
-      image_url: '/images/megabox.png',
-      category: 'movie',
-    },
-    {
-      id: 5,
-      name: '스타벅스 아메리카노',
-      brand: '스타벅스',
-      price: 4500,
-      image_url: '/images/starbucks.png',
-      category: 'cafe',
-    },
-    {
-      id: 6,
-      name: '맥도날드 빅맥세트',
-      brand: '맥도날드',
-      price: 7000,
-      image_url: '/images/mcdonalds.png',
-      category: 'food',
-    },
-  ];
-
-  // ✅ useCallback으로 래핑
   const fetchGifticons = useCallback(async (category = '', page = 1, size = 10) => {
     try {
       setLoading(true);
       setError(null);
-      await new Promise((resolve) => setTimeout(resolve, 300));
 
-      const allGifticons = getDummyGifticons();
+      const allGifticons = await fetchAllGifticons();
       const filtered = category
         ? allGifticons.filter((g) => g.category === category)
         : allGifticons;
@@ -99,6 +48,14 @@ const PointChargePage = () => {
     fetchGifticons(selectedCategory, currentPage);
   }, [fetchGifticons, selectedCategory, currentPage]);
 
+  useEffect(() => {
+    fetchMyInfo()
+      .then((data) => setUser(data))
+      .catch((err) => {
+        console.error('유저 정보 가져오기 실패:', err);
+      });
+  }, []);
+
   const handleViewDetails = (gifticonId) => {
     navigate(`/point-shop/${gifticonId}`);
   };
@@ -111,7 +68,9 @@ const PointChargePage = () => {
         <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold">
           포인트 상점
         </h2>
-        <span className="text-lg text-blue-600 font-bold">{userPoint.toLocaleString()}P</span>
+        <span className="text-lg text-blue-600 font-bold">
+          {user?.mileage?.toLocaleString() ?? '...'}P
+        </span>
       </div>
 
       {/* 카테고리 */}
@@ -156,11 +115,11 @@ const PointChargePage = () => {
                 className="bg-white rounded-2xl p-2 shadow-sm cursor-pointer hover:shadow-md transition"
               >
                 <div className="flex flex-col items-start">
-                  <div className="w-20 h-20 rounded-xl flex items-center justify-center mb-3">
+                  <div className="w-full h-20 rounded-xl flex items-center justify-center mb-3">
                     <img
-                      src={item.image_url}
+                      src={item.imageUrl || '/images/default-gifticon.png'}
                       alt={item.brand}
-                      className="w-16 h-16 object-contain"
+                      className="w-24 h-24 object-contain"
                     />
                   </div>
                   <div className="text-xs text-gray-600 text-left">{item.brand}</div>
