@@ -39,7 +39,7 @@ const ChargePage = () => {
   return (
     <div>
       {/* 헤더 */}
-      <div className="relative px-0 py-0">
+      <div className="relative ">
         <div className="flex items-center justify-center relative">
           <div className="absolute left-0">
             <BackButton />

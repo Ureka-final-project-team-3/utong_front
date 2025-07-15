@@ -22,7 +22,7 @@ const StoragePage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F6F7FC]">
+    <div>
       {/* 헤더 */}
       <div className="relative flex items-center justify-between px-4 py-0 mb-10">
         <BackButton />
@@ -40,7 +40,7 @@ const StoragePage = () => {
           {gifticons.map((item) => (
             <div
               key={item.id}
-              className="relative bg-white rounded-2xl p-3 shadow-sm overflow-hidden cursor-pointer"
+              className="relative  rounded-2xl p-2 overflow-hidden cursor-pointer"
               onClick={() => navigate(`/gifticons/${item.id}`)}
             >
               <div className="flex flex-col items-start relative z-10">
@@ -51,17 +51,20 @@ const StoragePage = () => {
                     className="w-auto h-auto object-contain"
                   />
                 </div>
-                <div className="text-base text-gray-600">{item.brand}</div>
-                <div className="text-xs font-medium text-gray-800 leading-tight mb-1 line-clamp-2">
+                <div className="text-xs text-gray-600">{item.brand}</div>
+                <div className="text-xs text-gray-800 leading-tight mb-1 line-clamp-2">
                   {item.name}
                 </div>
 
                 <div className="text-base font-bold text-gray-800">
                   {item.price.toLocaleString()}P
-                  <div className="text-xs text-gray-500 mb-1">
+                </div>
+
+                {item.status === '사용 가능' && item.daysRemaining !== -1 && (
+                  <div className="text-xs text-gray-500 mt-1">
                     {item.expiredAt ? `유효기간: ${item.expiredAt}` : `D-${item.daysRemaining}`}
                   </div>
-                </div>
+                )}
               </div>
 
               {/* 상태 오버레이 */}

@@ -49,24 +49,11 @@ const MyGifticonDetail = () => {
 
         {/* 텍스트 정보 */}
         <div className="text-center space-y-1 mb-4">
-          <p className="text-xs text-gray-500">[{detail.brand}]</p>
           <p className="text-base font-semibold">{detail.name}</p>
           <p className="text-sm font-bold text-gray-700">
             {detail.point?.toLocaleString() || detail.price?.toLocaleString()}P
           </p>
         </div>
-
-        {/* 바코드 */}
-        {detail.barcode && (
-          <div className="text-center mt-4">
-            <img
-              src={detail.barcodeImageUrl || '/images/sample-barcode.png'}
-              alt="바코드"
-              className="w-full max-w-xs mx-auto"
-            />
-            <p className="mt-2 text-base font-semibold tracking-widest">{detail.barcode}</p>
-          </div>
-        )}
       </div>
 
       {/* 유의사항 박스 */}
