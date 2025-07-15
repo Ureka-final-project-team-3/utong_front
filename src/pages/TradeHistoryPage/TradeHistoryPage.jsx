@@ -38,7 +38,7 @@ const TradeHistoryPage = () => {
   const [tab, setTab] = useState('구매 내역');
 
   return (
-    <div className="bg-[#F6F7FC] min-h-screen">
+    <div>
       {/* 헤더 */}
       <div className="flex items-center mb-6 relative">
         <BackButton />
