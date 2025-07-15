@@ -1,15 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import BuyDataHeader from './components/BuyDataHeader';
 import Button from '../../../components/common/Button';
 
 import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData';
+import { fetchMyInfo, fetchPoint } from '@/apis/mypageApi';
+import SellSuccessModal from '../components/BuySuccessModal';
 
 const BuyDataPage = () => {
-  const userName = '동석';
-  const point = 3000;
-  const data = 10;
+  const [userName, setUserName] = useState('');
+  const [point, setPoint] = useState(0);
+  const [data, setData] = useState(0);
 
   const dataCode = '5G';
+
+  useEffect(() => {
+  const loadUserInfo = async () => {
+    try {
+      const userInfo = await fetchMyInfo();
+      const userPoint = await fetchPoint();
+
+      console.log('👉 userInfo:', userInfo);
+      console.log('👉 userPoint:', userPoint);
+
+      setUserName(userInfo?.name ?? '');
+      setData(userInfo?.remainingData ?? 0); // remainingData가 실제 보유 데이터
+      setPoint(userPoint?.mileage ?? 0);     // mileage가 포인트
+    } catch (err) {
+      console.error('❌ 유저 정보 로딩 실패:', err);
+    }
+  };
+
+  loadUserInfo();
+}, []);
+
 
   const sellBids = mockSellBids.filter((bid) => bid.dataCode === dataCode);
 
@@ -26,23 +49,20 @@ const BuyDataPage = () => {
 
   // 누적 GB를 숫자 상태로 관리
   const [selectedDataGB, setSelectedDataGB] = useState(1); // 기본 1GB
-
+  const [showModal, setShowModal] = useState(false);
   // 구매 가격 상태
   const [buyPrice, setBuyPrice] = useState(avgPrice.toString());
 
   const buyPriceNum = Number(buyPrice) || 0;
 
-  // 입력값 숫자 필터링 함수
   const handleGBInputChange = (e) => {
     const val = e.target.value;
     if (/^\d*$/.test(val)) {
-      // 빈 문자열 허용, 0은 의미 없으니 1 이상으로 처리 가능하게도 조절 가능
       const numVal = val === '' ? '' : Math.max(1, Number(val));
       setSelectedDataGB(numVal === '' ? '' : numVal);
     }
   };
 
-  // 버튼 클릭 시 누적 증가
   const addDataGB = (gbString) => {
     const gbNum = Number(gbString.replace('GB', ''));
     setSelectedDataGB((prev) => {
@@ -50,10 +70,17 @@ const BuyDataPage = () => {
       return prevNum + gbNum;
     });
   };
-
+  const handleSellClick = () => {
+    setShowModal(true);
+    setTimeout(() => {
+      setShowModal(false);
+    }, 2000);
+  };
   return (
     <div>
       <BuyDataHeader />
+
+      <SellSuccessModal show={showModal} />
 
       <div className="mt-6 text-[20px] font-bold text-[#2C2C2C]">{userName}님</div>
       <div className="text-[#565656] text-[12px] text-right">(1GB)</div>
@@ -63,7 +90,7 @@ const BuyDataPage = () => {
           <div className="flex justify-between">
             <span>보유 포인트</span>
             <span className="text-[#2C2C2C]">
-              {point} <span className="text-[#565656]">P</span>
+              {point.toLocaleString()} <span className="text-[#565656]">P</span>
             </span>
           </div>
           <div className="flex justify-between">
@@ -93,7 +120,6 @@ const BuyDataPage = () => {
         </div>
       </div>
 
-      {/* 구매 가격 입력 박스 */}
       <div className="mt-6 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
         <div className="text-[15px] text-[#2C2C2C] mb-2">구매할 가격</div>
         <div className="flex justify-end items-center">
@@ -118,12 +144,10 @@ const BuyDataPage = () => {
         최저가보다 낮은 금액은 구매대기됩니다.
       </div>
 
-      {/* 데이터 선택 박스 */}
       <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
         <div className="text-[15px] text-[#2C2C2C] mb-2">데이터</div>
         <div className="flex justify-between items-center mb-2">
           <span className="text-[13px] text-[#B1B1B1] w-full">얼마나 구매할까요?</span>
-          {/* 수정: input 으로 직접 입력 가능 */}
           <input
             type="text"
             inputMode="numeric"
@@ -140,7 +164,7 @@ const BuyDataPage = () => {
               key={option}
               onClick={() => addDataGB(option)}
               className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center
-           hover:border-[#386DEE] hover:bg-[#E6EEFF] hover:text-[#386DEE]"
+              hover:border-[#386DEE] hover:bg-[#E6EEFF] hover:text-[#386DEE]"
             >
               {option}
             </button>
@@ -162,16 +186,7 @@ const BuyDataPage = () => {
       </div>
 
       <div className="mt-auto pt-6">
-        <Button
-          onClick={() =>
-            alert(
-              `구매 요청!\n가격: ${buyPriceNum.toLocaleString()} P\n수량: ${
-                selectedDataGB || 0
-              } GB\n총 결제: ${(buyPriceNum * (Number(selectedDataGB) || 0)).toLocaleString()} P`
-            )
-          }
-          className="bg-[#386DEE] hover:bg-[#2f5bd9] w-full"
-        >
+        <Button onClick={handleSellClick} className="bg-[#386DEE] hover:bg-[#2f5bd9] w-full">
           구매하기
         </Button>
       </div>
