@@ -16,7 +16,7 @@ const NotificationsPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#F6F7FC] ">
+    <div>
       {/* 헤더 */}
       <div className="relative flex items-center justify-between mb-4">
         <button onClick={() => navigate(-1)}>

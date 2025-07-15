@@ -38,3 +38,9 @@ export const fetchGifticonDetail = async (gifticonId) => {
   const res = await API.post('/gifticons/detail', { gifticonId });
   return res.data.data;
 };
+
+export const fetchCoupons = async () => {
+  const res = await API.get('/coupons');
+  console.log('🟢 쿠폰 응답:', res.data); // 응답 로그
+  return res.data.data;
+};
