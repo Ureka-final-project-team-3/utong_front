@@ -56,7 +56,7 @@ const MainPage = () => {
 
           <p className="text-right leading-5 self-end">
             <span className="text-[10px]">현재 </span>
-            <span className="text-[24px] font-bold">1200원</span>
+            <span className="text-[24px] font-bold">8700원</span>
             <span className="text-[10px]"> (1GB)</span>
           </p>
         </div>
