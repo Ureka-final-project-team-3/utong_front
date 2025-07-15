@@ -1,5 +1,5 @@
 # 📱 U-Tong: 데이터 거래 플랫폼
-<img width="416" height="564" alt="image" src="https://github.com/user-attachments/assets/7225efbb-063b-4afb-893c-30acb296f1cd" />
+<img width="954" height="954" alt="image" src="https://github.com/user-attachments/assets/5f05958a-0561-47c1-a7c6-04f3a431d53a" />
 
 U-Tong은 사용자가 자신의 데이터, 쿠폰 등 디지털 상품을 경매 방식으로 거래하고, 실시간 시세 변동과 다양한 거래 기능을 제공하는 웹 플랫폼입니다.
 
