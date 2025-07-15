@@ -43,7 +43,7 @@ const LoginPage = () => {
 
       const data = await response.json();
 
-      if (response.ok && data.data.accessToken) {
+      if (response.ok && data.data && data.data.accessToken) {
         const { accessToken, refreshToken } = data.data;
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
@@ -59,13 +59,14 @@ const LoginPage = () => {
 
         if (meResponse.ok && meData.data) {
           localStorage.setItem('account', JSON.stringify(meData.data));
-          console.log('meData', meData);
         }
 
-        // alert('로그인 성공!');
         navigate('/');
+      } else if (response.status === 401) {
+        alert('아이디 또는 비밀번호가 올바르지 않습니다.');
       } else {
-        alert(data.data.message || '로그인 실패');
+        const errorMessage = data.message || (data.data && data.data.message) || '로그인 실패';
+        alert(errorMessage);
       }
     } catch (err) {
       console.error('로그인 에러:', err);
