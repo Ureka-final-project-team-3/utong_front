@@ -40,7 +40,7 @@ export default function MyPage() {
       </div>
 
       {/* Info Card */}
-      <div className="mt-6 bg-blue-600 text-white rounded-xl p-3">
+      <div className="mt-6 bg-[#386DEE] text-white rounded-xl p-3">
         <div className="flex justify-between items-start mb-2">
           {/* 판매 가능 데이터 */}
           <div className="w-full pr-1">
@@ -55,7 +55,7 @@ export default function MyPage() {
           <div className="w-full pl-2">
             <div className="flex items-center gap-1">
               <img src={pointIcon} alt="포인트 아이콘" className="w-5 h-5" />
-              <div className="text-base">포인트</div>
+              <div className="text-base ">포인트</div>
             </div>
             <div className="text-base text-right">{(user.mileage ?? 0).toLocaleString()}P</div>
           </div>
@@ -91,7 +91,7 @@ export default function MyPage() {
         ].map(({ icon, label, path }) => (
           <Link to={path} key={label}>
             <div className="flex flex-col items-center cursor-pointer hover:opacity-80 transition">
-              <div className="w-14 h-14 rounded-full bg-[#1355E0] flex items-center justify-center mb-1">
+              <div className="w-14 h-14 rounded-full bg-[#386DEE] flex items-center justify-center mb-1">
                 <img src={icon} alt={label} className="w-[22px] h-[22px]" />
               </div>
               {label}
@@ -108,7 +108,7 @@ export default function MyPage() {
         ].map(({ icon, label, path }) => (
           <Link to={path} key={label}>
             <div className="flex flex-col items-center cursor-pointer hover:opacity-80 transition">
-              <div className="w-14 h-14 rounded-full bg-[#1355E0] flex items-center justify-center mb-1">
+              <div className="w-14 h-14 rounded-full bg-[#386DEE] flex items-center justify-center mb-1">
                 <img src={icon} alt={label} className="w-[22px] h-[22px]" />
               </div>
               {label}
