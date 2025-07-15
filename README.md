@@ -1,12 +1,85 @@
-# React + Vite
+# 📱 U-Tong: 데이터 거래 플랫폼
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+U-Tong은 사용자가 자신의 데이터, 쿠폰 등 디지털 상품을 경매 방식으로 거래하고, 실시간 시세 변동과 다양한 거래 기능을 제공하는 웹 플랫폼입니다.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠️ 주요 기술 스택
+- **React 18 + Vite**
+- **React Router DOM v6**
+- **Tailwind CSS**
+- **Kafka + WebSocket (실시간 시세 스트리밍)**
+- **Jotai/Zustand (전역 상태 관리)**
+- **JWT 기반 인증/인가**
+- **OAuth (Google, Kakao, Naver)**
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📦 프로젝트 구조
+src/
+├── assets/ # 이미지, 아이콘
+├── components/ # 공통 UI 컴포넌트
+├── layout/ # 레이아웃 컴포넌트
+├── pages/ # 주요 페이지 (MainPage, AuthPage 등)
+├── router/ # 라우터 설정
+└── ...
+
+## 🔑 메인 기능
+
+### 1️⃣ 주식형 데이터 경매/거래
+- 평균가 ± 범위 내에서 자유롭게 거래
+- 판매 대기, 구매 대기열 시스템
+- 예약 판매/구매, 주문 취소 가능
+- 거래 단위: 1GB
+- 판매/구매 시 Toast 메시지 표시
+- **조건 기반 거래**: 자동화된 정기적 매매 가능
+
+### 2️⃣ 실시간 시세 변동
+- Kafka + WebSocket으로 실시간 시세 스트리밍
+- 실시간 차트(UI: `Recharts` 또는 `Chart.js`)
+- 임계값 이상 변동 시 알림 (Toastify + Jotai)
+- 알림 ON/OFF 설정 가능
+
+### 3️⃣ 일반 상품(쿠폰/혜택) 거래
+- 가격 제안 기능
+- 실시간 채팅
+- 판매자 정보(닉네임, 현재 판매상품) 확인
+- 카테고리 기반 검색 및 필터링
+
+### 4️⃣ 상품 등록
+- 데이터, 기프티콘 상품 등록/취소 시 보유량 자동 반영
+- 카테고리 선택 및 가격제안 여부 설정
+
+### 5️⃣ 마이페이지
+- 내 거래 내역, 관심 상품, 매너 온도 표시
+- 키워드 알림 설정
+- 친구 등록, 일대일 채팅, 선물하기
+
+### 6️⃣ 인증 기능
+- 이메일/비밀번호 로그인
+- OAuth (카카오, 네이버, 구글)
+- Captcha
+- 회원가입 시 요금제 자동 조회
+
+### 7️⃣ 어드민 페이지
+- 등록 상품 조회/삭제
+- 채팅 신고 관리, 사용자 블랙리스트 등록
+
+---
+
+## 📡 세부 기능
+
+- 사용자 간 실시간 채팅/가격 제안
+- 챗봇 기반 API 호출
+- 이벤트 페이지: 예) 오전10시 선착순 룰렛 → 데이터 쿠폰 증정
+- 조건:
+  - 거래 수수료는 거래액의 일정 %
+  - 무제한 데이터 요금제 사용자는 판매 불가
+  - 구매한 데이터 재판매 불가
+
+---
+
+## 🖥️ 개발 서버 실행
+```bash
+npm install
+npm run dev
