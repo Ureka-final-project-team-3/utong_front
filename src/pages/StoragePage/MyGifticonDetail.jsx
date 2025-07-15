@@ -26,7 +26,7 @@ const MyGifticonDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F6F7FC] ">
+    <>
       {/* 헤더 */}
       <div className="relative flex items-center justify-between mb-6">
         <BackButton onClick={() => navigate(-1)} />
@@ -64,7 +64,7 @@ const MyGifticonDetail = () => {
         유효기간 연장이 불가합니다.{'\n'}- 교환품 구매하실 때 현금 영수증이 발행되지 않으며, 본
         쿠폰은 본 게시물 또는 서비스 교환 시 사용처의 매장에서 발행됩니다.
       </div>
-    </div>
+    </>
   );
 };
 

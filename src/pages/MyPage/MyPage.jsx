@@ -102,7 +102,7 @@ export default function MyPage() {
 
       <div className="grid grid-cols-3 gap-y-6 mt-8 px-5 text-center font-Medium text-xs text-[#5F5F5F]">
         {[
-          { icon: Notificationbox, label: '알림함', path: '/notifications' },
+          { icon: Notificationbox, label: '알림함', path: '/alarm' },
           { icon: ServiceGuide, label: '서비스 가이드', path: '/guide' },
           { icon: Notificationsettings, label: '알림 설정', path: '/notification-settings' },
         ].map(({ icon, label, path }) => (
