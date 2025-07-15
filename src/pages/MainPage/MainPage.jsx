@@ -89,7 +89,7 @@ const MainPage = () => {
 
         <div className="border-t border-gray-200" />
 
-        <Link to="/charge" className="block">
+        <Link to="/shop" className="block">
           <div className="flex items-center justify-between pl-6 pr-4 py-4">
             <div className="flex items-center space-x-3">
               <img src={shop} alt="상점" className="w-5 h-5" />

@@ -4,6 +4,7 @@ import LoginPage from '../pages/AuthPage/LoginPage';
 import FindIdPage from '../pages/AuthPage/FindIdPage.jsx';
 import FindPasswordPage from '../pages/AuthPage/FindPasswordPage.jsx';
 import SignUpPage from '../pages/AuthPage/SignUpPage';
+import ResetPasswordPage from '../pages/AuthPage/ResetPasswordPage.jsx';
 import MainPage from '../pages/MainPage/MainPage';
 import LiveChartPage from '../pages/LiveChartPage/LiveChartPage';
 import MyPage from '../pages/MyPage/MyPage';
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
   {
     path: '/find-password',
     element: <FindPasswordPage />,
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPasswordPage />,
   },
   {
     element: <DefaultLayout />,
