@@ -52,7 +52,7 @@ const PriceChartInfo = ({ selectedNetwork, selectedRange, onNetworkChange, onRan
           }`}
           onClick={() => onRangeChange?.('today')}
         >
-          오늘 시세
+          최근 시세
         </span>
         <div className="w-[2px] h-[20px] bg-[#D9D9D9]" />
         <span
@@ -61,7 +61,7 @@ const PriceChartInfo = ({ selectedNetwork, selectedRange, onNetworkChange, onRan
           }`}
           onClick={() => onRangeChange?.('all')}
         >
-          전체 시세
+          주간 시세
         </span>
       </div>
     </div>
