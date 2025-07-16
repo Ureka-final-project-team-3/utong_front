@@ -6,6 +6,7 @@ import shop from '@/assets/icon/shop.png';
 import event from '@/assets/icon/event.png';
 import wifi from '@/assets/icon/wifi.png';
 import coin from '@/assets/icon/coin.png';
+import { useNavigate } from 'react-router-dom';
 
 import { fetchMyInfo } from '@/apis/mypageApi';
 
@@ -13,17 +14,22 @@ const MainPage = () => {
   const [user, setUser] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const accountData = localStorage.getItem('account');
-    if (accountData && accountData !== 'undefined') {
+    if (!accountData || accountData === 'undefined') {
+      navigate('/login'); // 로그인 안되어 있으면 로그인 페이지로 이동
+    } else {
       setUser(JSON.parse(accountData));
     }
-  }, []);
+  }, [navigate]);
   useEffect(() => {
     fetchMyInfo()
       .then((data) => setUserInfo(data))
       .catch((err) => console.error('메인페이지 유저 정보 불러오기 실패:', err));
   }, []);
+
   return (
     <div>
       <div className="flex w-[300px] mt-8 items-start">
