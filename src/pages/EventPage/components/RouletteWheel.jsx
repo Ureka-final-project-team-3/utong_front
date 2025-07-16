@@ -1,12 +1,17 @@
 import React, { forwardRef } from 'react';
-import rouletteWheel from '@/assets/image/roulette.png'; // 실제 이미지 경로에 맞게 수정하세요
+import rouletteWheel from '@/assets/image/roulette.png';
 
-const RouletteWheel = forwardRef((props, ref) => {
+const RouletteWheel = forwardRef(({ rotation, isSpinning }, ref) => {
   return (
     <div
       ref={ref}
-      className="relative w-full flex justify-center items-center mt-[80px] select-none pointer-events-none z-30"
-      style={{ touchAction: 'none' }} // 모바일 터치 동작 방지용, 필요하면 제거하세요
+      className="relative flex justify-center items-center mt-[80px] select-none pointer-events-none z-30"
+      style={{
+        transition: 'transform 5s ease-out',
+        transform: `rotate(${rotation}deg)`,
+        touchAction: 'none',
+        overflow: 'hidden',
+      }}
     >
       <img src={rouletteWheel} alt="룰렛 이미지" />
     </div>
