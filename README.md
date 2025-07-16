@@ -17,13 +17,47 @@ U-Tong은 사용자가 자신의 데이터를 주식 방식으로 쉽게 거래�
 ---
 
 ## 📦 프로젝트 구조
-src/
-├── assets/ # 이미지, 아이콘
-├── components/ # 공통 UI 컴포넌트
-├── layout/ # 레이아웃 컴포넌트
-├── pages/ # 주요 페이지 (MainPage, AuthPage 등)
-├── router/ # 라우터 설정
-└── ...
+```
+├───apis
+├───assets
+│   ├───icon
+│   └───image
+├───components
+│   ├───BackButton
+│   ├───common
+│   └───NavigationBar
+├───layout
+├───pages
+│   ├───AlarmPage
+│   ├───AuthPage
+│   ├───ChargePage
+│   ├───CouponPage
+│   ├───EditProfilePage
+│   ├───EventPage
+│   ├───HistoryPage
+│   ├───LiveChartPage
+│   │   ├───components
+│   │   └───mock
+│   ├───MainPage
+│   ├───MyPage
+│   ├───NotFoundPage
+│   ├───PointChargePage
+│   ├───ServiceGuidePage
+│   ├───StartPage
+│   ├───StoragePage
+│   ├───TestPage
+│   ├───TradeHistoryPage
+│   └───TradePage
+│       ├───BuyDataPage
+│       │   └───components
+│       ├───components
+│       └───SellDataPage
+│           └───components
+├───router
+└───utils
+
+```
+
 
 ## 🔑 메인 기능
 
