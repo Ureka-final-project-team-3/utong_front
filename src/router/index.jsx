@@ -5,6 +5,7 @@ import FindIdPage from '../pages/AuthPage/FindIdPage.jsx';
 import FindPasswordPage from '../pages/AuthPage/FindPasswordPage.jsx';
 import SignUpPage from '../pages/AuthPage/SignUpPage';
 import ResetPasswordPage from '../pages/AuthPage/ResetPasswordPage.jsx';
+import ResetPasswordPage2 from '../pages/AuthPage/ResetPasswordPage2.jsx';
 import MainPage from '../pages/MainPage/MainPage';
 import LiveChartPage from '../pages/LiveChartPage/LiveChartPage';
 import MyPage from '../pages/MyPage/MyPage';
@@ -74,6 +75,10 @@ const router = createBrowserRouter([
       {
         path: '/mypage',
         element: <MyPage />,
+      },
+      {
+        path: '/reset-password2',
+        element: <ResetPasswordPage2 />,
       },
       {
         path: '/event',
