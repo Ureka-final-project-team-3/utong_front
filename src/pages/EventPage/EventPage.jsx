@@ -5,7 +5,7 @@ import RouletteWheel from './components/RouletteWheel';
 import StartButton from './components/StartButton';
 import { fetchRouletteEventStatus, participateInRoulette } from '@/apis/rouletteApi';
 
-const isTestMode = true; // 테스트 모드 (true면 무조건 당첨)
+const isTestMode = false; // 테스트 모드
 
 // 3시 기준 → 12시 기준으로 보정
 function toTop0Degree(angle) {
@@ -26,21 +26,30 @@ const prizeAngleMap = {
   PRIZE8: 337.5,
 };
 
-// 당첨 각도를 피해 랜덤한 꽝 각도 선택
+// 개선된 꽝 각도 선택 함수
 function getRandomNonWinAngle() {
   const prizeAngles = Object.values(prizeAngleMap);
   const allAngles = [];
 
   for (let angle = 0; angle < 360; angle++) {
-    const isPrizeArea = prizeAngles.some(
-      (prize) => Math.abs((angle - prize + 360) % 360) <= 22.5
-    );
-    if (!isPrizeArea) {
+    const isNearPrize = prizeAngles.some((prize) => {
+      const diff = Math.abs((angle - prize + 360) % 360);
+      return diff <= 22.5;
+    });
+
+    if (!isNearPrize) {
       allAngles.push(angle);
     }
   }
 
-  return allAngles[Math.floor(Math.random() * allAngles.length)];
+  // 추가로 12시 방향(0도 ~ 40도, 320도 ~ 360도)을 피함
+  const filtered = allAngles.filter((a) => {
+    const corrected = toTop0Degree(a);
+    return corrected > 40 && corrected < 320;
+  });
+
+  const candidates = filtered.length > 0 ? filtered : allAngles;
+  return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
 const EventPage = () => {
@@ -55,6 +64,7 @@ const EventPage = () => {
     setError(null);
     try {
       const response = await fetchRouletteEventStatus();
+      console.log('API 응답 전체:', response);
       if (response.resultCode >= 200 && response.resultCode < 300) {
         setEventInfo(response.data);
       } else {
@@ -94,7 +104,7 @@ const EventPage = () => {
       const response = isTestMode
         ? {
             resultCode: 200,
-            data: { isWinner: false, prizeCode: 'PRIZE1', message: '테스트 당첨!' },
+            data: { isWinner: false, message: '테스트' },
           }
         : await participateInRoulette(eventInfo.eventId);
 
@@ -107,7 +117,8 @@ const EventPage = () => {
         participationData = response.data;
 
         if (participationData.isWinner) {
-          prizeAngle = prizeAngleMap[participationData.prizeCode] ?? 22.5;
+          // 당첨이면 무조건 PRIZE1 각도 (22.5도)
+          prizeAngle = prizeAngleMap.PRIZE1;
         } else {
           prizeAngle = getRandomNonWinAngle();
         }
@@ -188,10 +199,12 @@ const EventPage = () => {
 
           <div className="mt-8 p-4 bg-gray-50 rounded-md text-sm text-gray-700 border border-gray-200">
             <p className="mb-1">
-              <strong>현재 당첨자 수:</strong> {eventInfo?.currentWinners ?? '-'} / {eventInfo?.maxWinners ?? '-'}
+              <strong>현재 당첨자 수:</strong> {eventInfo?.currentWinners ?? '-'} /{' '}
+              {eventInfo?.maxWinners ?? '-'}
             </p>
             <p className="mb-1">
-              <strong>참여 가능 여부:</strong> {eventInfo?.canParticipate ? '참여 가능' : '참여 불가'}
+              <strong>참여 가능 여부:</strong>{' '}
+              {eventInfo?.canParticipate ? '참여 가능' : '참여 불가'}
             </p>
             <p className="mb-1">
               <strong>이벤트 활성화:</strong> {eventInfo?.isActive ? '활성화됨' : '비활성화됨'}
@@ -221,7 +234,9 @@ const EventPage = () => {
                   })
                 : '-'}
             </p>
-            <p className="mt-2 text-xs text-gray-500">당첨 확률: {eventInfo?.winProbability ?? '-'}%</p>
+            <p className="mt-2 text-xs text-gray-500">
+              당첨 확률: {eventInfo?.winProbability ?? '-'}%
+            </p>
           </div>
         </>
       )}
