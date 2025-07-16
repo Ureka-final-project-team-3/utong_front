@@ -7,8 +7,11 @@ import event from '@/assets/icon/event.png';
 import wifi from '@/assets/icon/wifi.png';
 import coin from '@/assets/icon/coin.png';
 
+import { fetchMyInfo } from '@/apis/mypageApi';
+
 const MainPage = () => {
   const [user, setUser] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
     const accountData = localStorage.getItem('account');
@@ -16,7 +19,11 @@ const MainPage = () => {
       setUser(JSON.parse(accountData));
     }
   }, []);
-
+  useEffect(() => {
+    fetchMyInfo()
+      .then((data) => setUserInfo(data))
+      .catch((err) => console.error('메인페이지 유저 정보 불러오기 실패:', err));
+  }, []);
   return (
     <div>
       <div className="flex w-[300px] mt-8 items-start">
@@ -35,7 +42,7 @@ const MainPage = () => {
             <p className="text-xs text-gray-500">데이터</p>
           </div>
           <p className="text-sm font-bold self-end">
-            <span className="text-blue-600">20</span>GB | 100GB
+            <span className="text-blue-600">{userInfo?.remainingData ?? 0}</span>GB
           </p>
         </div>
 
@@ -45,7 +52,7 @@ const MainPage = () => {
             <p className="text-xs text-gray-500">포인트</p>
           </div>
           <p className="text-sm font-bold self-end">
-            <span className="text-blue-600">3000</span>P
+            <span className="text-blue-600">{(userInfo?.mileage ?? 0).toLocaleString()}</span>P
           </p>
         </div>
       </div>
