@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import rouletteWheel from '@/assets/image/roulette.png';
 import arrowImage from '@/assets/image/roulette_arrow.png';
 
-const RouletteWheel = forwardRef(({ rotation, isSpinning }, ref) => {
+const RouletteWheel = forwardRef(({ rotation }, ref) => {
   return (
     <div
       className="relative mt-[80px] select-none pointer-events-none z-30 flex justify-center items-center"

@@ -73,6 +73,7 @@ const EventPage = () => {
         alert(`이벤트 조회 실패: ${msg}`);
       }
     } catch (err) {
+      console.error(err);
       setError('이벤트 정보를 불러오는 중 에러가 발생했습니다.');
       alert('이벤트 정보를 불러오는 중 에러가 발생했습니다.');
     } finally {
