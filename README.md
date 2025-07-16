@@ -3,18 +3,39 @@
 
 U-Tong은 사용자가 자신의 데이터를 주식 방식으로 쉽게 거래하고, 실시간 시세 변동과 다양한 거래 기능을 제공하는 웹 플랫폼입니다.
 
----
 
-## 🛠️ 주요 기술 스택
-- **React 18 + Vite**
-- **React Router DOM v6**
-- **Tailwind CSS**
-- **Kafka + WebSocket (실시간 시세 스트리밍)**
-- **Jotai/Zustand (전역 상태 관리)**
-- **JWT 기반 인증/인가**
-- **OAuth (Google, Kakao, Naver)**
+## 👥 팀원 소개
 
----
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://avatars.githubusercontent.com/u/100756731?v=4" width="100" /><br/>
+      <strong>김현우</strong><br/>
+      <a href="https://github.com/gusdn6288">@gusdn6288</a>
+    </td>
+    <td align="center">
+      <img src="https://avatars.githubusercontent.com/u/87470993?v=4" width="100" /><br/>
+      <strong>유동석</strong><br/>
+      <a href="https://github.com/Youdongseok">@Youdongseok</a>
+    </td>
+    <td align="center">
+      <img src="https://avatars.githubusercontent.com/u/196130116?v=4" width="100" /><br/>
+      <strong>이채민</strong><br/>
+      <a href="https://github.com/chemnida">@chemnida</a>
+    </td>
+  </tr>
+</table>
+
+
+
+##  주요 스택
+
+| 구분       | 기술                                                                                                                                                      |
+|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Frontend   |![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white) ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)![Framer](https://img.shields.io/badge/Framer-black?style=for-the-badge&logo=framer&logoColor=blue) ![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101) ![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-000?style=for-the-badge&logo=apachekafka) ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)  |
+
+
+
 
 ## 📦 프로젝트 구조
 ```
@@ -101,7 +122,7 @@ U-Tong은 사용자가 자신의 데이터를 주식 방식으로 쉽게 거래�
 - 기프티콘 조회/삭제
 - 회원 조회/삭제
 
----
+
 
 ## 📡 세부 기능
 
@@ -110,7 +131,18 @@ U-Tong은 사용자가 자신의 데이터를 주식 방식으로 쉽게 거래�
   - 무제한 데이터 요금제 사용자는 판매 불가
   - 구매한 데이터 재판매 불가
 
----
+
+## 🎯 커밋 컨벤션
+
+- `feat`: Add a new feature
+- `fix`: Bug fix
+- `docs`: Documentation updates
+- `style`: Code formatting, missing semicolons, cases where no code change is involved
+- `refactor`: Code refactoring
+- `test`: Test code, adding refactoring tests
+- `build`: Build task updates, package manager updates
+
+
 
 ## 🖥️ 개발 서버 실행
 ```bash
