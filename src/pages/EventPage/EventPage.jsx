@@ -5,24 +5,42 @@ import RouletteWheel from './components/RouletteWheel';
 import StartButton from './components/StartButton';
 import { fetchRouletteEventStatus, participateInRoulette } from '@/apis/rouletteApi';
 
-const isTestMode = true; // 테스트 모드: true 시 canParticipate 무시
+const isTestMode = true; // 테스트 모드 (true면 무조건 당첨)
 
-// 꽝(미당첨) 위치 각도 랜덤 반환 (당첨 구간 제외한 6개 구간 중 랜덤)
-function getRandomNonWinAngle() {
-  // 당첨 영역(270~315도) 제외한 나머지 6개 구간
-  const nonWinRanges = [
-    [0, 270], // 0~270도 (3시~12시)
-    [315, 360], // 315~360도
-  ];
-  // 0~270도 구간 내에서 랜덤 선택
-  const rangeIdx = Math.floor(Math.random() * nonWinRanges.length);
-  const range = nonWinRanges[rangeIdx];
-  return Math.floor(Math.random() * (range[1] - range[0]) + range[0]);
+// 3시 기준 → 12시 기준으로 보정
+function toTop0Degree(angle) {
+  let corrected = angle - 22.5;
+  if (corrected < 0) corrected += 360;
+  return corrected;
 }
 
-// 당첨 구간(270~315도) 내 랜덤 각도 반환 (12시 ~ 1시 방향)
-function getRandomWinAngle() {
-  return 270 + Math.floor(Math.random() * 45); // 270~315도 사이 랜덤
+// 당첨 각도 맵 (3시 기준)
+const prizeAngleMap = {
+  PRIZE1: 22.5,
+  PRIZE2: 67.5,
+  PRIZE3: 112.5,
+  PRIZE4: 157.5,
+  PRIZE5: 202.5,
+  PRIZE6: 247.5,
+  PRIZE7: 292.5,
+  PRIZE8: 337.5,
+};
+
+// 당첨 각도를 피해 랜덤한 꽝 각도 선택
+function getRandomNonWinAngle() {
+  const prizeAngles = Object.values(prizeAngleMap);
+  const allAngles = [];
+
+  for (let angle = 0; angle < 360; angle++) {
+    const isPrizeArea = prizeAngles.some(
+      (prize) => Math.abs((angle - prize + 360) % 360) <= 22.5
+    );
+    if (!isPrizeArea) {
+      allAngles.push(angle);
+    }
+  }
+
+  return allAngles[Math.floor(Math.random() * allAngles.length)];
 }
 
 const EventPage = () => {
@@ -31,16 +49,12 @@ const EventPage = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // 룰렛 회전 각도 상태
   const [rotation, setRotation] = useState(0);
 
   const getEventData = async () => {
     setError(null);
     try {
       const response = await fetchRouletteEventStatus();
-      console.log('이벤트 정보:', response);
-
       if (response.resultCode >= 200 && response.resultCode < 300) {
         setEventInfo(response.data);
       } else {
@@ -49,7 +63,6 @@ const EventPage = () => {
         alert(`이벤트 조회 실패: ${msg}`);
       }
     } catch (err) {
-      console.error('이벤트 정보 요청 에러:', err);
       setError('이벤트 정보를 불러오는 중 에러가 발생했습니다.');
       alert('이벤트 정보를 불러오는 중 에러가 발생했습니다.');
     } finally {
@@ -76,19 +89,28 @@ const EventPage = () => {
     setError(null);
 
     try {
-      const response = await participateInRoulette(eventInfo.eventId);
-      console.log('룰렛 참여 응답:', response);
+      console.log('startSpin 호출 - eventId:', eventInfo?.eventId);
 
-      const baseRotation = 360 * 5; // 기본 5바퀴
-      let prizeAngle = 0;
-      let participationData = null;
+      const response = isTestMode
+        ? {
+            resultCode: 200,
+            data: { isWinner: false, prizeCode: 'PRIZE1', message: '테스트 당첨!' },
+          }
+        : await participateInRoulette(eventInfo.eventId);
+
+      console.log('참여 API 응답:', response);
+
+      let prizeAngle;
+      let participationData;
 
       if (response.resultCode >= 200 && response.resultCode < 300) {
         participationData = response.data;
 
-        prizeAngle = participationData.isWinner
-          ? getRandomWinAngle() // 당첨이면 270~315도 (12시 ~ 1시)
-          : getRandomNonWinAngle(); // 꽝이면 나머지 구간 랜덤
+        if (participationData.isWinner) {
+          prizeAngle = prizeAngleMap[participationData.prizeCode] ?? 22.5;
+        } else {
+          prizeAngle = getRandomNonWinAngle();
+        }
       } else {
         participationData = {
           isWinner: false,
@@ -97,12 +119,16 @@ const EventPage = () => {
         prizeAngle = getRandomNonWinAngle();
       }
 
-      setRotation((prev) => prev + baseRotation + prizeAngle);
+      const correctedAngle = toTop0Degree(prizeAngle);
+      const baseRotation = 360 * 5;
+      const finalRotation = baseRotation + correctedAngle;
+
+      setRotation((prev) => prev + finalRotation);
 
       setTimeout(() => {
         alert(
           participationData.isWinner
-            ? '🎉 축하합니다! 당첨되셨습니다!'
+            ? `🎉 축하합니다! 당첨되셨습니다! (${participationData.message})`
             : participationData.message || '아쉽지만 당첨되지 않았습니다.'
         );
         setResult(participationData);
@@ -110,10 +136,14 @@ const EventPage = () => {
         setIsSpinning(false);
       }, 5000);
     } catch (err) {
-      console.error('룰렛 참여 에러:', err);
+      console.error('룰렛 참여 에러:', err.response?.data || err.message || err);
+
+      const rawAngle = getRandomNonWinAngle();
+      const correctedAngle = toTop0Degree(rawAngle);
       const baseRotation = 360 * 5;
-      const prizeAngle = getRandomNonWinAngle();
-      setRotation((prev) => prev + baseRotation + prizeAngle);
+      const finalRotation = baseRotation + correctedAngle;
+
+      setRotation((prev) => prev + finalRotation);
 
       setTimeout(() => {
         alert('참여 중 오류가 발생했습니다.');
@@ -127,11 +157,10 @@ const EventPage = () => {
   };
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative">
       <EventHeader />
       <RouletteEventExtras />
 
-      {/* 룰렛 바퀴에 rotation 각도 전달 */}
       <RouletteWheel isSpinning={isSpinning} rotation={rotation} />
 
       {loading ? (
@@ -146,6 +175,54 @@ const EventPage = () => {
       ) : (
         <>
           <StartButton onClick={startSpin} disabled={isSpinning} />
+
+          {result && (
+            <div className="mt-6 p-4 bg-gray-100 rounded-md text-center border border-gray-200">
+              <p className="text-xl font-semibold text-gray-800">
+                {result.isWinner
+                  ? `🎉 축하합니다! 당첨되셨습니다!`
+                  : result.message || '아쉽지만 당첨되지 않았습니다.'}
+              </p>
+            </div>
+          )}
+
+          <div className="mt-8 p-4 bg-gray-50 rounded-md text-sm text-gray-700 border border-gray-200">
+            <p className="mb-1">
+              <strong>현재 당첨자 수:</strong> {eventInfo?.currentWinners ?? '-'} / {eventInfo?.maxWinners ?? '-'}
+            </p>
+            <p className="mb-1">
+              <strong>참여 가능 여부:</strong> {eventInfo?.canParticipate ? '참여 가능' : '참여 불가'}
+            </p>
+            <p className="mb-1">
+              <strong>이벤트 활성화:</strong> {eventInfo?.isActive ? '활성화됨' : '비활성화됨'}
+            </p>
+            <p className="mb-1">
+              <strong>이미 참여:</strong> {eventInfo?.alreadyParticipated ? '예' : '아니오'}
+            </p>
+            <p>
+              <strong>이벤트 기간:</strong>{' '}
+              {eventInfo?.startDate
+                ? new Date(eventInfo.startDate).toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })
+                : '-'}{' '}
+              ~{' '}
+              {eventInfo?.endDate
+                ? new Date(eventInfo.endDate).toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })
+                : '-'}
+            </p>
+            <p className="mt-2 text-xs text-gray-500">당첨 확률: {eventInfo?.winProbability ?? '-'}%</p>
+          </div>
         </>
       )}
     </div>
