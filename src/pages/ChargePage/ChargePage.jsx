@@ -192,7 +192,7 @@ const PointChargePage = () => {
             <span className="font-medium">{numericAmount.toLocaleString()} P</span>
           </div>
           <div className="flex justify-between py-2 text-base text-gray-600">
-            <span>수수료 2.5%</span>
+            <span>수수료 2.5% 부가</span>
             <span className="font-medium">{(selectedCouponId ? 0 : fee).toLocaleString()} P</span>
           </div>
           <div className="flex justify-between py-2 text-base text-gray-600">
