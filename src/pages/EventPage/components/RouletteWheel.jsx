@@ -30,7 +30,12 @@ const RouletteWheel = forwardRef(({ rotation, isSpinning }, ref) => {
           zIndex: 10,
         }}
       >
-        <img src={rouletteWheel} alt="룰렛 이미지" />
+        {/* 이미지에 width, height 100% 주기 */}
+        <img
+          src={rouletteWheel}
+          alt="룰렛 이미지"
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+        />
       </div>
     </div>
   );

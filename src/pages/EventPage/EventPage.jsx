@@ -7,35 +7,22 @@ import { fetchRouletteEventStatus, participateInRoulette } from '@/apis/roulette
 
 const isTestMode = true; // 테스트 모드: true 시 canParticipate 무시
 
-// 당첨 코드에 따른 룰렛 각도 반환 (8분할 기준, 각 구간 중앙 각도)
-function getPrizeAngle(prizeCode) {
-  const prizeAngleMap = {
-    PRIZE1: 22.5, // 0~45도 구간 중앙 (당첨 영역)
-    PRIZE2: 67.5,
-    PRIZE3: 112.5,
-    PRIZE4: 157.5,
-    PRIZE5: 202.5,
-    PRIZE6: 247.5,
-    PRIZE7: 292.5,
-    PRIZE8: 337.5,
-  };
-  return prizeAngleMap[prizeCode] ?? 22.5; // 기본 당첨 영역(0~45도 중앙)
+// 꽝(미당첨) 위치 각도 랜덤 반환 (당첨 구간 제외한 6개 구간 중 랜덤)
+function getRandomNonWinAngle() {
+  // 당첨 영역(270~315도) 제외한 나머지 6개 구간
+  const nonWinRanges = [
+    [0, 270], // 0~270도 (3시~12시)
+    [315, 360], // 315~360도
+  ];
+  // 0~270도 구간 내에서 랜덤 선택
+  const rangeIdx = Math.floor(Math.random() * nonWinRanges.length);
+  const range = nonWinRanges[rangeIdx];
+  return Math.floor(Math.random() * (range[1] - range[0]) + range[0]);
 }
 
-// 꽝(미당첨) 위치 각도 랜덤 반환 (당첨 구간 제외한 7개 구간 중 랜덤)
-function getRandomNonWinAngle() {
-  // 당첨 영역(0~45도) 제외한 나머지 7개 구간(45~360도)
-  const nonWinRanges = [
-    [45, 90],
-    [90, 135],
-    [135, 180],
-    [180, 225],
-    [225, 270],
-    [270, 315],
-    [315, 360],
-  ];
-  const range = nonWinRanges[Math.floor(Math.random() * nonWinRanges.length)];
-  return Math.floor(Math.random() * (range[1] - range[0]) + range[0]);
+// 당첨 구간(270~315도) 내 랜덤 각도 반환 (12시 ~ 1시 방향)
+function getRandomWinAngle() {
+  return 270 + Math.floor(Math.random() * 45); // 270~315도 사이 랜덤
 }
 
 const EventPage = () => {
@@ -98,11 +85,11 @@ const EventPage = () => {
 
       if (response.resultCode >= 200 && response.resultCode < 300) {
         participationData = response.data;
+
         prizeAngle = participationData.isWinner
-          ? getPrizeAngle(participationData.prizeCode)
-          : getRandomNonWinAngle();
+          ? getRandomWinAngle() // 당첨이면 270~315도 (12시 ~ 1시)
+          : getRandomNonWinAngle(); // 꽝이면 나머지 구간 랜덤
       } else {
-        // 실패해도 무조건 돌게 하려고 기본 꽝 각도 랜덤 선택
         participationData = {
           isWinner: false,
           message: response.message || response.codeName || '참여에 실패했습니다.',
@@ -140,7 +127,7 @@ const EventPage = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative overflow-hidden">
       <EventHeader />
       <RouletteEventExtras />
 
@@ -159,51 +146,6 @@ const EventPage = () => {
       ) : (
         <>
           <StartButton onClick={startSpin} disabled={isSpinning} />
-
-          {result && (
-            <div className="mt-6 p-4 bg-gray-100 rounded-md text-center border border-gray-200">
-              <p className="text-xl font-semibold text-gray-800">
-                {result.isWinner
-                  ? '🎉 축하합니다! 당첨되셨습니다!'
-                  : result.message || '아쉽지만 당첨되지 않았습니다.'}
-              </p>
-            </div>
-          )}
-
-          <div className="mt-8 p-4 bg-gray-50 rounded-md text-sm text-gray-700 border border-gray-200">
-            <p className="mb-1">
-              <strong>현재 당첨자 수:</strong> {eventInfo.currentWinners} / {eventInfo.maxWinners}
-            </p>
-            <p className="mb-1">
-              <strong>참여 가능 여부:</strong>{' '}
-              {eventInfo.canParticipate ? '참여 가능' : '참여 불가'}
-            </p>
-            <p className="mb-1">
-              <strong>이벤트 활성화:</strong> {eventInfo.isActive ? '활성화됨' : '비활성화됨'}
-            </p>
-            <p className="mb-1">
-              <strong>이미 참여:</strong> {eventInfo.alreadyParticipated ? '예' : '아니오'}
-            </p>
-            <p>
-              <strong>이벤트 기간:</strong>{' '}
-              {new Date(eventInfo.startDate).toLocaleString('ko-KR', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-              })}{' '}
-              ~{' '}
-              {new Date(eventInfo.endDate).toLocaleString('ko-KR', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </p>
-            <p className="mt-2 text-xs text-gray-500">당첨 확률: {eventInfo.winProbability}%</p>
-          </div>
         </>
       )}
     </div>
