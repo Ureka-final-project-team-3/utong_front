@@ -17,12 +17,20 @@ const PriceChartContainer = ({ network, range }) => {
   const filteredData = useMemo(() => {
     if (!rawData) return [];
 
-    const todayStr = new Date().toISOString().split('T')[0];
-
     if (range === 'today') {
+      const todayStrKST = new Date().toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      });
+
       return rawData.filter((item) => {
-        const itemDateStr = new Date(item.timestamp).toISOString().split('T')[0];
-        return itemDateStr === todayStr;
+        const itemDateStr = new Date(item.timestamp).toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        });
+        return itemDateStr === todayStrKST;
       });
     } else {
       return getAveragePriceByDate(rawData).map((d) => ({
@@ -32,6 +40,7 @@ const PriceChartContainer = ({ network, range }) => {
       }));
     }
   }, [rawData, range]);
+
   return (
     <div className=" bg-gradient-to-r from-[#2769F6] to-[#757AD0] rounded-[8px] shadow-md overflow-hidden flex flex-col">
       <div className="h-[165px]">
@@ -45,7 +54,7 @@ const PriceChartContainer = ({ network, range }) => {
                 return range === 'today'
                   ? date.toLocaleTimeString('ko-KR', {
                       hour: '2-digit',
-                      minute: '2-digit',
+                      //minute: '2-digit',
                       hour12: false,
                     })
                   : date.toLocaleDateString('ko-KR', {
@@ -60,6 +69,7 @@ const PriceChartContainer = ({ network, range }) => {
               }}
               axisLine={false}
               tickLine={false}
+              //interval={0}
               interval="preserveStartEnd"
               textAnchor="end"
             />
@@ -83,7 +93,7 @@ const PriceChartContainer = ({ network, range }) => {
                   month: 'long',
                   day: 'numeric',
                   hour: 'numeric',
-                  minute: '2-digit',
+                  //minute: '2-digit',
                   hour12: true,
                 });
 
