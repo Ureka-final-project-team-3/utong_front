@@ -1,9 +1,13 @@
-const StartButton = () => {
+import React from 'react';
+
+const StartButton = ({ onClick, disabled }) => {
   return (
     <div className="w-full flex justify-center mt-10">
       <button
         type="button"
-        className="
+        disabled={disabled}
+        onClick={onClick}
+        className={`
           w-[136px]
           h-[40px]
           bg-gradient-to-r from-[#EB008B] to-[#5B038C]
@@ -11,7 +15,8 @@ const StartButton = () => {
           rounded-[16px]
           cursor-pointer
           select-none
-        "
+          ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+        `}
       >
         <span
           className="
