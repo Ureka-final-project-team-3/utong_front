@@ -185,7 +185,10 @@ const EventPage = () => {
         </div>
       ) : (
         <>
-          <StartButton onClick={startSpin} disabled={isSpinning} />
+          <StartButton
+            onClick={startSpin}
+            disabled={isSpinning || !eventInfo?.canParticipate || eventInfo?.alreadyParticipated}
+          />
 
           {result && (
             <div className="mt-6 p-4 bg-gray-100 rounded-md text-center border border-gray-200">
