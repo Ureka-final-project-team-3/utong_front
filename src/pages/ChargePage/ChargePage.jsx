@@ -34,16 +34,22 @@ const PointChargePage = () => {
       const user = await fetchMyInfo();
       setCurrentMileage(user.mileage);
       setCustomerName(user.name || '홍길동');
+    } catch (err) {
+      console.error('유저 정보 조회 실패:', err);
+      alert('유저 정보 조회 실패. 다시 로그인해주세요.');
+      localStorage.removeItem('accessToken');
+      window.location.href = '/index.html';
+      return; // 유저 정보 없으면 이후 쿠폰 불러오지 않음
+    }
 
+    try {
       const allCoupons = await fetchCoupons();
       const usable = allCoupons.filter((c) => c.couponCode === '001' && c.statusCode === '002');
       setCoupons(usable);
       setSelectedCouponId(null);
     } catch (err) {
-      console.error('에러 발생:', err);
-      alert('유저 정보 또는 쿠폰 조회 실패. 다시 로그인해주세요.');
-      localStorage.removeItem('accessToken');
-      window.location.href = '/index.html';
+      console.error('쿠폰 조회 실패:', err);
+      setCoupons([]); // 쿠폰 실패해도 그냥 빈 배열 처리
     }
   };
 
@@ -161,7 +167,7 @@ const PointChargePage = () => {
               <select
                 value={selectedCouponId || ''}
                 onChange={(e) => setSelectedCouponId(e.target.value)}
-                className="w-2/3 max-w-xs text-sm px-3 py-2 border border-gray-300 rounded-lg"
+                className="w-2/3 max-w-xs text-sm px-3 py-2 rounded-lg"
               >
                 <option value="">쿠폰을 선택하세요</option>
                 {coupons.map((coupon) => (
@@ -171,7 +177,7 @@ const PointChargePage = () => {
                 ))}
               </select>
             ) : (
-              <span className="text-sm text-gray-400">사용 가능한 쿠폰이 없습니다</span>
+              <span className="text-xs text-gray-400">사용 가능한 쿠폰이 없습니다</span>
             )}
           </div>
         </div>
@@ -230,7 +236,20 @@ const PointChargePage = () => {
           </div>
         </div>
       )}
-      <ToastContainer />
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        style={{
+          position: 'absolute',
+          top: 100,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '100%',
+          maxWidth: 200,
+          zIndex: 9999,
+          pointerEvents: 'auto',
+        }}
+      />
     </div>
   );
 };

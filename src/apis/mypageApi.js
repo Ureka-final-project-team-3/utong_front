@@ -44,6 +44,5 @@ export const fetchGifticonDetail = async (gifticonId) => {
 
 export const fetchCoupons = async () => {
   const res = await API.get('/coupons');
-  console.log('🟢 쿠폰 응답:', res.data); // 응답 로그
   return res.data.data;
 };
