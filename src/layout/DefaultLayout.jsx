@@ -20,7 +20,7 @@ const DefaultLayout = () => {
         {/* 스크롤이 생기는 내부 콘텐츠 영역 */}
         <div
           className={`
-            flex-1 overflow-y-auto px-[30px] pt-[55px] pb-[80px]
+            flex-1 overflow-y-auto px-[30px] pt-[55px] pb-[30px]
             ${isColoredOutlet ? 'bg-gradient-blue' : 'bg-background'}
           `}
         >
