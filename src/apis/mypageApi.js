@@ -24,8 +24,11 @@ export const fetchPoint = async () => {
   return res.data.data;
 };
 
-export const chargePoint = async (chargedAmount) => {
-  const res = await API.post('/points/charge', { chargedAmount });
+export const chargePoint = async ({ chargedAmount, userCouponId }) => {
+  const payload = { chargedAmount };
+  if (userCouponId) payload.userCouponId = userCouponId;
+
+  const res = await API.post('/points/charge', payload);
   return res.data.data;
 };
 
