@@ -1,4 +1,4 @@
-// stores/modalStore.js
+//모달 상태관리
 import { create } from 'zustand';
 
 const useModalStore = create((set) => ({
