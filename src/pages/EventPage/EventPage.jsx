@@ -84,6 +84,11 @@ const EventPage = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    if (result !== null) {
+      console.log('참여 결과:', result);
+    }
+  }, [result]);
 
   useEffect(() => {
     getEventData();
