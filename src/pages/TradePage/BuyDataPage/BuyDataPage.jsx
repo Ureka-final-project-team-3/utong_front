@@ -5,6 +5,7 @@ import Button from '../../../components/common/Button';
 import { mockBuyBids } from '../../LiveChartPage/mock/mockTradeData';
 import useUserStore from '@/stores/useUserStore'; // ✅ 사용자 Zustand store
 import useTradeStore from '@/stores/tradeStore';
+import useModalStore from '@/stores/modalStore'; // 모달 Zustand store
 
 import PointRechargeModal from '../components/PointRechargeModal';
 import BuySuccessModal from '../components/BuySuccessModal';
@@ -18,26 +19,52 @@ const networkToDataCodeMap = {
 
 const BuyDataPage = () => {
   const selectedNetwork = useTradeStore((state) => state.selectedNetwork);
-  const { name: userName, remainingData: data, mileage: point, fetchUserData } = useUserStore(); // ✅ Zustand에서 유저 정보 가져오기
+  const { name: userName, remainingData: data, mileage: point, fetchUserData } = useUserStore();
+
+  // Zustand 모달 상태 및 함수
+  const {
+    showRechargeModal,
+    showSuccessModal,
+    showReservationModal,
+    showPaymentCompleteModal,
+    openModal,
+    closeModal,
+  } = useModalStore();
 
   const [dataCode, setDataCode] = useState(networkToDataCodeMap[selectedNetwork] || '002');
 
-  const [showRechargeModal, setShowRechargeModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showReservationModal, setShowReservationModal] = useState(false);
-  const [showPaymentCompleteModal, setShowPaymentCompleteModal] = useState(false);
+  // 데이터 양, 가격 상태
+  const dataOptions = ['1GB', '5GB', '10GB', '20GB'];
+  const [selectedDataGB, setSelectedDataGB] = useState(1);
+  const [buyPrice, setBuyPrice] = useState('0');
 
-  // ✅ 처음 마운트 시 사용자 정보 가져오기
+  // 사용자 정보 최초 로딩
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
 
+  // selectedNetwork 변경 시 dataCode 업데이트 및 평균 가격 초기화
   useEffect(() => {
-    setDataCode(networkToDataCodeMap[selectedNetwork] || '002');
+    const code = networkToDataCodeMap[selectedNetwork] || '002';
+    setDataCode(code);
+
+    // 평균가 기반 초기 buyPrice 설정
+    const buyBids = mockBuyBids.filter((bid) => bid.dataCode === code);
+    const avgPrice = buyBids.length
+      ? Math.round(
+          buyBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
+            buyBids.reduce((sum, b) => sum + b.quantity, 0) /
+            100
+        ) * 100
+      : 0;
+
+    setBuyPrice(avgPrice.toString());
   }, [selectedNetwork]);
 
+  // 현재 매칭되는 구매 입찰들
   const buyBids = mockBuyBids.filter((bid) => bid.dataCode === dataCode);
 
+  // 평균가, 최저가 계산
   const avgPrice = buyBids.length
     ? Math.round(
         buyBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
@@ -45,15 +72,11 @@ const BuyDataPage = () => {
           100
       ) * 100
     : 0;
-
   const minPrice = buyBids.length ? Math.min(...buyBids.map((b) => b.price)) : 0;
-
-  const dataOptions = ['1GB', '5GB', '10GB', '20GB'];
-  const [selectedDataGB, setSelectedDataGB] = useState(1);
-  const [buyPrice, setBuyPrice] = useState(avgPrice.toString());
 
   const buyPriceNum = Number(buyPrice) || 0;
 
+  // 데이터 GB 입력 처리
   const handleGBInputChange = (e) => {
     const val = e.target.value;
     if (/^\d*$/.test(val)) {
@@ -62,11 +85,13 @@ const BuyDataPage = () => {
     }
   };
 
+  // 버튼 클릭 시 GB 추가
   const addDataGB = (gbString) => {
     const gbNum = Number(gbString.replace('GB', ''));
     setSelectedDataGB((prev) => (Number(prev) || 0) + gbNum);
   };
 
+  // 구매하기 버튼 클릭 처리
   const handleBuyClick = () => {
     const selectedQty = Number(selectedDataGB) || 0;
     const totalPrice = buyPriceNum * selectedQty;
@@ -74,23 +99,23 @@ const BuyDataPage = () => {
     const matchedQuantity = matchedBids.reduce((sum, b) => sum + b.quantity, 0);
 
     if (point < totalPrice) {
-      setShowRechargeModal(true);
+      openModal('showRechargeModal');
       return;
     }
 
     if (buyPriceNum < minPrice) {
-      setShowReservationModal(true);
+      openModal('showReservationModal');
       return;
     }
 
     if (selectedQty > matchedQuantity) {
-      setShowPaymentCompleteModal(true);
-      setTimeout(() => setShowPaymentCompleteModal(false), 2000);
+      openModal('showPaymentCompleteModal');
+      setTimeout(() => closeModal('showPaymentCompleteModal'), 2000);
       return;
     }
 
-    setShowSuccessModal(true);
-    setTimeout(() => setShowSuccessModal(false), 2000);
+    openModal('showSuccessModal');
+    setTimeout(() => closeModal('showSuccessModal'), 2000);
   };
 
   return (
@@ -98,10 +123,13 @@ const BuyDataPage = () => {
       <BuyDataHeader />
 
       {/* 모달들 */}
-      <PointRechargeModal show={showRechargeModal} onClose={() => setShowRechargeModal(false)} />
-      <BuySuccessModal show={showSuccessModal} />
+      <PointRechargeModal
+        show={showRechargeModal}
+        onClose={() => closeModal('showRechargeModal')}
+      />
+      <BuySuccessModal show={showSuccessModal} onClose={() => closeModal('showSuccessModal')} />
       {showReservationModal && (
-        <ReservationModal onConfirm={() => setShowReservationModal(false)} />
+        <ReservationModal onConfirm={() => closeModal('showReservationModal')} />
       )}
       {showPaymentCompleteModal && <PaymentCompleteModal point={point} />}
 
