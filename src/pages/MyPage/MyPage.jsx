@@ -15,6 +15,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { fetchMyInfo } from '@/apis/mypageApi';
+import SyncLoading from '@/components/Loading/SyncLoading';
 
 export default function MyPage() {
   const [user, setUser] = useState();
@@ -27,6 +28,7 @@ export default function MyPage() {
       .then((data) => setUser(data))
       .catch((error) => {
         console.error('유저 정보 불러오기 실패:', error);
+        console.log('상세 응답:', error.response?.data); // 백엔드 에러 메시지 확인
       });
   }, []);
 
@@ -85,7 +87,7 @@ export default function MyPage() {
   };
 
   if (!user) {
-    return <div className="text-center mt-10 text-gray-600">유저 정보를 불러오는 중..</div>;
+    return <SyncLoading />;
   }
 
   return (
