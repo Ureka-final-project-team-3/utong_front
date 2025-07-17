@@ -100,12 +100,12 @@ const PointChargePage = () => {
           setModal({
             open: true,
             success: true,
-            message: `충전 완료 🎉\n충전금액: ${data.data.chargedAmount}원\n수수료: ${data.data.feeAmount}원\n실제 적립 포인트: ${data.data.finalAmount}P\n총 포인트: ${data.data.updatedMileage}P`,
+            message: ``,
           });
           setCurrentMileage(data.data.updatedMileage);
           localStorage.removeItem('userCouponId');
         } else {
-          setModal({ open: true, success: false, message: `충전 실패 ❌\n${data.message}` });
+          setModal({ open: true, success: false, message: `충전 실패\n${data.message}` });
         }
       })
       .catch((err) => {
@@ -179,7 +179,7 @@ const PointChargePage = () => {
             <span className="font-medium">{numericAmount.toLocaleString()} P</span>
           </div>
           <div className="flex justify-between py-2 text-base text-gray-600">
-            <span>수수료 2.5% 부가</span>
+            <span>수수료 2.5%</span>
             <span className="font-medium">{fee.toLocaleString()} P</span>
           </div>
           <div className="flex justify-between py-2 text-base text-gray-600">
@@ -203,10 +203,8 @@ const PointChargePage = () => {
       {modal.open && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-80 text-center shadow-lg">
-            <h2 className="text-lg font-bold mb-4">
-              {modal.success ? '🎉 충전 성공' : '❌ 충전 실패'}
-            </h2>
-            <pre className="whitespace-pre-wrap text-sm text-left mb-4">{modal.message}</pre>
+            <h2 className="text-lg font-bold mb-4">{modal.success ? '충전 성공' : '충전 실패'}</h2>
+            <pre className="whitespace-pre-wrap text-base text-center mb-4">{modal.message}</pre>
             <button
               onClick={() => {
                 setModal({ open: false, message: '', success: false });

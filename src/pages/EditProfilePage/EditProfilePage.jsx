@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import BackButton from '@/components/BackButton/BackButton';
 import { fetchMyInfo } from '@/apis/mypageApi';
 import { Mail, Lock, Smartphone } from 'lucide-react';
-
+import { Link } from 'react-router-dom';
 const EditProfilePage = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -55,7 +55,12 @@ const EditProfilePage = () => {
           <Lock size={16} className="text-gray-500" />
           <span>비밀번호</span>
           <span className="ml-auto">**********</span>
-          <button className="text-base text-blue-600 font-semibold">수정</button>
+          <button
+            onClick={() => navigate('/find-password')}
+            className="text-base text-blue-600 font-semibold hover:text-blue-800 hover:underline cursor-pointer"
+          >
+            수정
+          </button>
         </div>
 
         {/* 휴대전화 */}
