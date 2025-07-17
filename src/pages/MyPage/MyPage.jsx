@@ -186,11 +186,11 @@ export default function MyPage() {
 
       {/* 모달 */}
       {showModal && (
-        <div className="fixed inset-0 flex justify-center items-center z-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
           <div ref={modalRef} className="bg-white rounded-xl p-6 w-60 shadow-lg">
-            <h2 className="text-lg font-bold mb-4">알림 설정</h2>
+            <h2 className="text-lg font-bold mb-4">백그라운드 알림</h2>
             <div className="flex justify-between items-center">
-              <span>알림</span>
+              <span>수신여부</span>
               <button
                 onClick={handleToggle}
                 className={`w-14 h-7 rounded-full p-1 focus:outline-none transition ${
