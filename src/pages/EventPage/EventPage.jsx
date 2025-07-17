@@ -9,6 +9,7 @@ import { useRouletteSpin } from './hooks/useRouletteSpin';
 import useSound from 'use-sound'; // ① useSound import
 import spinSoundSrc from '@/assets/sounds/spin.mp3'; // ② 사운드 파일 import
 import RemainingTimeDisplay from './components/RemainingTimeDisplay';
+import FailRewardModal from './components/FailRewardModal';
 
 const isTestMode = false;
 
@@ -61,6 +62,7 @@ const EventPage = () => {
   const [rotation, setRotation] = useState(0);
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [wonCoupon, setWonCoupon] = useState(null);
+  const [showFailModal, setShowFailModal] = useState(false);
 
   const { spinTo } = useRouletteSpin();
 
@@ -96,7 +98,7 @@ const EventPage = () => {
       setEventInfo({
         eventId: 'test-event',
         canParticipate: true,
-        alreadyParticipated: true,
+        alreadyParticipated: false,
       });
       setLoading(false);
     } else {
@@ -164,7 +166,7 @@ const EventPage = () => {
             setWonCoupon(couponData);
             setShowCouponModal(true);
           } else {
-            alert(participationData.message || '아쉽지만 당첨되지 않았습니다.');
+            setShowFailModal(true); // 꽝일 때 전용 모달
           }
         },
       });
@@ -223,6 +225,7 @@ const EventPage = () => {
           {showCouponModal && (
             <CouponRewardModal coupon={wonCoupon} onClose={() => setShowCouponModal(false)} />
           )}
+          {showFailModal && <FailRewardModal onClose={() => setShowFailModal(false)} />}
         </>
       )}
     </div>
