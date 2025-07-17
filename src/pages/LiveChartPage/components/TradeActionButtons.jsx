@@ -1,10 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import useTradeStore from '@/stores/tradeStore';
 
 const TradeActionButtons = () => {
   const navigate = useNavigate();
-  const selectedNetwork = useTradeStore((state) => state.selectedNetwork);
 
   const goToBuy = () => {
     navigate(`/buydata`);
