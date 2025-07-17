@@ -21,7 +21,6 @@ const RouletteWheel = forwardRef(({ rotation }, ref) => {
         ref={ref}
         className="flex justify-center items-center"
         style={{
-          transition: 'transform 5s ease-out',
           transform: `rotate(${rotation}deg)`,
           touchAction: 'none',
           overflow: 'hidden',
