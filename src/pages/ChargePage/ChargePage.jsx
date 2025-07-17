@@ -118,7 +118,7 @@ const PointChargePage = () => {
       <div className="relative">
         <div className="flex items-center justify-center relative">
           <div className="absolute left-0">
-            <BackButton />
+            <BackButton to="/mypage" />
           </div>
           <h1 className="text-lg font-bold text-center">포인트 충전하기</h1>
         </div>
