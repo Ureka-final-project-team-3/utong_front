@@ -43,7 +43,7 @@ export default function MyPage() {
       });
       const data = await response.json();
       console.log('API Response:', data);
-      return { success: data.resultCode === 0, data };
+      return { success: data.resultCode === 200, data };
     } catch (error) {
       console.error('API Error', error);
       return { success: false, data: null };
@@ -54,7 +54,7 @@ export default function MyPage() {
     if (!showModal) return;
 
     const fetchSetting = async () => {
-      const result = await apiRequest('/auth/mail-settings');
+      const result = await apiRequest('/api/auth/mail-settings');
       if (result.success) {
         const mailStatus = result.data.data.isMail;
         setIsMail(mailStatus);
@@ -74,7 +74,7 @@ export default function MyPage() {
   }, [showModal]);
 
   const handleToggle = async () => {
-    const result = await apiRequest('/auth/mail-settings/toggle', { method: 'POST' });
+    const result = await apiRequest('/api/auth/mail-settings/toggle', { method: 'POST' });
     if (result.success) {
       const mailStatus = result.data.data.isMail;
       setIsMail(mailStatus);
