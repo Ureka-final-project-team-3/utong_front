@@ -8,6 +8,7 @@ import { fetchRouletteEventStatus, participateInRoulette } from '@/apis/roulette
 import { useRouletteSpin } from './hooks/useRouletteSpin';
 import useSound from 'use-sound'; // ① useSound import
 import spinSoundSrc from '@/assets/sounds/spin.mp3'; // ② 사운드 파일 import
+import RemainingTimeDisplay from './components/RemainingTimeDisplay';
 
 const isTestMode = false;
 
@@ -63,7 +64,7 @@ const EventPage = () => {
 
   const { spinTo } = useRouletteSpin();
 
-  const [playSpin, { stop }] = useSound(spinSoundSrc, { loop: true }); // ③ 루프 재생
+  const [playSpin, { stop }] = useSound(spinSoundSrc, { loop: true, volume: 0.1 }); // ③ 루프 재생
 
   const getEventData = async () => {
     setError(null);
@@ -91,7 +92,16 @@ const EventPage = () => {
   }, [result]);
 
   useEffect(() => {
-    getEventData();
+    if (isTestMode) {
+      setEventInfo({
+        eventId: 'test-event',
+        canParticipate: true,
+        alreadyParticipated: true,
+      });
+      setLoading(false);
+    } else {
+      getEventData();
+    }
   }, []);
 
   const startSpin = async () => {
@@ -112,7 +122,10 @@ const EventPage = () => {
 
     try {
       const response = isTestMode
-        ? { resultCode: 200, data: { isWinner: false, message: '테스트' } }
+        ? {
+            resultCode: 200,
+            data: { isWinner: false, alreadyParticipated: true, message: '테스트' },
+          }
         : await participateInRoulette(eventInfo.eventId);
 
       let prizeAngle;
@@ -141,13 +154,12 @@ const EventPage = () => {
           setResult(participationData);
           getEventData();
           setIsSpinning(false);
-
           if (participationData.isWinner) {
-            // 백엔드에서 coupon 정보가 없으면 더미 쿠폰 사용
-            const couponData = participationData.coupon || {
-              name: '10% 할인 쿠폰',
-              expiredAt: '2025-12-31T23:59:59Z',
+            const couponData = {
+              name: participationData.gifticonDescription || '당첨된 쿠폰',
+              expiredAt: participationData.expiredAt || null, // 유효기간 포함
               statusName: '사용 가능',
+              eventTitle: participationData.eventTitle || '',
             };
             setWonCoupon(couponData);
             setShowCouponModal(true);
@@ -179,6 +191,7 @@ const EventPage = () => {
   return (
     <div className="relative overflow-hidden">
       <EventHeader />
+
       <RouletteEventExtras />
 
       <RouletteWheel isSpinning={isSpinning} rotation={rotation} />
@@ -199,9 +212,12 @@ const EventPage = () => {
             disabled={isSpinning || !eventInfo?.canParticipate || eventInfo?.alreadyParticipated}
           />
 
-          <div className="mt-5 text-center">
-            <strong>참여 가능:</strong> {eventInfo?.alreadyParticipated ? '아니오' : '예'}
-          </div>
+          {eventInfo?.alreadyParticipated && (
+            <>
+              <div className="mt-5 text-center text-[#777777]">이미 참여했습니다</div>
+              <RemainingTimeDisplay resetHour={0} />
+            </>
+          )}
 
           {/* 쿠폰 당첨 모달 */}
           {showCouponModal && (
