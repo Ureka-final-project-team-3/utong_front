@@ -1,14 +1,24 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import useTradeStore from '@/stores/tradeStore';
 
 const TradeActionButtons = () => {
   const navigate = useNavigate();
+  const selectedNetwork = useTradeStore((state) => state.selectedNetwork);
+
+  const goToBuy = () => {
+    navigate(`/buydata?network=${selectedNetwork}`);
+  };
+
+  const goToSell = () => {
+    navigate(`/selldata?network=${selectedNetwork}`);
+  };
 
   return (
     <div className="relative w-[300px] mt-5 flex justify-between">
       {/* 구매하기 버튼 */}
       <button
-        onClick={() => navigate('/buydata')}
+        onClick={goToBuy}
         className="w-[140px] h-[50px] bg-[var(--blue)] rounded-[8px] text-white text-[18px] leading-[23px] font-normal"
       >
         구매하기
@@ -16,7 +26,7 @@ const TradeActionButtons = () => {
 
       {/* 판매하기 버튼 */}
       <button
-        onClick={() => navigate('/selldata')}
+        onClick={goToSell}
         className="w-[140px] h-[50px] bg-[var(--red)] rounded-[8px] text-white text-[18px] leading-[23px] font-normal"
       >
         판매하기

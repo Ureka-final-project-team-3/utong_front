@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
+import useTradeStore from '@/stores/tradeStore';
 import { mockSellBids, mockBuyBids } from '../mock/mockTradeData';
 
-const TradeInfoSection = ({ selectedNetwork = '5G' }) => {
+const networkToDataCodeMap = {
+  LTE: '001',
+  '5G': '002',
+};
+
+const TradeInfoSection = () => {
+  const selectedNetwork = useTradeStore((state) => state.selectedNetwork);
+  const selectedDataCode = networkToDataCodeMap[selectedNetwork] || selectedNetwork;
+
   const [tab, setTab] = useState('settled');
 
   const tabs = [
@@ -13,23 +22,22 @@ const TradeInfoSection = ({ selectedNetwork = '5G' }) => {
   const getCurrentData = () => {
     switch (tab) {
       case 'sell':
-        return mockSellBids.filter((item) => item.dataCode === selectedNetwork);
+        return mockSellBids.filter((item) => item.dataCode === selectedDataCode);
       case 'buy':
-        return mockBuyBids.filter((item) => item.dataCode === selectedNetwork);
+        return mockBuyBids.filter((item) => item.dataCode === selectedDataCode);
       case 'settled':
-      default: {
-        const settled = mockSellBids
-          .filter((item) => item.dataCode === selectedNetwork)
+      default:
+        return mockSellBids
+          .filter((item) => item.dataCode === selectedDataCode)
           .map(({ price, createdAt }) => ({ price, createdAt }));
-        return settled;
-      }
     }
   };
 
   const currentData = getCurrentData();
+
   const maxQuantity = Math.max(
     ...[...mockSellBids, ...mockBuyBids]
-      .filter((d) => d.dataCode === selectedNetwork)
+      .filter((d) => d.dataCode === selectedDataCode)
       .map((d) => d.quantity || 0)
   );
 
@@ -62,36 +70,40 @@ const TradeInfoSection = ({ selectedNetwork = '5G' }) => {
 
       {/* 거래 정보 리스트 */}
       <div className="max-h-[132px] overflow-y-auto flex flex-col divide-y divide-[#EEE] px-2">
-        {currentData.map((item, index) => (
-          <div key={index} className="flex py-[6px] text-[12px] text-[#777777] min-h-[33px]">
-            {/* 거래가 */}
-            <div className="w-1/2 flex justify-center items-center">
-              {item.price.toLocaleString()}P
-            </div>
+        {currentData.length === 0 ? (
+          <div className="text-center text-[#777777] py-5">데이터가 없습니다.</div>
+        ) : (
+          currentData.map((item, index) => (
+            <div key={index} className="flex py-[6px] text-[12px] text-[#777777] min-h-[33px]">
+              {/* 거래가 */}
+              <div className="w-1/2 flex justify-center items-center">
+                {item.price.toLocaleString()}P
+              </div>
 
-            {/* 날짜 or 그래프 */}
-            <div className="w-1/2 flex justify-center items-center">
-              {tab === 'settled' ? (
-                <span className="text-[#777777] text-[12px]">
-                  {item.createdAt.replace('T', ' ').slice(0, 16)}
-                </span>
-              ) : (
-                <div className="flex items-center gap-[6px] w-full max-w-[160px]">
-                  <div className="w-[40px] text-right">{item.quantity}GB</div>
-                  <div className="flex-1 h-[10px] bg-[#F0F0F0] rounded-sm overflow-hidden">
-                    <div
-                      className={`h-full ${tab === 'sell' ? 'bg-[#2769F6]' : 'bg-[#FF4343]'}`}
-                      style={{
-                        width: `${(item.quantity / maxQuantity) * 100}%`,
-                        minWidth: '4px',
-                      }}
-                    />
+              {/* 날짜 or 그래프 */}
+              <div className="w-1/2 flex justify-center items-center">
+                {tab === 'settled' ? (
+                  <span className="text-[#777777] text-[12px]">
+                    {item.createdAt.replace('T', ' ').slice(0, 16)}
+                  </span>
+                ) : (
+                  <div className="flex items-center gap-[6px] w-full max-w-[160px]">
+                    <div className="w-[40px] text-right">{item.quantity}GB</div>
+                    <div className="flex-1 h-[10px] bg-[#F0F0F0] rounded-sm overflow-hidden">
+                      <div
+                        className={`h-full ${tab === 'sell' ? 'bg-[#2769F6]' : 'bg-[#FF4343]'}`}
+                        style={{
+                          width: `${(item.quantity / maxQuantity) * 100}%`,
+                          minWidth: '4px',
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

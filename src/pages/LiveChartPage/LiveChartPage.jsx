@@ -1,25 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import ChartHeader from './components/ChartHeader';
 import PriceChart from './components/PriceChart';
 import PriceChartInfo from './components/PriceChartInfo';
 import TradeInfoSection from './components/TradeInfoSection';
 import TradeActionButtons from './components/TradeActionButtons';
+import { fetchMyInfo } from '@/apis/mypageApi';
+import useUserStore from '@/stores/useUserStore';
 
 const LiveChartPage = () => {
-  const [selectedNetwork, setSelectedNetwork] = useState('5G'); // '5G' or 'LTE'
-  const [selectedRange, setSelectedRange] = useState('today'); // 'today' or 'all'
+  const setUserInfo = useUserStore((state) => state.setUserInfo);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const res = await fetchMyInfo();
+        setUserInfo(res); // 또는 res.data 구조에 따라 수정
+        console.log(res);
+      } catch (err) {
+        console.error('사용자 정보 불러오기 실패', err);
+      }
+    };
+
+    loadUser();
+  }, [setUserInfo]);
 
   return (
     <div>
       <ChartHeader />
-      <PriceChartInfo
-        selectedNetwork={selectedNetwork}
-        selectedRange={selectedRange}
-        onNetworkChange={setSelectedNetwork}
-        onRangeChange={setSelectedRange}
-      />
-      <PriceChart network={selectedNetwork} range={selectedRange} />
-      <TradeInfoSection selectedNetwork={selectedNetwork} />
+      <PriceChartInfo />
+      <PriceChart />
+      <TradeInfoSection />
       <TradeActionButtons />
     </div>
   );
