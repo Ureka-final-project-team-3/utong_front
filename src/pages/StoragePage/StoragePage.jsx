@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '@/components/BackButton/BackButton';
 import { fetchGifticons } from '@/apis/mypageApi';
+import SyncLoading from '../../components/Loading/SyncLoading';
 
 const StoragePage = () => {
   const [gifticons, setGifticons] = useState([]);
@@ -34,7 +35,9 @@ const StoragePage = () => {
 
       {/* 로딩 */}
       {loading ? (
-        <div className="text-center text-gray-400 py-10">불러오는 중...</div>
+        <div className="text-center text-gray-400 py-50">
+          <SyncLoading />
+        </div>
       ) : gifticons.length > 0 ? (
         <div className="grid grid-cols-2 gap-4">
           {gifticons.map((item) => {

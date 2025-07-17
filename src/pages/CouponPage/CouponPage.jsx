@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import BackButton from '@/components/BackButton/BackButton';
 import { fetchCoupons } from '@/apis/mypageApi';
-import CouponCard from './CouponCard'; // 경로는 실제 구조에 맞게 수정하세요
-
+import CouponCard from './CouponCard';
+import SyncLoading from '../../components/Loading/SyncLoading';
 const CouponPage = () => {
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,12 +10,12 @@ const CouponPage = () => {
   useEffect(() => {
     fetchCoupons()
       .then((data) => {
-        console.log('✅ 쿠폰 응답:', data);
+        console.log('쿠폰 응답:', data);
         setCoupons(data);
         setLoading(false);
       })
       .catch((err) => {
-        console.log('❌ 쿠폰 목록 불러오기 실패:', err);
+        console.log('쿠폰 목록 불러오기 실패:', err);
         // 404면 쿠폰이 없는 것으로 처리
         if (err.response?.status === 404) {
           setCoupons([]);
@@ -37,7 +37,9 @@ const CouponPage = () => {
 
       {/* 로딩 상태 */}
       {loading ? (
-        <div className="text-center text-gray-400 py-10">로딩 중...</div>
+        <div className="text-center text-gray-400 py-50">
+          <SyncLoading />
+        </div>
       ) : (
         <div className="flex flex-col gap-3 pt-8 pb-8">
           {coupons.length === 0 ? (
