@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchMyInfo, fetchCoupons } from '@/apis/mypageApi';
+import { confirmTossPayment } from '@/apis/paymentApi';
 import BackButton from '@/components/BackButton/BackButton';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -9,13 +10,12 @@ const PointChargePage = () => {
   const [currentMileage, setCurrentMileage] = useState(0);
   const [coupons, setCoupons] = useState([]);
   const [selectedCouponId, setSelectedCouponId] = useState(null);
-  const [couponApplied] = useState(false);
   const [customerName, setCustomerName] = useState('홍길동');
   const [modal, setModal] = useState({ open: false, message: '', success: false });
-
   const feeRate = 0.025;
   const numericAmount = Number(amount) || 0;
-  const fee = couponApplied ? 0 : Math.floor(numericAmount * feeRate);
+  const fee = selectedCouponId ? 0 : Math.floor(numericAmount * feeRate);
+
   useEffect(() => {
     if (selectedCouponId) {
       toast.info('할인 쿠폰이 적용되었습니다!', {
@@ -39,7 +39,7 @@ const PointChargePage = () => {
       alert('유저 정보 조회 실패. 다시 로그인해주세요.');
       localStorage.removeItem('accessToken');
       window.location.href = '/index.html';
-      return; // 유저 정보 없으면 이후 쿠폰 불러오지 않음
+      return;
     }
 
     try {
@@ -49,7 +49,7 @@ const PointChargePage = () => {
       setSelectedCouponId(null);
     } catch (err) {
       console.error('쿠폰 조회 실패:', err);
-      setCoupons([]); // 쿠폰 실패해도 그냥 빈 배열 처리
+      setCoupons([]);
     }
   };
 
@@ -91,22 +91,10 @@ const PointChargePage = () => {
     const orderId = params.get('orderId');
     const amount = parseInt(params.get('amount'));
     const userCouponId = localStorage.getItem('userCouponId');
-    const accessToken = localStorage.getItem('accessToken');
 
-    if (!paymentKey || !orderId || !amount || !accessToken) return;
+    if (!paymentKey || !orderId || !amount) return;
 
-    const body = { paymentKey, orderId, amount };
-    if (userCouponId) body.userCouponId = userCouponId;
-
-    fetch('/api/payments/toss/confirm', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify(body),
-    })
-      .then((res) => res.json())
+    confirmTossPayment({ paymentKey, orderId, amount, userCouponId })
       .then((data) => {
         if (data.codeName === 'SUCCESS') {
           setModal({
@@ -126,11 +114,11 @@ const PointChargePage = () => {
   }, []);
 
   return (
-    <div className="">
+    <div>
       <div className="relative">
         <div className="flex items-center justify-center relative">
           <div className="absolute left-0">
-            <BackButton />
+            <BackButton to="/mypage" />
           </div>
           <h1 className="text-lg font-bold text-center">포인트 충전하기</h1>
         </div>
@@ -156,7 +144,6 @@ const PointChargePage = () => {
         </div>
       </div>
 
-      {/* 쿠폰 영역 */}
       <div className="rounded-lg border-gray-200 p-4 mt-4">
         <div className="mb-4">
           <div className="flex items-center gap-2">
@@ -193,13 +180,11 @@ const PointChargePage = () => {
           </div>
           <div className="flex justify-between py-2 text-base text-gray-600">
             <span>수수료 2.5% 부가</span>
-            <span className="font-medium">{(selectedCouponId ? 0 : fee).toLocaleString()} P</span>
+            <span className="font-medium">{fee.toLocaleString()} P</span>
           </div>
           <div className="flex justify-between py-2 text-base text-gray-600">
             <span>총 포인트</span>
-            <span className="font-medium">
-              {(numericAmount - (selectedCouponId ? 0 : fee)).toLocaleString()} P
-            </span>
+            <span className="font-medium">{(numericAmount - fee).toLocaleString()} P</span>
           </div>
         </div>
       </div>
@@ -236,6 +221,7 @@ const PointChargePage = () => {
           </div>
         </div>
       )}
+
       <ToastContainer
         position="top-center"
         autoClose={3000}

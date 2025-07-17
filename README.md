@@ -371,7 +371,7 @@ npm run dev
         <a href="https://github.com/chemnida">@chemnida</a>
       </td>
       <td align="center">디자인<br/>리더</td>
-      <td>스타트, 메인, 로그인, 회원가입, 아이디·비밀번호 찾기, 비밀번호 재설정 페이지 UI 구현 및 API 연동</td>
+      <td>스타트, 메인, 로그인, 회원가입, 아이디·비밀번호 찾기, 비밀번호 재설정, 알림 페이지 UI 구현 및 API 연동</td>
     </tr>
     <tr>
       <td align="center" rowspan="4"><strong>백엔드</strong></td>
