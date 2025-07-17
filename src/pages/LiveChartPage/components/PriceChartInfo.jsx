@@ -1,7 +1,10 @@
 import React, { useMemo } from 'react';
 import { PriceData5G, PriceDataLTE } from '../mock/mockPriceData';
+import useTradeStore from '@/stores/tradeStore';
 
-const PriceChartInfo = ({ selectedNetwork, selectedRange, onNetworkChange, onRangeChange }) => {
+const PriceChartInfo = () => {
+  const { selectedNetwork, selectedRange, setSelectedNetwork, setSelectedRange } = useTradeStore();
+
   const latestPrice = useMemo(() => {
     const data = selectedNetwork === '5G' ? PriceData5G : PriceDataLTE;
     if (!data || data.length === 0) return null;
@@ -20,13 +23,13 @@ const PriceChartInfo = ({ selectedNetwork, selectedRange, onNetworkChange, onRan
         <span className="text-[12px] leading-[15px] text-[#2C2C2C]">원 (1GB)</span>
       </div>
 
-      {/* 네트워크 선택 (오른쪽 상단) */}
+      {/* 네트워크 선택 */}
       <div className="absolute right-2 top-2 sm:top-2 flex flex-col gap-[10px]">
         {['5G', 'LTE'].map((type) => (
           <div
             key={type}
             className="flex items-center cursor-pointer"
-            onClick={() => onNetworkChange?.(type)}
+            onClick={() => setSelectedNetwork(type)}
           >
             <div
               className={`w-[13px] h-[13px] rounded-full mr-[10px] ${
@@ -50,7 +53,7 @@ const PriceChartInfo = ({ selectedNetwork, selectedRange, onNetworkChange, onRan
           className={`text-[13px] sm:text-[14px] cursor-pointer ${
             selectedRange === 'today' ? 'text-[#EB008B] font-bold' : 'text-[#2C2C2C]'
           }`}
-          onClick={() => onRangeChange?.('today')}
+          onClick={() => setSelectedRange('today')}
         >
           최근 시세
         </span>
@@ -59,7 +62,7 @@ const PriceChartInfo = ({ selectedNetwork, selectedRange, onNetworkChange, onRan
           className={`text-[13px] sm:text-[14px] cursor-pointer ${
             selectedRange === 'all' ? 'text-[#EB008B] font-bold' : 'text-[#2C2C2C]'
           }`}
-          onClick={() => onRangeChange?.('all')}
+          onClick={() => setSelectedRange('all')}
         >
           주간 시세
         </span>

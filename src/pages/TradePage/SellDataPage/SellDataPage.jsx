@@ -1,20 +1,35 @@
+// src/pages/SellDataPage.jsx
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import SellDataHeader from './components/SellDataHeader';
 import Button from '../../../components/common/Button';
 import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData';
 import SellSuccessModal from '../components/SellSuccessModal';
 
-import { fetchMyInfo, fetchPoint } from '@/apis/mypageApi';
+import useTradeStore from '@/stores/tradeStore';
+import useUserStore from '@/stores/useUserStore';
+
+const networkToDataCodeMap = {
+  LTE: '001',
+  '5G': '002',
+};
 
 const SellDataPage = () => {
-  const [userName, setUserName] = useState('');
-  const [point, setPoint] = useState(0);
-  const [data, setData] = useState(0);
+  const selectedNetwork = useTradeStore((state) => state.selectedNetwork);
+  const { name: userName, remainingData: data, mileage: point, fetchUserData } = useUserStore(); // ✅ Zustand에서 유저 정보 가져오기
 
-  // 데이터 코드 및 mock 데이터 필터링
-  const dataCode = '5G';
+  const [dataCode, setDataCode] = useState(networkToDataCodeMap[selectedNetwork] || '002');
+
+  useEffect(() => {
+    setDataCode(networkToDataCodeMap[selectedNetwork] || '002');
+  }, [selectedNetwork]);
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
   const sellBids = mockSellBids.filter((bid) => bid.dataCode === dataCode);
 
   const avgPrice = sellBids.length
@@ -46,23 +61,6 @@ const SellDataPage = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const userInfo = await fetchMyInfo();
-        const userPoint = await fetchPoint();
-
-        setUserName(userInfo?.name ?? '');
-        setData(userInfo?.remainingData ?? 0);
-        setPoint(userPoint?.mileage ?? 0);
-      } catch (error) {
-        console.error('유저 정보 로딩 실패:', error);
-      }
-    };
-
-    loadUserData();
-  }, []);
-
-  useEffect(() => {
     if (!isPriceValid && price.length > 0 && !hasWarned) {
       toast.error(
         `가격은 ${minPrice.toLocaleString()}원 이상 ${maxPriceAllowed.toLocaleString()}원 이하만 가능합니다.`,
@@ -70,12 +68,9 @@ const SellDataPage = () => {
       );
       setHasWarned(true);
     }
-    if (isPriceValid) {
-      setHasWarned(false);
-    }
+    if (isPriceValid) setHasWarned(false);
   }, [price, isPriceValid, hasWarned, minPrice, maxPriceAllowed]);
 
-  // **보유 데이터 초과 입력 시 토스트 띄우기**
   useEffect(() => {
     if (dataAmount > data && data !== 0) {
       toast.error(`보유 데이터(${data}GB)보다 많은 양을 판매할 수 없어요.`, {
@@ -94,11 +89,9 @@ const SellDataPage = () => {
   const handleSellClick = () => {
     if (!isPriceValid || !isDataValid) return;
 
-    setPoint((prev) => prev + totalAfterPoint);
+    addPoint(totalAfterPoint);
     setShowModal(true);
-    setTimeout(() => {
-      setShowModal(false);
-    }, 2000);
+    setTimeout(() => setShowModal(false), 2000);
   };
 
   const handleSelectData = (option) => {

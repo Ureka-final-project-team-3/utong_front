@@ -10,14 +10,18 @@ import {
 } from 'recharts';
 import { PriceData5G, PriceDataLTE } from '../mock/mockPriceData';
 import { getAveragePriceByDate } from '../../../utils/getAveragePriceByDate';
+import useTradeStore from '@/stores/tradeStore';
 
-const PriceChartContainer = ({ network, range }) => {
-  const rawData = network === '5G' ? PriceData5G : PriceDataLTE;
+const PriceChartContainer = () => {
+  const selectedNetwork = useTradeStore((state) => state.selectedNetwork);
+  const selectedRange = useTradeStore((state) => state.selectedRange);
+
+  const rawData = selectedNetwork === '5G' ? PriceData5G : PriceDataLTE;
 
   const filteredData = useMemo(() => {
     if (!rawData) return [];
 
-    if (range === 'today') {
+    if (selectedRange === 'today') {
       const todayStrKST = new Date().toLocaleDateString('ko-KR', {
         year: 'numeric',
         month: '2-digit',
@@ -39,7 +43,7 @@ const PriceChartContainer = ({ network, range }) => {
         volume: d.totalVolume,
       }));
     }
-  }, [rawData, range]);
+  }, [rawData, selectedRange]);
 
   return (
     <div className=" bg-gradient-to-r from-[#2769F6] to-[#757AD0] rounded-[8px] shadow-md overflow-hidden flex flex-col">
@@ -51,10 +55,10 @@ const PriceChartContainer = ({ network, range }) => {
               dataKey="timestamp"
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return range === 'today'
+                return selectedRange === 'today'
                   ? date.toLocaleTimeString('ko-KR', {
                       hour: '2-digit',
-                      //minute: '2-digit',
+                      // minute: '2-digit',
                       hour12: false,
                     })
                   : date.toLocaleDateString('ko-KR', {
@@ -69,7 +73,6 @@ const PriceChartContainer = ({ network, range }) => {
               }}
               axisLine={false}
               tickLine={false}
-              //interval={0}
               interval="preserveStartEnd"
               textAnchor="end"
             />
@@ -93,7 +96,7 @@ const PriceChartContainer = ({ network, range }) => {
                   month: 'long',
                   day: 'numeric',
                   hour: 'numeric',
-                  //minute: '2-digit',
+                  // minute: '2-digit',
                   hour12: true,
                 });
 
@@ -116,7 +119,7 @@ const PriceChartContainer = ({ network, range }) => {
 
       <div className="w-full flex justify-center items-center gap-[12px] text-white text-[10px] font-bold opacity-80 py-[6px]">
         <div className="flex items-center gap-[4px]">
-          <span>{range === 'today' ? '오늘의 거래량' : '총 거래량'}</span>
+          <span>{selectedRange === 'today' ? '오늘의 거래량' : '총 거래량'}</span>
           <span>{filteredData.reduce((sum, d) => sum + (d.volume || 0), 0).toLocaleString()}</span>
         </div>
         <div className="w-[1px] h-[10px] bg-white opacity-80" />
