@@ -18,11 +18,12 @@ const SellDataPage = () => {
   const sellBids = mockSellBids.filter((bid) => bid.dataCode === dataCode);
 
   const avgPrice = sellBids.length
-  ? Math.round(
-      sellBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
-        sellBids.reduce((sum, b) => sum + b.quantity, 0) / 100
-    ) * 100
-  : 0;
+    ? Math.round(
+        sellBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
+          sellBids.reduce((sum, b) => sum + b.quantity, 0) /
+          100
+      ) * 100
+    : 0;
 
   const maxPrice = sellBids.length ? Math.max(...sellBids.map((b) => b.price)) : 0;
 

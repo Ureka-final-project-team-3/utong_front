@@ -1,6 +1,6 @@
-# U-Tong: 데이터 거래 플랫폼
-<img width="1440" height="1024" alt="시작" src="https://github.com/user-attachments/assets/954384b1-ab49-444e-8a73-1bff307ed873" />
 
+# 📱 U-Tong: 데이터 거래 플랫폼
+<img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/5f05958a-0561-47c1-a7c6-04f3a431d53a" />
 
 U-Tong은 사용자가 자신의 데이터를 주식 방식으로 쉽게 거래하고, 실시간 시세 변동과 다양한 거래 기능을 제공하는 웹 플랫폼입니다.
 
@@ -371,7 +371,7 @@ npm run dev
         <a href="https://github.com/chemnida">@chemnida</a>
       </td>
       <td align="center">디자인<br/>리더</td>
-      <td>스타트, 메인, 로그인, 회원가입, 아이디·비밀번호 찾기, 비밀번호 재설정 페이지 UI 구현 및 API 연동</td>
+      <td>스타트, 메인, 로그인, 회원가입, 아이디·비밀번호 찾기, 비밀번호 재설정, 알림 페이지 UI 구현 및 API 연동</td>
     </tr>
     <tr>
       <td align="center" rowspan="4"><strong>백엔드</strong></td>
