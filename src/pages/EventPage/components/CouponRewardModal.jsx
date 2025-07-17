@@ -9,7 +9,7 @@ const CouponRewardModal = ({ coupon, onClose }) => {
 
   useEffect(() => {
     const audio = new Audio(winnerSound);
-    audio.volume = 0.3;
+    audio.volume = 0.1;
     audio.play().catch((err) => console.error('사운드 재생 실패:', err));
 
     // 5초 후 애니메이션 숨기기

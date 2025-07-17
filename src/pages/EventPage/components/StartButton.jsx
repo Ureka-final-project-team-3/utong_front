@@ -2,7 +2,7 @@ import React from 'react';
 
 const StartButton = ({ onClick, disabled }) => {
   return (
-    <div className="w-full flex justify-center mt-10">
+    <div className="w-full flex justify-center mt-5">
       <button
         type="button"
         disabled={disabled}
@@ -10,12 +10,16 @@ const StartButton = ({ onClick, disabled }) => {
         className={`
           w-[136px]
           h-[40px]
-          bg-gradient-to-r from-[#EB008B] to-[#5B038C]
+          ${
+            disabled
+              ? 'bg-[#949494] cursor-not-allowed'
+              : 'bg-gradient-to-r from-[#EB008B] to-[#5B038C]'
+          }
           shadow-[0_4px_4px_rgba(0,0,0,0.25)]
           rounded-[16px]
-          cursor-pointer
+          ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
+
           select-none
-          ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         `}
       >
         <span
