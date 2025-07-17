@@ -78,7 +78,7 @@ const MainPage = () => {
         className="w-[300px] mx-auto mt-6 rounded-3xl overflow-hidden bg-white"
         style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.25)' }}
       >
-        <Link to="/chart" className="block">
+        <Link to="/chart" className="block transition-transform duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between pl-6 pr-4 py-4">
             <div className="flex items-center space-x-3">
               <img src={trade} alt="거래하기" className="w-5 h-5" />
@@ -90,7 +90,7 @@ const MainPage = () => {
 
         <div className="border-t border-gray-200" />
 
-        <Link to="/event" className="block">
+        <Link to="/event" className="block transition-transform duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between pl-6 pr-4 py-4">
             <div className="flex items-center space-x-3">
               <img src={event} alt="이벤트" className="w-5 h-5" />
@@ -102,7 +102,7 @@ const MainPage = () => {
 
         <div className="border-t border-gray-200" />
 
-        <Link to="/shop" className="block">
+        <Link to="/shop" className="block transition-transform duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between pl-6 pr-4 py-4">
             <div className="flex items-center space-x-3">
               <img src={shop} alt="상점" className="w-5 h-5" />
