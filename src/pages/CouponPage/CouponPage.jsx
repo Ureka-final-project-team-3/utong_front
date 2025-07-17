@@ -15,8 +15,11 @@ const CouponPage = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.error('❌ 쿠폰 목록 불러오기 실패:', err);
-        setCoupons([]);
+        console.log('❌ 쿠폰 목록 불러오기 실패:', err);
+        // 404면 쿠폰이 없는 것으로 처리
+        if (err.response?.status === 404) {
+          setCoupons([]);
+        }
         setLoading(false);
       });
   }, []);
