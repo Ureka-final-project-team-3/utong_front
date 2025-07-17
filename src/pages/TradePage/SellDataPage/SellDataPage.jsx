@@ -89,7 +89,6 @@ const SellDataPage = () => {
   const handleSellClick = () => {
     if (!isPriceValid || !isDataValid) return;
 
-    addPoint(totalAfterPoint);
     setShowModal(true);
     setTimeout(() => setShowModal(false), 2000);
   };
