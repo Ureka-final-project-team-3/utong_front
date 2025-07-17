@@ -17,9 +17,20 @@ const networkToDataCodeMap = {
   '5G': '002',
 };
 
+const codeToNetworkMap = {
+  '001': 'LTE',
+  '002': '5G',
+};
+
 const BuyDataPage = () => {
   const selectedNetwork = useTradeStore((state) => state.selectedNetwork);
-  const { name: userName, remainingData: data, mileage: point, fetchUserData } = useUserStore();
+  const {
+    name: userName,
+    remainingData: data,
+    mileage: point,
+    fetchUserData,
+    dataCode,
+  } = useUserStore();
 
   // Zustand 모달 상태 및 함수
   const {
@@ -31,7 +42,12 @@ const BuyDataPage = () => {
     closeModal,
   } = useModalStore();
 
-  const [dataCode, setDataCode] = useState(networkToDataCodeMap[selectedNetwork] || '002');
+  const [localDataCode, setLocalDataCode] = useState(
+    networkToDataCodeMap[selectedNetwork] || '002'
+  );
+
+  // 사용자 요금제 네트워크명 (Zustand에 저장된 dataCode → 네트워크명)
+  const userPlanNetwork = codeToNetworkMap[dataCode] || '';
 
   // 데이터 양, 가격 상태
   const dataOptions = ['1GB', '5GB', '10GB', '20GB'];
@@ -46,7 +62,7 @@ const BuyDataPage = () => {
   // selectedNetwork 변경 시 dataCode 업데이트 및 평균 가격 초기화
   useEffect(() => {
     const code = networkToDataCodeMap[selectedNetwork] || '002';
-    setDataCode(code);
+    setLocalDataCode(code);
 
     // 평균가 기반 초기 buyPrice 설정
     const buyBids = mockBuyBids.filter((bid) => bid.dataCode === code);
@@ -62,7 +78,7 @@ const BuyDataPage = () => {
   }, [selectedNetwork]);
 
   // 현재 매칭되는 구매 입찰들
-  const buyBids = mockBuyBids.filter((bid) => bid.dataCode === dataCode);
+  const buyBids = mockBuyBids.filter((bid) => bid.dataCode === localDataCode);
 
   // 평균가, 최저가 계산
   const avgPrice = buyBids.length
@@ -98,6 +114,11 @@ const BuyDataPage = () => {
     const matchedBids = buyBids.filter((bid) => bid.price <= buyPriceNum);
     const matchedQuantity = matchedBids.reduce((sum, b) => sum + b.quantity, 0);
 
+    // 사용 요금제 다르면 클릭 자체 못하게 disabled 처리 중이라 필요 없지만, 안전하게 한 번 더 체크 가능
+    if (userPlanNetwork !== selectedNetwork) {
+      return;
+    }
+
     if (point < totalPrice) {
       openModal('showRechargeModal');
       return;
@@ -117,6 +138,12 @@ const BuyDataPage = () => {
     openModal('showSuccessModal');
     setTimeout(() => closeModal('showSuccessModal'), 2000);
   };
+
+  // 요금제 일치 여부
+  const isUserPlanMatches = userPlanNetwork === selectedNetwork;
+
+  // 버튼 활성화 조건
+  const isButtonEnabled = buyPriceNum > 0 && (Number(selectedDataGB) || 0) > 0 && isUserPlanMatches;
 
   return (
     <div>
@@ -243,10 +270,12 @@ const BuyDataPage = () => {
       <div className="mt-auto pt-6">
         <Button
           onClick={handleBuyClick}
-          className="bg-[#386DEE] hover:bg-[#2f5bd9] w-full"
-          disabled={buyPriceNum <= 0 || (Number(selectedDataGB) || 0) <= 0}
+          className={`w-full ${
+            isButtonEnabled ? 'bg-[#386DEE] hover:bg-[#2f5bd9]' : 'bg-gray-300 cursor-not-allowed'
+          }`}
+          disabled={!isButtonEnabled}
         >
-          구매하기
+          {isUserPlanMatches ? '구매하기' : '사용 요금제가 다릅니다'}
         </Button>
       </div>
     </div>
