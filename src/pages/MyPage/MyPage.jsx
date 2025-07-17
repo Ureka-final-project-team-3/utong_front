@@ -107,7 +107,10 @@ export default function MyPage() {
               <img src={dataIcon} alt="데이터 아이콘" className="w-5 h-5" />
               <div className="text-base">판매 가능 데이터</div>
             </div>
-            <div className="text-base text-right">{user.remainingData ?? 0}GB</div>
+            <div className="text-base flex justify-between pl-6.5">
+              <div>{user.dataCode === '002' ? '5G' : 'LTE'}</div>
+              <div> {user.remainingData ?? 0}GB</div>
+            </div>
           </div>
 
           {/* 포인트 */}
