@@ -3,12 +3,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import backIcon from '@/assets/icon/back.svg';
 
-const BackButton = ({ className = '' }) => {
+const BackButton = ({ className = '', to = -1 }) => {
   const navigate = useNavigate();
 
   return (
     <button
-      onClick={() => navigate(-1)}
+      onClick={() => navigate(to)}
       className={`flex items-center z-10 ${className}`}
       aria-label="뒤로가기"
     >
