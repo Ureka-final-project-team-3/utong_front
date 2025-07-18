@@ -48,6 +48,13 @@ const ResetPasswordPage = () => {
     }
   };
 
+  // 엔터 키 처리 함수
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleResetPassword();
+    }
+  };
+
   return (
     <div
       className="absolute inset-0 z-0"
@@ -79,6 +86,7 @@ const ResetPasswordPage = () => {
             placeholder="8자 이상"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="w-full px-4 py-3 mb-4 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
           />
 
@@ -88,6 +96,7 @@ const ResetPasswordPage = () => {
             placeholder="8자 이상"
             value={passwordConfirm}
             onChange={(e) => setPasswordConfirm(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="w-full px-4 py-3 mb-4 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
           />
 
