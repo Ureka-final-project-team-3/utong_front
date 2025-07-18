@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchMyInfo, fetchCoupons } from '@/apis/mypageApi';
 import { confirmTossPayment } from '@/apis/paymentApi';
 import BackButton from '@/components/BackButton/BackButton';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import questionIcon from '@/assets/icon/question.svg';
 
 const PointChargePage = () => {
   const [amount, setAmount] = useState('');
@@ -12,20 +11,19 @@ const PointChargePage = () => {
   const [selectedCouponId, setSelectedCouponId] = useState(null);
   const [customerName, setCustomerName] = useState('홍길동');
   const [modal, setModal] = useState({ open: false, message: '', success: false });
+  const [infoModalMessage, setInfoModalMessage] = useState(''); // ✅ 메시지 상태
   const feeRate = 0.025;
   const numericAmount = Number(amount) || 0;
   const fee = selectedCouponId ? 0 : Math.floor(numericAmount * feeRate);
 
+  const showInfoModal = (message) => {
+    setInfoModalMessage(message);
+    setTimeout(() => setInfoModalMessage(''), 2000);
+  };
+
   useEffect(() => {
     if (selectedCouponId) {
-      toast.info('할인 쿠폰이 적용되었습니다!', {
-        position: 'top-center',
-        autoClose: 2000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-      });
+      showInfoModal('할인 쿠폰이 적용되었습니다!');
     }
   }, [selectedCouponId]);
 
@@ -178,8 +176,17 @@ const PointChargePage = () => {
             <span>충전 포인트</span>
             <span className="font-medium">{numericAmount.toLocaleString()} P</span>
           </div>
-          <div className="flex justify-between py-2 text-base text-gray-600">
-            <span>수수료 2.5%</span>
+          <div className="flex justify-between items-center py-2 text-base text-gray-600">
+            <div className="flex items-center gap-1">
+              <span>수수료</span>
+              <img
+                src={questionIcon}
+                alt="수수료 안내"
+                title="수수료 설명 보기"
+                onClick={() => showInfoModal('거래중개 등 제반 서비스 이용료가 포함됩니다.')}
+                className="w-4 h-4 cursor-pointer"
+              />
+            </div>
             <span className="font-medium">{fee.toLocaleString()} P</span>
           </div>
           <div className="flex justify-between py-2 text-base text-gray-600">
@@ -199,7 +206,7 @@ const PointChargePage = () => {
         </button>
       </div>
 
-      {/* 모달 */}
+      {/* 충전 성공/실패 모달 */}
       {modal.open && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-80 text-center shadow-lg">
@@ -220,20 +227,23 @@ const PointChargePage = () => {
         </div>
       )}
 
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        style={{
-          position: 'absolute',
-          top: 100,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '100%',
-          maxWidth: 200,
-          zIndex: 9999,
-          pointerEvents: 'auto',
-        }}
-      />
+      {/* 알림 모달 (2초 후 자동 사라짐) */}
+      {infoModalMessage && (
+        <div className="fixed top-40 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-white border border-gray-300 rounded-full shadow px-4 py-2 w-fit flex items-center gap-2 animate-fade-in-out">
+            <svg
+              className="w-4 h-4 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-sm font-medium text-gray-800">{infoModalMessage}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
