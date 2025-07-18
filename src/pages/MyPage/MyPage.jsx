@@ -109,7 +109,7 @@ export default function MyPage() {
             </div>
             <div className="text-base flex justify-between pl-6.5">
               <div>{user.dataCode === '002' ? '5G' : 'LTE'}</div>
-              <div> {user.remainingData ?? 0}GB</div>
+              <div> {user.canSale ?? 0}GB</div>
             </div>
           </div>
 

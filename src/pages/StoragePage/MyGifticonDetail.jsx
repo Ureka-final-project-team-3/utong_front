@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchGifticonDetail } from '@/apis/mypageApi';
+import { fetchGifticonDetail } from '@/apis/gifticonsApi';
 import BackButton from '@/components/BackButton/BackButton';
 
 const MyGifticonDetail = () => {

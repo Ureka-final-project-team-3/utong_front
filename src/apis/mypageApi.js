@@ -16,6 +16,7 @@ API.interceptors.request.use((config) => {
 
 export const fetchMyInfo = async () => {
   const res = await API.get('/info');
+
   return res.data.data;
 };
 
@@ -29,16 +30,6 @@ export const chargePoint = async ({ chargedAmount, userCouponId }) => {
   if (userCouponId) payload.userCouponId = userCouponId;
 
   const res = await API.post('/points/charge', payload);
-  return res.data.data;
-};
-
-export const fetchGifticons = async () => {
-  const res = await API.get('/gifticons');
-  return res.data.data;
-};
-
-export const fetchGifticonDetail = async (gifticonId) => {
-  const res = await API.post('/gifticons/detail', { gifticonId });
   return res.data.data;
 };
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '@/components/BackButton/BackButton';
-import { fetchGifticons } from '@/apis/mypageApi';
+import { fetchGifticons } from '@/apis/gifticonsApi';
 import SyncLoading from '../../components/Loading/SyncLoading';
 
 const StoragePage = () => {
