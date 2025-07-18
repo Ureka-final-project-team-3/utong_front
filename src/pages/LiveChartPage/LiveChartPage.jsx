@@ -6,7 +6,7 @@ import TradeActionButtons from './components/TradeActionButtons';
 
 const LiveChartPage = () => {
   return (
-    <div className="overflow-y-auto">
+    <div className="h-auto max-md:h-[100dvh] max-md:overflow-y-auto">
       <ChartHeader />
       <PriceChartInfo />
       <PriceChart />
