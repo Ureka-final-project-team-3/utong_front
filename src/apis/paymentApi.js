@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const paymentAPI = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL + '/api/payments/toss',
+  baseURL: import.meta.env.VITE_API_BASE_URL + '/api/payments',
   withCredentials: true,
 });
 
