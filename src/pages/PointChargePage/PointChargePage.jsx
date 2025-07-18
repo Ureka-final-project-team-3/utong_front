@@ -139,7 +139,7 @@ const PointChargePage = () => {
                       className="w-24 h-24 object-contain"
                     />
                   </div>
-                  <div className="text-xs text-gray-600 text-left">{item.brand}</div>
+                  <hr className="w-full border-0.5 border-gray-300 mb-3" />
                   <div className="text-xs font-medium text-gray-800 text-left leading-tight mb-2">
                     {item.name}
                   </div>
