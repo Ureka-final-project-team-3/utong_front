@@ -46,6 +46,13 @@ const ResetPasswordPage2 = () => {
     }
   };
 
+  // Enter 키 핸들러
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleResetPassword();
+    }
+  };
+
   return (
     <div
       className="absolute inset-0 z-0"
@@ -89,6 +96,7 @@ const ResetPasswordPage2 = () => {
                 placeholder="비밀번호"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="w-full h-[40px] px-4 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
               />
             </div>
@@ -100,6 +108,7 @@ const ResetPasswordPage2 = () => {
                 placeholder="비밀번호"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="w-full h-[40px] px-4 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
               />
             </div>
@@ -113,6 +122,7 @@ const ResetPasswordPage2 = () => {
                 placeholder="비밀번호 확인"
                 value={passwordConfirm}
                 onChange={(e) => setPasswordConfirm(e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="w-full h-[40px] px-4 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
               />
             </div>

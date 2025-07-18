@@ -37,6 +37,13 @@ const FindIdPage = () => {
     }
   };
 
+  // 엔터 키 처리 함수
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleFindId();
+    }
+  };
+
   return (
     <div
       className="absolute inset-0 z-0"
@@ -70,6 +77,7 @@ const FindIdPage = () => {
               placeholder="010-1234-1234 형식으로 입력"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
             />
           </div>

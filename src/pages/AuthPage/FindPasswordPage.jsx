@@ -45,6 +45,13 @@ const FindPasswordPage = () => {
     return value;
   };
 
+  // 엔터 키 처리 함수
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handlePasswordResetRequest();
+    }
+  };
+
   return (
     <div
       className="absolute inset-0 z-0"
@@ -76,6 +83,7 @@ const FindPasswordPage = () => {
             placeholder="이메일 입력"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="w-full px-4 py-3 mb-4 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
           />
 
@@ -85,6 +93,7 @@ const FindPasswordPage = () => {
             placeholder="숫자만 입력"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="w-full px-4 py-3 mb-4 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
           />
 

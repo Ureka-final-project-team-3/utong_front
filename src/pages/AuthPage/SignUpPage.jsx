@@ -98,6 +98,13 @@ const SignupPage = () => {
     }
   };
 
+  // Enter 키 핸들러
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSignup();
+    }
+  };
+
   return (
     <div
       className="absolute inset-0 z-0"
@@ -131,6 +138,7 @@ const SignupPage = () => {
                 placeholder="이메일 입력"
                 value={email}
                 onChange={(e) => handleChange('email', e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
               />
               <p className="min-h-[5px] text-red-500 text-xs mt-[2px]">
@@ -146,6 +154,7 @@ const SignupPage = () => {
                 placeholder="비밀번호 입력"
                 value={password}
                 onChange={(e) => handleChange('password', e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
               />
               <p className="min-h-[5px] text-red-500 text-xs mt-[2px]">
@@ -161,6 +170,7 @@ const SignupPage = () => {
                 placeholder="비밀번호 확인 입력"
                 value={passwordConfirm}
                 onChange={(e) => handleChange('passwordConfirm', e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
               />
               <p className="min-h-[5px] text-red-500 text-xs mt-[2px]">
@@ -176,6 +186,7 @@ const SignupPage = () => {
                 placeholder="닉네임 입력"
                 value={nickname}
                 onChange={(e) => handleChange('nickname', e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
               />
               <p className="min-h-[5px] text-red-500 text-xs mt-[2px]">
@@ -191,6 +202,7 @@ const SignupPage = () => {
                 placeholder="010-1234-1234 형식"
                 value={phone}
                 onChange={(e) => handleChange('phone', e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
               />
               <p className="min-h-[5px] text-red-500 text-xs mt-[2px]">
