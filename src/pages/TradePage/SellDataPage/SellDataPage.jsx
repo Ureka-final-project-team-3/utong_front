@@ -16,21 +16,34 @@ const networkToDataCodeMap = {
   '5G': '002',
 };
 
+const codeToNetworkMap = {
+  '001': 'LTE',
+  '002': '5G',
+};
+
 const SellDataPage = () => {
   const selectedNetwork = useTradeStore((state) => state.selectedNetwork);
-  const { name: userName, remainingData: data, mileage: point, fetchUserData } = useUserStore(); // ✅ Zustand에서 유저 정보 가져오기
+  const {
+    name: userName,
+    remainingData: data,
+    mileage: point,
+    fetchUserData,
+    dataCode,
+  } = useUserStore();
 
-  const [dataCode, setDataCode] = useState(networkToDataCodeMap[selectedNetwork] || '002');
+  const [localDataCode, setLocalDataCode] = useState(
+    networkToDataCodeMap[selectedNetwork] || '002'
+  );
 
   useEffect(() => {
-    setDataCode(networkToDataCodeMap[selectedNetwork] || '002');
+    setLocalDataCode(networkToDataCodeMap[selectedNetwork] || '002');
   }, [selectedNetwork]);
 
   useEffect(() => {
     fetchUserData();
-  }, []);
+  }, [fetchUserData]);
 
-  const sellBids = mockSellBids.filter((bid) => bid.dataCode === dataCode);
+  const sellBids = mockSellBids.filter((bid) => bid.dataCode === localDataCode);
 
   const avgPrice = sellBids.length
     ? Math.round(
@@ -60,6 +73,9 @@ const SellDataPage = () => {
   const [hasWarned, setHasWarned] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
+  // 사용자 요금제 네트워크명 (Zustand에 저장된 dataCode → 네트워크명)
+  const userPlanNetwork = codeToNetworkMap[dataCode] || '';
+
   useEffect(() => {
     if (!isPriceValid && price.length > 0 && !hasWarned) {
       toast.error(
@@ -87,7 +103,7 @@ const SellDataPage = () => {
   }, []);
 
   const handleSellClick = () => {
-    if (!isPriceValid || !isDataValid) return;
+    if (!isPriceValid || !isDataValid || userPlanNetwork !== selectedNetwork) return;
 
     setShowModal(true);
     setTimeout(() => setShowModal(false), 2000);
@@ -97,6 +113,9 @@ const SellDataPage = () => {
     const val = Number(option.replace('GB', ''));
     setDataAmount((prev) => prev + val);
   };
+
+  // 버튼 활성화 조건: 가격/데이터 유효 + 사용자 요금제와 선택 네트워크 일치 여부
+  const isButtonEnabled = isPriceValid && isDataValid && userPlanNetwork === selectedNetwork;
 
   return (
     <div style={{ position: 'relative' }}>
@@ -230,15 +249,13 @@ const SellDataPage = () => {
 
       <div className="mt-auto pt-6">
         <Button
-          disabled={!isPriceValid || !isDataValid}
+          disabled={!isButtonEnabled}
           onClick={handleSellClick}
           className={`w-full ${
-            isPriceValid && isDataValid
-              ? 'bg-[#FF4343] hover:bg-[#e63a3a]'
-              : 'bg-gray-300 cursor-not-allowed'
+            isButtonEnabled ? 'bg-[#FF4343] hover:bg-[#e63a3a]' : 'bg-[#949494] cursor-not-allowed'
           }`}
         >
-          판매하기
+          {userPlanNetwork === selectedNetwork ? '판매하기' : '사용 요금제가 다릅니다'}
         </Button>
       </div>
     </div>
