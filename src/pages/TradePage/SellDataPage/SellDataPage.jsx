@@ -1,5 +1,5 @@
 // src/pages/SellDataPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -10,6 +10,7 @@ import SellSuccessModal from '../components/SellSuccessModal';
 
 import useTradeStore from '@/stores/tradeStore';
 import useUserStore from '@/stores/useUserStore';
+import { postSellOrder } from '@/apis/dataTradeApi';
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -29,19 +30,33 @@ const SellDataPage = () => {
     mileage: point,
     fetchUserData,
     dataCode,
+    canSale,
   } = useUserStore();
 
   const [localDataCode, setLocalDataCode] = useState(
     networkToDataCodeMap[selectedNetwork] || '002'
   );
+  const [showModal, setShowModal] = useState(false);
+  const [modalStatus, setModalStatus] = useState(null);
+  const [isBlockingInput, setIsBlockingInput] = useState(false);
 
   useEffect(() => {
+    console.log('selectedNetwork (zustand):', selectedNetwork);
     setLocalDataCode(networkToDataCodeMap[selectedNetwork] || '002');
   }, [selectedNetwork]);
 
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
+
+  useEffect(() => {
+    console.log('유저 정보 업데이트:', {
+      userName,
+      dataCode,
+      data,
+      point,
+    });
+  }, [userName, dataCode, data, point]);
 
   const sellBids = mockSellBids.filter((bid) => bid.dataCode === localDataCode);
 
@@ -56,7 +71,7 @@ const SellDataPage = () => {
   const maxPrice = sellBids.length ? Math.max(...sellBids.map((b) => b.price)) : 0;
 
   const [price, setPrice] = useState(avgPrice.toString());
-  const dataOptions = ['1GB', '5GB', '10GB', '20GB'];
+  const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
   const [dataAmount, setDataAmount] = useState(1);
 
   const priceNum = Number(price) || 0;
@@ -68,13 +83,20 @@ const SellDataPage = () => {
   const totalAfterPoint = totalPrice - totalFee;
 
   const isPriceValid = priceNum >= minPrice && priceNum <= maxPriceAllowed;
-  const isDataValid = dataAmount > 0 && dataAmount <= data;
+  const isDataValid = dataAmount > 0 && dataAmount <= canSale;
 
   const [hasWarned, setHasWarned] = useState(false);
-  const [showModal, setShowModal] = useState(false);
 
-  // 사용자 요금제 네트워크명 (Zustand에 저장된 dataCode → 네트워크명)
-  const userPlanNetwork = codeToNetworkMap[dataCode] || '';
+  // userPlanNetwork를 useMemo로 최신 상태 반영 및 소문자 비교용 변수 생성
+  const userPlanNetwork = useMemo(() => codeToNetworkMap[dataCode] || '', [dataCode]);
+  const normalizedUserPlanNetwork = userPlanNetwork.toLowerCase();
+  const normalizedSelectedNetwork = selectedNetwork.toLowerCase();
+
+  useEffect(() => {
+    console.log('userPlanNetwork:', userPlanNetwork);
+    console.log('normalizedUserPlanNetwork:', normalizedUserPlanNetwork);
+    console.log('normalizedSelectedNetwork:', normalizedSelectedNetwork);
+  }, [userPlanNetwork, normalizedUserPlanNetwork, normalizedSelectedNetwork]);
 
   useEffect(() => {
     if (!isPriceValid && price.length > 0 && !hasWarned) {
@@ -88,12 +110,14 @@ const SellDataPage = () => {
   }, [price, isPriceValid, hasWarned, minPrice, maxPriceAllowed]);
 
   useEffect(() => {
-    if (dataAmount > data && data !== 0) {
-      toast.error(`보유 데이터(${data}GB)보다 많은 양을 판매할 수 없어요.`, {
+    if (dataAmount > canSale && data !== 0) {
+      toast.error(`보유 데이터(${canSale}GB)보다 많은 양을 판매할 수 없어요.`, {
         autoClose: 3000,
+        onOpen: () => setIsBlockingInput(true),
+        onClose: () => setIsBlockingInput(false),
       });
     }
-  }, [dataAmount, data]);
+  }, [dataAmount, canSale, data]);
 
   useEffect(() => {
     toast.info('거래중개 등 제반 서비스 이용료가 포함됩니다.', {
@@ -102,11 +126,45 @@ const SellDataPage = () => {
     });
   }, []);
 
-  const handleSellClick = () => {
-    if (!isPriceValid || !isDataValid || userPlanNetwork !== selectedNetwork) return;
+  useEffect(() => {
+    console.log('가격 유효성:', isPriceValid, '가격:', price);
+    console.log('데이터 유효성:', isDataValid, '판매 데이터 양:', dataAmount);
+    console.log('판매 가능 데이터:', canSale);
+  }, [isPriceValid, price, isDataValid, dataAmount, canSale]);
 
-    setShowModal(true);
-    setTimeout(() => setShowModal(false), 2000);
+  const handleSellClick = async () => {
+    if (!isPriceValid || !isDataValid || normalizedUserPlanNetwork !== normalizedSelectedNetwork)
+      return;
+
+    const payload = {
+      price: priceNum,
+      dataAmount,
+      dataCode: localDataCode,
+    };
+
+    try {
+      const res = await postSellOrder(payload);
+
+      if (res && res.result) {
+        setModalStatus(res.result);
+        setShowModal(true);
+        setTimeout(() => {
+          setShowModal(false);
+          setModalStatus(null);
+        }, 5000);
+      } else {
+        setModalStatus(null);
+        setShowModal(true);
+        setTimeout(() => setShowModal(false), 3000);
+      }
+
+      fetchUserData();
+    } catch (err) {
+      console.error('판매 등록 실패:', err);
+      setModalStatus(null);
+      setShowModal(true);
+      setTimeout(() => setShowModal(false), 3000);
+    }
   };
 
   const handleSelectData = (option) => {
@@ -114,8 +172,11 @@ const SellDataPage = () => {
     setDataAmount((prev) => prev + val);
   };
 
-  // 버튼 활성화 조건: 가격/데이터 유효 + 사용자 요금제와 선택 네트워크 일치 여부
-  const isButtonEnabled = isPriceValid && isDataValid && userPlanNetwork === selectedNetwork;
+  const isButtonEnabled =
+    isPriceValid &&
+    isDataValid &&
+    dataAmount <= canSale &&
+    normalizedUserPlanNetwork === normalizedSelectedNetwork;
 
   return (
     <div style={{ position: 'relative' }}>
@@ -136,7 +197,11 @@ const SellDataPage = () => {
         }}
       />
 
-      <SellSuccessModal show={showModal} />
+      <SellSuccessModal
+        show={showModal}
+        statusKey={modalStatus}
+        onClose={() => setShowModal(false)}
+      />
 
       <div className="mt-6 text-[20px] font-bold text-[#2C2C2C]">{userName}님</div>
       <div className="text-[#565656] text-[12px] text-right">(1GB)</div>
@@ -200,7 +265,10 @@ const SellDataPage = () => {
       </div>
 
       <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
-        <div className="text-[15px] text-[#2C2C2C] mb-2">데이터</div>
+        <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between">
+          <div>데이터</div>
+          <div>판매가능 데이터 : {canSale}GB</div>
+        </div>
         <div className="flex justify-between items-center mb-2">
           <span className="text-[12px] text-[#B1B1B1] w-full">얼마나 판매할까요?</span>
           <div className="flex items-center">
@@ -209,6 +277,7 @@ const SellDataPage = () => {
               inputMode="numeric"
               pattern="[0-9]*"
               value={dataAmount}
+              disabled={isBlockingInput}
               onChange={(e) => {
                 const value = e.target.value;
                 if (/^\d*$/.test(value)) {
@@ -225,6 +294,7 @@ const SellDataPage = () => {
             <button
               key={option}
               onClick={() => handleSelectData(option)}
+              disabled={isBlockingInput}
               className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center
                 hover:border-[#FF4343] hover:bg-[#FFEEEE] hover:text-[#FF4343]"
             >
@@ -255,7 +325,9 @@ const SellDataPage = () => {
             isButtonEnabled ? 'bg-[#FF4343] hover:bg-[#e63a3a]' : 'bg-[#949494] cursor-not-allowed'
           }`}
         >
-          {userPlanNetwork === selectedNetwork ? '판매하기' : '사용 요금제가 다릅니다'}
+          {normalizedUserPlanNetwork === normalizedSelectedNetwork
+            ? '판매하기'
+            : '사용 요금제가 다릅니다'}
         </Button>
       </div>
     </div>

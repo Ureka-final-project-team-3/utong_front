@@ -12,6 +12,8 @@ import BuySuccessModal from '../components/BuySuccessModal';
 import ReservationModal from '../components/ReservationModal';
 import PaymentCompleteModal from '../components/PaymentCompleteModal';
 
+import { postBuyOrder } from '@/apis/dataTradeApi'; // 구매 주문 API import (경로 맞게 수정)
+
 const networkToDataCodeMap = {
   LTE: '001',
   '5G': '002',
@@ -50,7 +52,7 @@ const BuyDataPage = () => {
   const userPlanNetwork = codeToNetworkMap[dataCode] || '';
 
   // 데이터 양, 가격 상태
-  const dataOptions = ['1GB', '5GB', '10GB', '20GB'];
+  const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
   const [selectedDataGB, setSelectedDataGB] = useState(1);
   const [buyPrice, setBuyPrice] = useState('0');
 
@@ -64,17 +66,11 @@ const BuyDataPage = () => {
     const code = networkToDataCodeMap[selectedNetwork] || '002';
     setLocalDataCode(code);
 
-    // 평균가 기반 초기 buyPrice 설정
+    // ✅ 최저가 기반 초기값 설정
     const buyBids = mockBuyBids.filter((bid) => bid.dataCode === code);
-    const avgPrice = buyBids.length
-      ? Math.round(
-          buyBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
-            buyBids.reduce((sum, b) => sum + b.quantity, 0) /
-            100
-        ) * 100
-      : 0;
+    const minPrice = buyBids.length ? Math.min(...buyBids.map((b) => b.price)) : 0;
 
-    setBuyPrice(avgPrice.toString());
+    setBuyPrice(minPrice.toString());
   }, [selectedNetwork]);
 
   // 현재 매칭되는 구매 입찰들
@@ -107,36 +103,80 @@ const BuyDataPage = () => {
     setSelectedDataGB((prev) => (Number(prev) || 0) + gbNum);
   };
 
-  // 구매하기 버튼 클릭 처리
-  const handleBuyClick = () => {
-    const selectedQty = Number(selectedDataGB) || 0;
-    const totalPrice = buyPriceNum * selectedQty;
-    const matchedBids = buyBids.filter((bid) => bid.price <= buyPriceNum);
-    const matchedQuantity = matchedBids.reduce((sum, b) => sum + b.quantity, 0);
+  // 구매하기 버튼 클릭 처리 (API 호출 및 모달 상태 처리 포함)
+  const handleBuyClick = async () => {
+    try {
+      const selectedQty = Number(selectedDataGB) || 0;
+      const totalPrice = buyPriceNum * selectedQty;
 
-    // 사용 요금제 다르면 클릭 자체 못하게 disabled 처리 중이라 필요 없지만, 안전하게 한 번 더 체크 가능
-    if (userPlanNetwork !== selectedNetwork) {
-      return;
+      if (userPlanNetwork !== selectedNetwork) {
+        console.log('[구매 실패] 요금제 불일치', { userPlanNetwork, selectedNetwork });
+        return;
+      }
+
+      if (point < totalPrice) {
+        console.log('[구매 실패] 포인트 부족', { point, totalPrice });
+        openModal('showRechargeModal');
+        return;
+      }
+
+      const payload = {
+        price: buyPriceNum,
+        dataAmount: selectedQty,
+        dataCode: localDataCode,
+      };
+
+      const response = await postBuyOrder(payload);
+
+      console.log('[API 응답]', response);
+      console.log('[현재 상태]', {
+        userPlanNetwork,
+        selectedNetwork,
+        point,
+        selectedQty,
+        buyPriceNum,
+        totalPrice,
+        minPrice,
+        avgPrice,
+        buyBidsLength: buyBids.length,
+        modals: {
+          showRechargeModal,
+          showSuccessModal,
+          showReservationModal,
+          showPaymentCompleteModal,
+        },
+      });
+
+      switch (response.result) {
+        case 'ALL_COMPLETE':
+          openModal('showSuccessModal');
+          setTimeout(() => closeModal('showSuccessModal'), 2000);
+          break;
+        case 'PART_COMPLETE':
+          openModal('showPaymentCompleteModal');
+          setTimeout(() => closeModal('showPaymentCompleteModal'), 2000);
+          break;
+        case 'WAITING':
+          openModal('showReservationModal');
+          break;
+        case 'INSUFFICIENT_POINT':
+          openModal('showRechargeModal');
+          break;
+        case 'NEED_DEFAULT_LINE':
+          alert('기본 회선을 설정해 주세요.');
+          break;
+        case 'EXIST_SALE_REQUEST':
+          alert('이미 판매 요청이 존재합니다.');
+          break;
+        default:
+          alert('알 수 없는 오류가 발생했습니다.');
+      }
+
+      fetchUserData();
+    } catch (error) {
+      console.error('[구매 요청 오류]', error);
+      alert('구매 요청 중 오류가 발생했습니다.');
     }
-
-    if (point < totalPrice) {
-      openModal('showRechargeModal');
-      return;
-    }
-
-    if (buyPriceNum < minPrice) {
-      openModal('showReservationModal');
-      return;
-    }
-
-    if (selectedQty > matchedQuantity) {
-      openModal('showPaymentCompleteModal');
-      setTimeout(() => closeModal('showPaymentCompleteModal'), 2000);
-      return;
-    }
-
-    openModal('showSuccessModal');
-    setTimeout(() => closeModal('showSuccessModal'), 2000);
   };
 
   // 요금제 일치 여부

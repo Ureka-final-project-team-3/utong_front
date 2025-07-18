@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { fetchMyInfo, fetchPoint } from '@/apis/mypageApi'; // ✅ 이거 빠져있었음
+import { fetchMyInfo, fetchPoint } from '@/apis/mypageApi';
 
 const useUserStore = create((set) => ({
   name: '',
@@ -8,6 +8,7 @@ const useUserStore = create((set) => ({
   remainingData: 0,
   dataCode: '',
   mileage: 0,
+  canSale: 0,
 
   setUserInfo: (userData) => {
     set({
@@ -17,12 +18,14 @@ const useUserStore = create((set) => ({
       remainingData: userData.remainingData ?? 0,
       dataCode: userData.dataCode ?? '',
       mileage: userData.mileage ?? 0,
+      canSale: userData.canSale ?? 0,
     });
   },
 
   fetchUserData: async () => {
     try {
       const userInfo = await fetchMyInfo();
+      console.log('fetchMyInfo 응답:', userInfo);
       const userPoint = await fetchPoint();
 
       set({
@@ -32,6 +35,7 @@ const useUserStore = create((set) => ({
         remainingData: userInfo?.remainingData ?? 0,
         dataCode: userInfo?.dataCode ?? '',
         mileage: userPoint?.mileage ?? 0,
+        canSale: userInfo?.canSale ?? 0,
       });
     } catch (e) {
       console.error('❌ 유저 정보 가져오기 실패:', e);
