@@ -12,6 +12,9 @@ import FiveIcon from '@/assets/icon/five.svg';
 import FiveIconRed from '@/assets/icon/five-red.svg';
 import SixIcon from '@/assets/icon/six.svg';
 import SixIconRed from '@/assets/icon/six-red.svg';
+import SevenIcon from '@/assets/icon/seven.svg';
+import SevenIconRed from '@/assets/icon/seven-red.svg';
+
 import ArrowIcon from '@/assets/icon/arrow.svg';
 
 const iconMap = {
@@ -21,6 +24,7 @@ const iconMap = {
   four: { blue: FourIcon, red: FourIconRed },
   five: { blue: FiveIcon, red: FiveIconRed },
   six: { blue: SixIcon, red: SixIconRed },
+  seven: { blue: SevenIcon, red: SevenIconRed },
 };
 
 const ModalInfo = ({ onClose, color = 'blue' }) => {
@@ -72,6 +76,12 @@ const ModalInfo = ({ onClose, color = 'blue' }) => {
             color={color}
             text="가격은 100원 단위로만 바꿀 수 있어요."
             sub="5,130원은 OK! 5,125원은 안 돼요."
+          />
+          <RuleItem
+            type="seven"
+            color={color}
+            text="사용 중인 요금제와 같은 종류만 거래할 수 있어요."
+            sub="5G 요금제는 5G끼리, LTE 요금제는 LTE끼리만 사고팔 수 있어요."
           />
         </div>
         <button
