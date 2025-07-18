@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import NavigationBar from '@/components/NavigationBar/NavigationBar';
 import bgImage from '@/assets/image/background3.png';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 
 const DefaultLayout = () => {
   const location = useLocation();
