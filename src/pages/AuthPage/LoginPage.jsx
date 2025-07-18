@@ -75,6 +75,13 @@ const LoginPage = () => {
     }
   };
 
+  // 엔터 키 처리 함수
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin();
+    }
+  };
+
   return (
     <div
       className="absolute inset-0 z-0"
@@ -109,6 +116,7 @@ const LoginPage = () => {
                   placeholder="이메일형식 입력"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
                 />
                 <p className="min-h-[5px] text-red-500 text-xs mt-[2px]">
@@ -124,6 +132,7 @@ const LoginPage = () => {
                   placeholder="비밀번호 입력"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   className="w-full px-4 py-3 rounded-md bg-gray-200 placeholder-gray-400 focus:outline-none"
                 />
                 <p className="min-h-[5px] text-red-500 text-xs mt-[2px]">
