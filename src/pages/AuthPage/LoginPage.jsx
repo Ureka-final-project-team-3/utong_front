@@ -6,7 +6,7 @@ import utong2 from '@/assets/image/utong2.png';
 import googleIcon from '@/assets/image/google.png';
 import kakaoIcon from '@/assets/image/kakao.png';
 import naverIcon from '@/assets/image/naver.png';
-import bgImage from '@/assets/image/background3.png'; // 배경 이미지 추가
+import bgImage from '@/assets/image/background4.png'; // 배경 이미지 추가
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import BackButton from '@/components/BackButton/BackButton.jsx';
 import utongLogo from '@/assets/image/utong2.png';
 import Button from '@/components/common/Button.jsx';
-import bgImage from '@/assets/image/background3.png'; // 배경 이미지 import
+import bgImage from '@/assets/image/background4.png'; // 배경 이미지 import
 
 const ResetPasswordPage2 = () => {
   const [currentPassword, setCurrentPassword] = useState('');
