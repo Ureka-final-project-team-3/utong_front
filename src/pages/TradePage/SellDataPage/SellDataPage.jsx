@@ -30,6 +30,7 @@ const SellDataPage = () => {
     mileage: point,
     fetchUserData,
     dataCode,
+    canSale,
   } = useUserStore();
 
   const [localDataCode, setLocalDataCode] = useState(
@@ -38,8 +39,6 @@ const SellDataPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalStatus, setModalStatus] = useState(null);
   const [isBlockingInput, setIsBlockingInput] = useState(false);
-
-  const ableData = data / 10; // 판매 가능 데이터(GB 기준)
 
   useEffect(() => {
     console.log('selectedNetwork (zustand):', selectedNetwork);
@@ -84,7 +83,7 @@ const SellDataPage = () => {
   const totalAfterPoint = totalPrice - totalFee;
 
   const isPriceValid = priceNum >= minPrice && priceNum <= maxPriceAllowed;
-  const isDataValid = dataAmount > 0 && dataAmount <= ableData;
+  const isDataValid = dataAmount > 0 && dataAmount <= canSale;
 
   const [hasWarned, setHasWarned] = useState(false);
 
@@ -111,14 +110,14 @@ const SellDataPage = () => {
   }, [price, isPriceValid, hasWarned, minPrice, maxPriceAllowed]);
 
   useEffect(() => {
-    if (dataAmount > ableData && data !== 0) {
-      toast.error(`보유 데이터(${ableData}GB)보다 많은 양을 판매할 수 없어요.`, {
+    if (dataAmount > canSale && data !== 0) {
+      toast.error(`보유 데이터(${canSale}GB)보다 많은 양을 판매할 수 없어요.`, {
         autoClose: 3000,
         onOpen: () => setIsBlockingInput(true),
         onClose: () => setIsBlockingInput(false),
       });
     }
-  }, [dataAmount, ableData, data]);
+  }, [dataAmount, canSale, data]);
 
   useEffect(() => {
     toast.info('거래중개 등 제반 서비스 이용료가 포함됩니다.', {
@@ -130,8 +129,8 @@ const SellDataPage = () => {
   useEffect(() => {
     console.log('가격 유효성:', isPriceValid, '가격:', price);
     console.log('데이터 유효성:', isDataValid, '판매 데이터 양:', dataAmount);
-    console.log('판매 가능 데이터:', ableData);
-  }, [isPriceValid, price, isDataValid, dataAmount, ableData]);
+    console.log('판매 가능 데이터:', canSale);
+  }, [isPriceValid, price, isDataValid, dataAmount, canSale]);
 
   const handleSellClick = async () => {
     if (!isPriceValid || !isDataValid || normalizedUserPlanNetwork !== normalizedSelectedNetwork)
@@ -176,7 +175,7 @@ const SellDataPage = () => {
   const isButtonEnabled =
     isPriceValid &&
     isDataValid &&
-    dataAmount <= ableData &&
+    dataAmount <= canSale &&
     normalizedUserPlanNetwork === normalizedSelectedNetwork;
 
   return (
@@ -268,7 +267,7 @@ const SellDataPage = () => {
       <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
         <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between">
           <div>데이터</div>
-          <div>판매가능 데이터 : {ableData}GB</div>
+          <div>판매가능 데이터 : {canSale}GB</div>
         </div>
         <div className="flex justify-between items-center mb-2">
           <span className="text-[12px] text-[#B1B1B1] w-full">얼마나 판매할까요?</span>

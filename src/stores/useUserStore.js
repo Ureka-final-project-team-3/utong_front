@@ -8,6 +8,7 @@ const useUserStore = create((set) => ({
   remainingData: 0,
   dataCode: '',
   mileage: 0,
+  canSale: 0,
 
   setUserInfo: (userData) => {
     set({
@@ -17,6 +18,7 @@ const useUserStore = create((set) => ({
       remainingData: userData.remainingData ?? 0,
       dataCode: userData.dataCode ?? '',
       mileage: userData.mileage ?? 0,
+      canSale: userData.canSale ?? 0,
     });
   },
 
@@ -33,6 +35,7 @@ const useUserStore = create((set) => ({
         remainingData: userInfo?.remainingData ?? 0,
         dataCode: userInfo?.dataCode ?? '',
         mileage: userPoint?.mileage ?? 0,
+        canSale: userInfo?.canSale ?? 0,
       });
     } catch (e) {
       console.error('❌ 유저 정보 가져오기 실패:', e);
