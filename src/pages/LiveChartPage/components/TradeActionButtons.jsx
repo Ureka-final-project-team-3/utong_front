@@ -13,11 +13,11 @@ const TradeActionButtons = () => {
   };
 
   return (
-    <div className="relative w-[300px] mt-5 flex justify-between">
+    <div className="relative w-full mt-5 flex justify-center gap-5">
       {/* 구매하기 버튼 */}
       <button
         onClick={goToBuy}
-        className="w-[140px] h-[50px] bg-[var(--blue)] rounded-[8px] text-white text-[18px] leading-[23px] font-normal"
+        className=" w-1/2 h-[50px] bg-[var(--blue)] rounded-[8px] text-white text-[18px] leading-[23px] font-normal"
       >
         구매하기
       </button>
@@ -25,7 +25,7 @@ const TradeActionButtons = () => {
       {/* 판매하기 버튼 */}
       <button
         onClick={goToSell}
-        className="w-[140px] h-[50px] bg-[var(--red)] rounded-[8px] text-white text-[18px] leading-[23px] font-normal"
+        className=" w-1/2 h-[50px] bg-[var(--red)] rounded-[8px] text-white text-[18px] leading-[23px] font-normal"
       >
         판매하기
       </button>

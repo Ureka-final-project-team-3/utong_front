@@ -4,11 +4,8 @@ import arrowImage from '@/assets/image/roulette_arrow.png';
 
 const RouletteWheel = forwardRef(({ rotation }, ref) => {
   return (
-    <div
-      className="relative mt-[80px] select-none pointer-events-none z-30 flex justify-center items-center"
-      style={{ height: 300, width: 300 }}
-    >
-      {/* 화살표 - 회전 div 밖, 부모에 절대 위치 */}
+    <div className="relative mt-20 select-none pointer-events-none z-30 flex justify-center items-center w-full max-w-[300px] aspect-square mx-auto">
+      {/* 화살표 */}
       <img
         src={arrowImage}
         alt="룰렛 화살표"
@@ -16,25 +13,18 @@ const RouletteWheel = forwardRef(({ rotation }, ref) => {
         style={{ top: '-12px', width: 40, height: 40, zIndex: 50 }}
       />
 
-      {/* 회전하는 룰렛 바퀴 */}
+      {/* 룰렛 */}
       <div
         ref={ref}
-        className="flex justify-center items-center"
+        className="w-full h-full flex justify-center items-center"
         style={{
           transform: `rotate(${rotation}deg)`,
           touchAction: 'none',
           overflow: 'hidden',
-          width: 300,
-          height: 300,
           zIndex: 10,
         }}
       >
-        {/* 이미지에 width, height 100% 주기 */}
-        <img
-          src={rouletteWheel}
-          alt="룰렛 이미지"
-          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-        />
+        <img src={rouletteWheel} alt="룰렛 이미지" className="w-full h-full object-contain" />
       </div>
     </div>
   );
