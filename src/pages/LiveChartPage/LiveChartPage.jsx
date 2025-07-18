@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import ChartHeader from './components/ChartHeader';
 import PriceChart from './components/PriceChart';
 import PriceChartInfo from './components/PriceChartInfo';

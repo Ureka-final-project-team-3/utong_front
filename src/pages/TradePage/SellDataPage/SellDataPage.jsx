@@ -252,7 +252,7 @@ const SellDataPage = () => {
           disabled={!isButtonEnabled}
           onClick={handleSellClick}
           className={`w-full ${
-            isButtonEnabled ? 'bg-[#FF4343] hover:bg-[#e63a3a]' : 'bg-gray-300 cursor-not-allowed'
+            isButtonEnabled ? 'bg-[#FF4343] hover:bg-[#e63a3a]' : 'bg-[#949494] cursor-not-allowed'
           }`}
         >
           {userPlanNetwork === selectedNetwork ? '판매하기' : '사용 요금제가 다릅니다'}

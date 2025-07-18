@@ -271,7 +271,7 @@ const BuyDataPage = () => {
         <Button
           onClick={handleBuyClick}
           className={`w-full ${
-            isButtonEnabled ? 'bg-[#386DEE] hover:bg-[#2f5bd9]' : 'bg-gray-300 cursor-not-allowed'
+            isButtonEnabled ? 'bg-[#386DEE] hover:bg-[#2f5bd9]' : 'bg-[#949494] cursor-not-allowed'
           }`}
           disabled={!isButtonEnabled}
         >
