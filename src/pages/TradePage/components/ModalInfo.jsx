@@ -50,8 +50,8 @@ const ModalInfo = ({ onClose, color = 'blue' }) => {
           <RuleItem
             type="two"
             color={color}
-            text="현재 평균 가격에서 ±30% 범위 안에서만 거래할 수 있어요."
-            sub="너무 싸게 또는 너무 비싸게는 못 팔아요."
+            text="보유중인 데이터의 10%만 판매 가능해요."
+            sub="정책상 일부만 판매할 수 있도록 제한되어 있어요."
           />
           <RuleItem
             type="three"
@@ -75,7 +75,7 @@ const ModalInfo = ({ onClose, color = 'blue' }) => {
             type="six"
             color={color}
             text="가격은 100원 단위로만 바꿀 수 있어요."
-            sub="5,130원은 OK! 5,125원은 안 돼요."
+            sub="5,100원은 OK! 5,125원은 안 돼요."
           />
           <RuleItem
             type="seven"

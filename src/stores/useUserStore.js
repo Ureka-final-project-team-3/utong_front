@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { fetchMyInfo, fetchPoint } from '@/apis/mypageApi'; // ✅ 이거 빠져있었음
+import { fetchMyInfo, fetchPoint } from '@/apis/mypageApi';
 
 const useUserStore = create((set) => ({
   name: '',
@@ -23,6 +23,7 @@ const useUserStore = create((set) => ({
   fetchUserData: async () => {
     try {
       const userInfo = await fetchMyInfo();
+      console.log('fetchMyInfo 응답:', userInfo);
       const userPoint = await fetchPoint();
 
       set({
