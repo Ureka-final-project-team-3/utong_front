@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import NavigationBar from '@/components/NavigationBar/NavigationBar';
 import bgImage from '@/assets/image/background3.png';
+import { AnimatePresence } from 'framer-motion';
 
 const DefaultLayout = () => {
   const location = useLocation();
@@ -33,7 +34,17 @@ const DefaultLayout = () => {
               ${isColoredOutlet ? 'bg-gradient-blue' : 'bg-background'}
             `}
           >
-            <Outlet />
+            <AnimatePresence mode="sync" initial={false}>
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
+                style={{ height: '100%' }}
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
           </div>
           <div className="h-[49px] w-full fixed bottom-0 left-1/2 -translate-x-1/2 sm:static sm:left-auto sm:translate-x-0 z-10">
             <NavigationBar />
