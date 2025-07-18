@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import BackButton from '@/components/BackButton/BackButton';
 import loadingIcon from '@/assets/image/loading.png';
 import checkIcon from '@/assets/image/check.png';
+import { motion } from 'framer-motion';
 
+motion.span = motion;
+
+const tabs = ['구매 내역', '판매 내역'];
 const dummyData = [
   {
     id: 1,
@@ -49,23 +53,46 @@ const TradeHistoryPage = () => {
       </div>
 
       {/* 탭 */}
-      <div className="flex justify-center mb-4">
-        <button
-          onClick={() => setTab('구매 내역')}
-          className={`px-6 py-2 rounded-full text-sm font-semibold ${
-            tab === '구매 내역' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'
-          }`}
-        >
-          구매 내역
-        </button>
-        <button
-          onClick={() => setTab('판매 내역')}
-          className={`px-6 py-2 rounded-full text-sm font-semibold ml-2 ${
-            tab === '판매 내역' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'
-          }`}
-        >
-          판매 내역
-        </button>
+
+      <div className="flex justify-center mb-4 relative">
+        <div className="flex bg-gray-100 rounded-full p-1 relative shadow-inner w-[220px]">
+          {/* 슬라이딩 배경 */}
+          <motion.div
+            className={`absolute top-1 bottom-1 rounded-full shadow-md ${
+              tab === '구매 내역'
+                ? 'bg-gradient-to-r from-blue-500 to-blue-600'
+                : 'bg-gradient-to-r from-red-500 to-red-600'
+            }`}
+            animate={{
+              x: tab === '구매 내역' ? '4px' : '110px',
+              width: '104px',
+            }}
+            transition={{
+              type: 'spring',
+              stiffness: 400,
+              damping: 30,
+            }}
+            style={{ zIndex: 0 }}
+          />
+
+          {tabs.map((label) => (
+            <button
+              key={label}
+              onClick={() => setTab(label)}
+              className="relative z-10 w-[104px] py-2 text-sm font-medium rounded-full text-center"
+            >
+              <motion.span
+                className={tab === label ? 'text-white' : 'text-gray-600 hover:text-gray-800'}
+                animate={{
+                  fontWeight: tab === label ? 600 : 500,
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                {label}
+              </motion.span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* 정렬 옵션 */}
