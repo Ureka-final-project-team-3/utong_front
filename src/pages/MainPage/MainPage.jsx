@@ -19,7 +19,7 @@ const MainPage = () => {
   useEffect(() => {
     const accountData = localStorage.getItem('account');
     if (!accountData || accountData === 'undefined') {
-      navigate('/login'); // 로그인 안되어 있으면 로그인 페이지로 이동
+      navigate('/start'); // 로그인 안되어 있으면 로그인 페이지로 이동
     } else {
       setUser(JSON.parse(accountData));
     }
