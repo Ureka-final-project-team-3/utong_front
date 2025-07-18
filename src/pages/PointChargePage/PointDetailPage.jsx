@@ -13,7 +13,6 @@ const PointDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const availableCoupons = 0;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,13 +73,6 @@ const PointDetailPage = () => {
 
       {/* 구매 정보 */}
       <div className="rounded-xl p-2 text-sm text-gray-800 mb-4">
-        <div className="mb-6 flex justify-between items-center">
-          <span className="font-semibold">쿠폰</span>
-          <span className="text-sm text-gray-500">
-            사용가능한 쿠폰 {availableCoupons}개 {'>'}
-          </span>
-        </div>
-        <hr className="my-4 border-gray-200" />
         <div className="flex justify-between py-1 text-gray-600">
           <span>잔여 포인트</span>
           <span>{userPoint.toLocaleString()} P</span>
