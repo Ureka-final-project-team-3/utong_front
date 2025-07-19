@@ -8,18 +8,23 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { PriceData5G, PriceDataLTE } from '../mock/mockPriceData';
 import { getAveragePriceByDate } from '../../../utils/getAveragePriceByDate';
 import useTradeStore from '@/stores/tradeStore';
+import useLivePrice from '@/hooks/useLivePrice'; // 실시간 시세 훅
 
 const PriceChartContainer = () => {
   const selectedNetwork = useTradeStore((state) => state.selectedNetwork);
   const selectedRange = useTradeStore((state) => state.selectedRange);
 
-  const rawData = selectedNetwork === '5G' ? PriceData5G : PriceDataLTE;
+  const dataCode = selectedNetwork === '5G' ? '002' : '001';
+
+  // 실시간 시세 데이터 (SSE)
+  const liveData = useLivePrice(dataCode);
+
+  console.log('liveData (SSE 수신 데이터):', liveData);
 
   const filteredData = useMemo(() => {
-    if (!rawData) return [];
+    if (!liveData || liveData.length === 0) return [];
 
     if (selectedRange === 'today') {
       const todayStrKST = new Date().toLocaleDateString('ko-KR', {
@@ -28,25 +33,47 @@ const PriceChartContainer = () => {
         day: '2-digit',
       });
 
-      return rawData.filter((item) => {
-        const itemDateStr = new Date(item.timestamp).toLocaleDateString('ko-KR', {
+      // today 필터링 기준은 aggregatedAt 사용
+      const filtered = liveData.filter((item) => {
+        const itemDateStr = new Date(item.aggregatedAt).toLocaleDateString('ko-KR', {
           year: 'numeric',
           month: '2-digit',
           day: '2-digit',
         });
         return itemDateStr === todayStrKST;
       });
+
+      const mapped = filtered.map((item) => ({
+        timestamp: item.aggregatedAt,
+        price: item.avgPrice,
+        volume: item.volume || 0,
+      }));
+
+      console.log('filteredData (today 필터링 결과):', mapped);
+
+      return mapped;
     } else {
-      return getAveragePriceByDate(rawData).map((d) => ({
+      // 전체 기간 평균값 계산 시 필드명 변환 후 getAveragePriceByDate 호출
+      const mappedData = liveData.map((item) => ({
+        timestamp: item.aggregatedAt,
+        price: item.avgPrice,
+        volume: item.volume || 0,
+      }));
+
+      const averaged = getAveragePriceByDate(mappedData).map((d) => ({
         timestamp: d.date,
         price: d.averagePrice,
         volume: d.totalVolume,
       }));
+
+      console.log('filteredData (평균값 계산 결과):', averaged);
+
+      return averaged;
     }
-  }, [rawData, selectedRange]);
+  }, [liveData, selectedRange]);
 
   return (
-    <div className=" bg-gradient-to-r from-[#2769F6] to-[#757AD0] rounded-[8px] shadow-md overflow-hidden flex flex-col">
+    <div className="bg-gradient-to-r from-[#2769F6] to-[#757AD0] rounded-[8px] shadow-md overflow-hidden flex flex-col">
       <div className="h-[165px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={filteredData} margin={{ top: 20, right: 20, left: 5, bottom: 10 }}>
@@ -58,7 +85,6 @@ const PriceChartContainer = () => {
                 return selectedRange === 'today'
                   ? date.toLocaleTimeString('ko-KR', {
                       hour: '2-digit',
-                      // minute: '2-digit',
                       hour12: false,
                     })
                   : date.toLocaleDateString('ko-KR', {
@@ -96,7 +122,6 @@ const PriceChartContainer = () => {
                   month: 'long',
                   day: 'numeric',
                   hour: 'numeric',
-                  // minute: '2-digit',
                   hour12: true,
                 });
 
