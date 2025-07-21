@@ -11,6 +11,7 @@ import spinSoundSrc from '@/assets/sounds/spin.mp3'; // ② 사운드 파일 imp
 import RemainingTimeDisplay from './components/RemainingTimeDisplay';
 import FailRewardModal from './components/FailRewardModal';
 import useAuth from '@/hooks/useAuth'; // useAuth 훅 import
+import { motion, AnimatePresence } from 'framer-motion';
 
 const isTestMode = false;
 
@@ -215,35 +216,68 @@ const EventPage = () => {
   }
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-visible pb-12">
       <EventHeader />
 
       <RouletteEventExtras />
 
-      <RouletteWheel isSpinning={isSpinning} rotation={rotation} />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="wheel"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        >
+          <RouletteWheel isSpinning={isSpinning} rotation={rotation} />
+        </motion.div>
+      </AnimatePresence>
 
       {loading ? (
         <div className="p-4 max-w-xl mx-auto text-center text-gray-700 font-semibold text-lg mt-20">
           이벤트 정보를 불러오는 중입니다...
         </div>
       ) : error ? (
-        <div className="p-4 max-w-xl mx-auto text-center text-red-600 font-semibold text-lg mt-20">
+        <motion.div
+          className="p-4 max-w-xl mx-auto text-center text-red-600 font-semibold text-lg mt-20"
+          initial={{ x: -10, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+        >
           <p>오류가 발생했습니다: {error}</p>
           <p className="text-base text-gray-500 mt-2">잠시 후 다시 시도해주세요.</p>
-        </div>
+        </motion.div>
       ) : (
         <>
-          <StartButton
-            onClick={startSpin}
-            disabled={isSpinning || !eventInfo?.canParticipate || eventInfo?.alreadyParticipated}
-          />
+          <motion.div
+            animate={{ rotate: [0, -5, 5, -5, 5, 0] }}
+            transition={{
+              duration: 0.6,
+              ease: 'easeInOut',
+              repeat: Infinity,
+              repeatDelay: 3, // 3초마다 반복
+            }}
+          >
+            <StartButton
+              onClick={startSpin}
+              disabled={isSpinning || !eventInfo?.canParticipate || eventInfo?.alreadyParticipated}
+            />
+          </motion.div>
 
-          {eventInfo?.alreadyParticipated && (
-            <>
-              <div className="mt-5 text-center text-[#777777]">이미 참여했습니다</div>
-              <RemainingTimeDisplay resetHour={0} />
-            </>
-          )}
+          <AnimatePresence>
+            {eventInfo?.alreadyParticipated && (
+              <motion.div
+                key="already"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="mt-5 text-center text-[#777777]">이미 참여했습니다</div>
+                <RemainingTimeDisplay resetHour={0} />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* 쿠폰 당첨 모달 */}
           {showCouponModal && (
