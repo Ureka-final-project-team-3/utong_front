@@ -53,6 +53,10 @@ const router = createBrowserRouter([
     element: <ResetPasswordPage />,
   },
   {
+    path: '/tradehistory',
+    element: <TradeHistoryPage />,
+  },
+  {
     element: <DefaultLayout />,
     children: [
       {
@@ -100,10 +104,7 @@ const router = createBrowserRouter([
         path: '/test',
         element: <TestPage />,
       },
-      {
-        path: '/tradehistory',
-        element: <TradeHistoryPage />,
-      },
+
       {
         path: '/coupon',
         element: <CouponPage />,

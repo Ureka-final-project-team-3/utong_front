@@ -225,7 +225,6 @@ export default function MyPage() {
           className="text-blue-600 cursor-pointer hover:underline transition"
           onClick={() => {
             localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
             localStorage.removeItem('account'); // 'user' -> 'account'로 수정 (다른 코드와 일치하도록)
             window.location.href = '/start'; // '/login' -> '/start'로 수정 (다른 코드와 일치하도록)
           }}

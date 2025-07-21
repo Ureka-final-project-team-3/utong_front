@@ -54,3 +54,15 @@ export const fetchPriceRange = async () => {
   const res = await API.get('/auction/priceRange');
   return res.data.data;
 };
+
+// 거래 내역 - 구매
+export const fetchPurchaseData = async (params = {}) => {
+  const res = await API.get('/data/purchase', { params });
+  return res.data.data;
+};
+
+// 거래 내역 - 판매
+export const fetchSaleData = async (params = {}) => {
+  const res = await API.get('/data/sale', { params });
+  return res.data.data;
+};
