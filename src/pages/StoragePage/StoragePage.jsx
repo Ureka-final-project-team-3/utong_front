@@ -3,24 +3,50 @@ import { useNavigate } from 'react-router-dom';
 import BackButton from '@/components/BackButton/BackButton';
 import { fetchGifticons } from '@/apis/gifticonsApi';
 import SyncLoading from '../../components/Loading/SyncLoading';
+import useAuth from '@/hooks/useAuth'; // 커스텀 훅 import
 
 const StoragePage = () => {
+  const { user, isLoading: authLoading } = useAuth(); // 인증 체크
   const [gifticons, setGifticons] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchGifticons()
-      .then((data) => {
-        setGifticons(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('기프티콘 목록 조회 실패:', err);
-        setGifticons([]);
-        setLoading(false);
-      });
-  }, []);
+    // 인증이 완료되고 사용자가 있을 때만 기프티콘 목록을 가져옴
+    if (!authLoading && user) {
+      fetchGifticons()
+        .then((data) => {
+          setGifticons(data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error('기프티콘 목록 조회 실패:', err);
+          setGifticons([]);
+          setLoading(false);
+        });
+    }
+  }, [user, authLoading]);
+
+  // 인증 로딩 중이거나 데이터 로딩 중일 때 로딩 화면 표시
+  if (authLoading || loading) {
+    return (
+      <div>
+        {/* 헤더 */}
+        <div className="relative flex items-center justify-between px-4 py-0 mb-10">
+          <BackButton />
+          <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold pb-0">
+            보관함
+          </h2>
+          <div className="w-8" />
+        </div>
+
+        {/* 로딩 */}
+        <div className="text-center text-gray-400 py-50">
+          <SyncLoading />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -33,12 +59,8 @@ const StoragePage = () => {
         <div className="w-8" />
       </div>
 
-      {/* 로딩 */}
-      {loading ? (
-        <div className="text-center text-gray-400 py-50">
-          <SyncLoading />
-        </div>
-      ) : gifticons.length > 0 ? (
+      {/* 기프티콘 목록 */}
+      {gifticons.length > 0 ? (
         <div className="grid grid-cols-2 gap-4">
           {gifticons.map((item) => {
             const isClickable = item.status === '사용 가능';

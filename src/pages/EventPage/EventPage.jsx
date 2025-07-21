@@ -10,6 +10,7 @@ import useSound from 'use-sound'; // ① useSound import
 import spinSoundSrc from '@/assets/sounds/spin.mp3'; // ② 사운드 파일 import
 import RemainingTimeDisplay from './components/RemainingTimeDisplay';
 import FailRewardModal from './components/FailRewardModal';
+import useAuth from '@/hooks/useAuth'; // useAuth 훅 import
 
 const isTestMode = false;
 
@@ -54,6 +55,8 @@ function getRandomNonWinAngle() {
 }
 
 const EventPage = () => {
+  const { user, isLoading: authLoading } = useAuth(); // useAuth 훅 사용
+
   const [eventInfo, setEventInfo] = useState(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState(null);
@@ -87,6 +90,7 @@ const EventPage = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     if (result !== null) {
       console.log('참여 결과:', result);
@@ -94,17 +98,20 @@ const EventPage = () => {
   }, [result]);
 
   useEffect(() => {
-    if (isTestMode) {
-      setEventInfo({
-        eventId: 'test-event',
-        canParticipate: true,
-        alreadyParticipated: false,
-      });
-      setLoading(false);
-    } else {
-      getEventData();
+    // 인증 로딩이 끝나고 사용자가 있을 때만 이벤트 데이터 가져오기
+    if (!authLoading && user) {
+      if (isTestMode) {
+        setEventInfo({
+          eventId: 'test-event',
+          canParticipate: true,
+          alreadyParticipated: false,
+        });
+        setLoading(false);
+      } else {
+        getEventData();
+      }
     }
-  }, []);
+  }, [authLoading, user]);
 
   const startSpin = async () => {
     if (isSpinning || (!eventInfo?.canParticipate && !isTestMode) || !eventInfo?.eventId) {
@@ -189,6 +196,23 @@ const EventPage = () => {
       });
     }
   };
+
+  // 인증 로딩 중이면 로딩 화면 표시
+  if (authLoading) {
+    return (
+      <div className="relative overflow-hidden">
+        <EventHeader />
+        <div className="p-4 max-w-xl mx-auto text-center text-gray-700 font-semibold text-lg mt-20">
+          로딩 중입니다...
+        </div>
+      </div>
+    );
+  }
+
+  // 사용자가 없으면 useAuth에서 자동으로 로그인 페이지로 리다이렉트
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="relative overflow-hidden">

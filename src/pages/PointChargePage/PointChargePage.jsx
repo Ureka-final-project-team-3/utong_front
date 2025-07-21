@@ -3,9 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import BackButton from '@/components/BackButton/BackButton';
 import { fetchAllGifticons } from '@/apis/shopApi';
 import { fetchMyInfo } from '@/apis/mypageApi';
+import useAuth from '@/hooks/useAuth'; // useAuth 훅 import
 import coinIcon from '@/assets/icon/coin.png';
 
 const PointChargePage = () => {
+  const { user: authUser, isLoading: authLoading } = useAuth(); // useAuth 훅 사용
+
   const [user, setUser] = useState(null);
   const [gifticons, setGifticons] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,20 +49,53 @@ const PointChargePage = () => {
   }, []);
 
   useEffect(() => {
-    fetchGifticons(selectedCategory, currentPage);
-  }, [fetchGifticons, selectedCategory, currentPage]);
+    // 인증 로딩이 끝나고 사용자가 있을 때만 데이터 가져오기
+    if (!authLoading && authUser) {
+      fetchGifticons(selectedCategory, currentPage);
+    }
+  }, [fetchGifticons, selectedCategory, currentPage, authLoading, authUser]);
 
   useEffect(() => {
-    fetchMyInfo()
-      .then((data) => setUser(data))
-      .catch((err) => {
-        console.error('유저 정보 가져오기 실패:', err);
-      });
-  }, []);
+    // 인증 로딩이 끝나고 사용자가 있을 때만 사용자 정보 가져오기
+    if (!authLoading && authUser) {
+      fetchMyInfo()
+        .then((data) => setUser(data))
+        .catch((err) => {
+          console.error('유저 정보 가져오기 실패:', err);
+        });
+    }
+  }, [authLoading, authUser]);
 
   const handleViewDetails = (gifticonId) => {
     navigate(`/point-shop/${gifticonId}`);
   };
+
+  // 인증 로딩 중이면 로딩 화면 표시
+  if (authLoading) {
+    return (
+      <div>
+        {/* 헤더 */}
+        <div className="relative flex items-center justify-between mb-6">
+          <BackButton />
+          <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold">
+            포인트 상점
+          </h2>
+          <span className="flex items-center gap-1 text-base text-blue-600 font-bold">
+            <img src={coinIcon} alt="코인 아이콘" className="w-4 h-4" />
+            ...P
+          </span>
+        </div>
+        <div className="text-center text-gray-700 font-semibold text-lg mt-20">
+          로딩 중입니다...
+        </div>
+      </div>
+    );
+  }
+
+  // 사용자가 없으면 useAuth에서 자동으로 로그인 페이지로 리다이렉트
+  if (!authUser) {
+    return null;
+  }
 
   return (
     <div>
