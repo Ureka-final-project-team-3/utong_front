@@ -12,7 +12,7 @@ import isoWeek from 'dayjs/plugin/isoWeek';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { motion, AnimatePresence } from 'framer-motion';
 import NavigationBar from '@/components/NavigationBar/NavigationBar';
-
+import DateRangeModal from './DateRangeModal';
 dayjs.extend(isoWeek);
 dayjs.extend(weekOfYear);
 
@@ -275,41 +275,17 @@ const TradeHistoryPage = () => {
           {/* 날짜 모달 */}
           <AnimatePresence>
             {showRangeModal && (
-              <div className="absolute inset-0 z-50">
-                <div
-                  className="absolute inset-0 bg-black/30"
-                  onClick={() => setShowRangeModal(false)}
-                ></div>
-                <motion.div
-                  initial={{ y: 300, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 300, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                  className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl pb-5"
-                >
-                  <div className="px-4 py-3 font-semibold text-sm text-gray-800 text-center">
-                    날짜 선택
-                  </div>
-                  <div className="flex flex-col">
-                    {ranges.map((r) => (
-                      <button
-                        key={r.value}
-                        onClick={() => {
-                          setRange(r.value);
-                          setOffset(0);
-                          setShowRangeModal(false);
-                        }}
-                        className="flex items-center justify-between px-5 py-3 text-sm text-gray-800"
-                      >
-                        <span>{r.label}</span>
-                        {range === r.value && (
-                          <img src={checkIcon} alt="선택됨" className="w-6 h-6" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              </div>
+              <DateRangeModal
+                show={showRangeModal}
+                range={range}
+                ranges={ranges}
+                onSelect={(selected) => {
+                  setRange(selected);
+                  setOffset(0);
+                  setShowRangeModal(false);
+                }}
+                onClose={() => setShowRangeModal(false)}
+              />
             )}
           </AnimatePresence>
 

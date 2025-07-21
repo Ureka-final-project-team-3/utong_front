@@ -31,6 +31,7 @@ const LoginPage = () => {
   const debugCookies = () => {
     const cookies = document.cookie.split(';').map((cookie) => cookie.trim());
     const refreshTokenCookie = cookies.find((cookie) => cookie.startsWith('refresh_token='));
+
     // localStorage의 accessToken도 확인
     const accessToken = localStorage.getItem('accessToken');
     return {
@@ -50,6 +51,7 @@ const LoginPage = () => {
         credentials: 'include', // 🔍 쿠키 포함하도록 추가
         body: JSON.stringify({ email, password }),
       });
+
       const setCookieHeader = response.headers.get('Set-Cookie');
       const data = await response.json();
       if (response.ok && data.data && data.data.accessToken) {
@@ -77,6 +79,7 @@ const LoginPage = () => {
       console.error('🔍 로그인 에러:', err);
     }
   };
+
   // 엔터 키 처리 함수
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
