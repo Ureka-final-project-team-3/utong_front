@@ -7,13 +7,11 @@ import googleIcon from '@/assets/image/google.png';
 import kakaoIcon from '@/assets/image/kakao.png';
 import naverIcon from '@/assets/image/naver.png';
 import bgImage from '@/assets/image/background4.png'; // 배경 이미지 추가
-
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
-
   const validate = () => {
     const newErrors = {};
     if (!email) {
@@ -21,47 +19,36 @@ const LoginPage = () => {
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = '유효한 이메일 형식을 입력해주세요.';
     }
-
     if (!password) {
       newErrors.password = '비밀번호를 입력해주세요.';
     } else if (password.length < 8) {
       newErrors.password = '비밀번호는 8자 이상이어야 합니다.';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleLogin = async () => {
     if (!validate()) return;
-
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
       const data = await response.json();
-
       if (response.ok && data.data && data.data.accessToken) {
         const { accessToken, refreshToken } = data.data;
         localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-
         const meResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-
         const meData = await meResponse.json();
-
         if (meResponse.ok && meData.data) {
           localStorage.setItem('account', JSON.stringify(meData.data));
         }
-
         navigate('/');
       } else if (response.status === 401) {
         alert('아이디 또는 비밀번호가 올바르지 않습니다.');
@@ -74,14 +61,12 @@ const LoginPage = () => {
       alert('네트워크 오류');
     }
   };
-
   // 엔터 키 처리 함수
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleLogin();
     }
   };
-
   return (
     <div
       className="absolute inset-0 z-0"
@@ -102,11 +87,9 @@ const LoginPage = () => {
         >
           <div className="flex-1 overflow-y-auto px-[30px] pt-[55px] pb-[30px] bg-background">
             <BackButton />
-
             <div className="flex justify-center mb-8">
               <img src={utong2} alt="로고" className="w-[100px] h-auto" />
             </div>
-
             <div className="space-y-4">
               {/* 이메일 입력 */}
               <div>
@@ -123,7 +106,6 @@ const LoginPage = () => {
                   {errors.email || '\u00A0'}
                 </p>
               </div>
-
               {/* 비밀번호 입력 */}
               <div>
                 <label className="block text-gray-500 text-sm font-bold mb-1">비밀번호</label>
@@ -140,17 +122,14 @@ const LoginPage = () => {
                 </p>
               </div>
             </div>
-
             <div className="flex justify-center mt-6 mb-4">
               <Button onClick={handleLogin}>로그인</Button>
             </div>
-
             <div className="border-t border-gray-300 pt-4 text-sm text-gray-400 flex justify-center space-x-4 mb-4">
               <Link to="/find-id">아이디 찾기</Link>
               <Link to="/find-password">비밀번호 찾기</Link>
               <Link to="/signup">회원가입</Link>
             </div>
-
             {/* 소셜 로그인 */}
             <div className="flex justify-center space-x-6">
               <a
@@ -178,5 +157,4 @@ const LoginPage = () => {
     </div>
   );
 };
-
 export default LoginPage;
