@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import SellDataHeader from './components/SellDataHeader';
 import Button from '../../../components/common/Button';
-import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData';
+import { mockBuyBids } from '../../LiveChartPage/mock/mockTradeData'; // 구매 매물 데이터 import
 import SellSuccessModal from '../components/SellSuccessModal';
 
 import useTradeStore from '@/stores/tradeStore';
@@ -41,7 +41,6 @@ const SellDataPage = () => {
   const [isBlockingInput, setIsBlockingInput] = useState(false);
 
   useEffect(() => {
-    console.log('selectedNetwork (zustand):', selectedNetwork);
     setLocalDataCode(networkToDataCodeMap[selectedNetwork] || '002');
   }, [selectedNetwork]);
 
@@ -49,28 +48,24 @@ const SellDataPage = () => {
     fetchUserData();
   }, [fetchUserData]);
 
-  useEffect(() => {
-    console.log('유저 정보 업데이트:', {
-      userName,
-      dataCode,
-      data,
-      point,
-    });
-  }, [userName, dataCode, data, point]);
+  // 구매 매물만 필터링 (판매 페이지에서 최고가 표시 목적)
+  const buyBids = mockBuyBids.filter((bid) => bid.dataCode === localDataCode);
 
-  const sellBids = mockSellBids.filter((bid) => bid.dataCode === localDataCode);
-
-  const avgPrice = sellBids.length
+  // 평균가 계산 (구매 매물 기준)
+  const avgPrice = buyBids.length
     ? Math.round(
-        sellBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
-          sellBids.reduce((sum, b) => sum + b.quantity, 0) /
+        buyBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
+          buyBids.reduce((sum, b) => sum + b.quantity, 0) /
           100
       ) * 100
     : 0;
 
-  const maxPrice = sellBids.length ? Math.max(...sellBids.map((b) => b.price)) : 0;
+  // 최고가 계산 (구매 매물 기준)
+  const highestPrice = buyBids.length ? Math.max(...buyBids.map((b) => b.price)) : 0;
 
-  const [price, setPrice] = useState(avgPrice.toString());
+  // 가격 입력 초기값은 평균가
+  const [price, setPrice] = useState(highestPrice.toString());
+
   const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
   const [dataAmount, setDataAmount] = useState(1);
 
@@ -87,16 +82,9 @@ const SellDataPage = () => {
 
   const [hasWarned, setHasWarned] = useState(false);
 
-  // userPlanNetwork를 useMemo로 최신 상태 반영 및 소문자 비교용 변수 생성
   const userPlanNetwork = useMemo(() => codeToNetworkMap[dataCode] || '', [dataCode]);
   const normalizedUserPlanNetwork = userPlanNetwork.toLowerCase();
   const normalizedSelectedNetwork = selectedNetwork.toLowerCase();
-
-  useEffect(() => {
-    console.log('userPlanNetwork:', userPlanNetwork);
-    console.log('normalizedUserPlanNetwork:', normalizedUserPlanNetwork);
-    console.log('normalizedSelectedNetwork:', normalizedSelectedNetwork);
-  }, [userPlanNetwork, normalizedUserPlanNetwork, normalizedSelectedNetwork]);
 
   useEffect(() => {
     if (!isPriceValid && price.length > 0 && !hasWarned) {
@@ -125,12 +113,6 @@ const SellDataPage = () => {
       position: 'top-center',
     });
   }, []);
-
-  useEffect(() => {
-    console.log('가격 유효성:', isPriceValid, '가격:', price);
-    console.log('데이터 유효성:', isDataValid, '판매 데이터 양:', dataAmount);
-    console.log('판매 가능 데이터:', canSale);
-  }, [isPriceValid, price, isDataValid, dataAmount, canSale]);
 
   const handleSellClick = async () => {
     if (!isPriceValid || !isDataValid || normalizedUserPlanNetwork !== normalizedSelectedNetwork)
@@ -207,7 +189,7 @@ const SellDataPage = () => {
       <div className="text-[#565656] text-[12px] text-right">(1GB)</div>
 
       <div className="flex items-center justify-between gap-2">
-        <div className="flex-1 space-y-2 text-[13px] text-[#5D5D5D]">
+        <div className="flex-1 space-y-2 text-[14px] text-[#5D5D5D]">
           <div className="flex justify-between">
             <span>보유 포인트</span>
             <span className="text-[#2C2C2C]">
@@ -222,19 +204,19 @@ const SellDataPage = () => {
           </div>
         </div>
         <div className="w-px h-[35px] bg-[#D9D9D9]" />
-        <div className="flex-1 space-y-2 text-[13px]">
+        <div className="flex-1 space-y-2 text-[14px]">
           <div className="flex justify-between">
-            <span className="text-[#4B4B4B] text-[14px]">평균가</span>
-            <span className="text-[#2C2C2C] text-[15px] font-medium">
+            <span className="text-[#4B4B4B]">구매 평균가</span>
+            <span className="text-[#2C2C2C]">
               {avgPrice.toLocaleString()}
-              <span className="text-[#565656] text-[13px] font-bold"> 원</span>
+              <span className="text-[#565656]"> 원</span>
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#5D5D5D]">최대가</span>
-            <span className="text-[#2C2C2C] text-[15px]">
-              {maxPrice.toLocaleString()}
-              <span className="text-[#565656] text-[13px]"> 원</span>
+            <span className="text-[#5D5D5D]">구매 최고가</span>
+            <span className="text-[#2C2C2C]">
+              {highestPrice.toLocaleString()}
+              <span className="text-[#565656]"> 원</span>
             </span>
           </div>
         </div>

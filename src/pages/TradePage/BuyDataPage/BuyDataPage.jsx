@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import BuyDataHeader from './components/BuyDataHeader';
 import Button from '../../../components/common/Button';
 
-import { mockBuyBids } from '../../LiveChartPage/mock/mockTradeData';
+import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData'; // 판매 매물 데이터
 import useUserStore from '@/stores/useUserStore'; // ✅ 사용자 Zustand store
 import useTradeStore from '@/stores/tradeStore';
 import useModalStore from '@/stores/modalStore'; // 모달 Zustand store
@@ -34,7 +34,6 @@ const BuyDataPage = () => {
     dataCode,
   } = useUserStore();
 
-  // Zustand 모달 상태 및 함수
   const {
     showRechargeModal,
     showSuccessModal,
@@ -48,47 +47,46 @@ const BuyDataPage = () => {
     networkToDataCodeMap[selectedNetwork] || '002'
   );
 
-  // 사용자 요금제 네트워크명 (Zustand에 저장된 dataCode → 네트워크명)
   const userPlanNetwork = codeToNetworkMap[dataCode] || '';
 
-  // 데이터 양, 가격 상태
   const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
   const [selectedDataGB, setSelectedDataGB] = useState(1);
   const [buyPrice, setBuyPrice] = useState('0');
 
-  // 사용자 정보 최초 로딩
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
 
-  // selectedNetwork 변경 시 dataCode 업데이트 및 평균 가격 초기화
   useEffect(() => {
     const code = networkToDataCodeMap[selectedNetwork] || '002';
     setLocalDataCode(code);
 
-    // ✅ 최저가 기반 초기값 설정
-    const buyBids = mockBuyBids.filter((bid) => bid.dataCode === code);
-    const minPrice = buyBids.length ? Math.min(...buyBids.map((b) => b.price)) : 0;
+    // 판매 매물 필터링
+    const sellBids = mockSellBids.filter((bid) => bid.dataCode === code);
 
-    setBuyPrice(minPrice.toString());
+    // 판매 매물 최저가 계산 (최저가가 없으면 0)
+    const minSellPrice = sellBids.length ? Math.min(...sellBids.map((b) => b.price)) : 0;
+
+    setBuyPrice(minSellPrice.toString());
   }, [selectedNetwork]);
 
-  // 현재 매칭되는 구매 입찰들
-  const buyBids = mockBuyBids.filter((bid) => bid.dataCode === localDataCode);
+  // 판매 매물 필터링
+  const sellBids = mockSellBids.filter((bid) => bid.dataCode === localDataCode);
 
-  // 평균가, 최저가 계산
-  const avgPrice = buyBids.length
+  // 평균가 계산 (수량 가중 평균)
+  const avgPrice = sellBids.length
     ? Math.round(
-        buyBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
-          buyBids.reduce((sum, b) => sum + b.quantity, 0) /
+        sellBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
+          sellBids.reduce((sum, b) => sum + b.quantity, 0) /
           100
       ) * 100
     : 0;
-  const minPrice = buyBids.length ? Math.min(...buyBids.map((b) => b.price)) : 0;
+
+  // 최저가 계산
+  const minPrice = sellBids.length ? Math.min(...sellBids.map((b) => b.price)) : 0;
 
   const buyPriceNum = Number(buyPrice) || 0;
 
-  // 데이터 GB 입력 처리
   const handleGBInputChange = (e) => {
     const val = e.target.value;
     if (/^\d*$/.test(val)) {
@@ -97,13 +95,11 @@ const BuyDataPage = () => {
     }
   };
 
-  // 버튼 클릭 시 GB 추가
   const addDataGB = (gbString) => {
     const gbNum = Number(gbString.replace('GB', ''));
     setSelectedDataGB((prev) => (Number(prev) || 0) + gbNum);
   };
 
-  // 구매하기 버튼 클릭 처리 (API 호출 및 모달 상태 처리 포함)
   const handleBuyClick = async () => {
     try {
       const selectedQty = Number(selectedDataGB) || 0;
@@ -129,23 +125,6 @@ const BuyDataPage = () => {
       const response = await postBuyOrder(payload);
 
       console.log('[API 응답]', response);
-      console.log('[현재 상태]', {
-        userPlanNetwork,
-        selectedNetwork,
-        point,
-        selectedQty,
-        buyPriceNum,
-        totalPrice,
-        minPrice,
-        avgPrice,
-        buyBidsLength: buyBids.length,
-        modals: {
-          showRechargeModal,
-          showSuccessModal,
-          showReservationModal,
-          showPaymentCompleteModal,
-        },
-      });
 
       switch (response.result) {
         case 'ALL_COMPLETE':
@@ -179,17 +158,13 @@ const BuyDataPage = () => {
     }
   };
 
-  // 요금제 일치 여부
   const isUserPlanMatches = userPlanNetwork === selectedNetwork;
-
-  // 버튼 활성화 조건
   const isButtonEnabled = buyPriceNum > 0 && (Number(selectedDataGB) || 0) > 0 && isUserPlanMatches;
 
   return (
     <div>
       <BuyDataHeader />
 
-      {/* 모달들 */}
       <PointRechargeModal
         show={showRechargeModal}
         onClose={() => closeModal('showRechargeModal')}
@@ -203,9 +178,8 @@ const BuyDataPage = () => {
       <div className="mt-6 text-[20px] font-bold text-[#2C2C2C]">{userName}님</div>
       <div className="text-[#565656] text-[12px] text-right">(1GB)</div>
 
-      {/* 사용자 정보 영역 */}
       <div className="flex items-center justify-between gap-2">
-        <div className="flex-1 space-y-2 text-[13px] text-[#5D5D5D]">
+        <div className="flex-1 space-y-2 text-[14px] text-[#5D5D5D]">
           <div className="flex justify-between">
             <span>보유 포인트</span>
             <span className="text-[#2C2C2C]">
@@ -222,24 +196,23 @@ const BuyDataPage = () => {
 
         <div className="w-px h-[35px] bg-[#D9D9D9]" />
 
-        <div className="flex-1 space-y-2 text-[13px]">
+        <div className="flex-1 space-y-2 text-[14px]">
           <div className="flex justify-between">
-            <span className="text-[#4B4B4B] text-[14px]">평균가</span>
-            <span className="text-[#2C2C2C] text-[15px] font-medium">
-              {avgPrice.toLocaleString()}{' '}
-              <span className="text-[#565656] text-[13px] font-bold">원</span>
+            <span className="text-[#4B4B4B]">판매 평균가</span>
+            <span className="text-[#2C2C2C] font-medium">
+              {avgPrice.toLocaleString()}
+              <span className="text-[#565656]"> 원</span>
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#5D5D5D]">최저가</span>
-            <span className="text-[#2C2C2C] text-[15px]">
-              {minPrice.toLocaleString()} <span className="text-[#565656] text-[13px]">원</span>
+            <span className="text-[#5D5D5D]">판매 최저가</span>
+            <span className="text-[#2C2C2C]">
+              {minPrice.toLocaleString()} <span className="text-[#565656]">원</span>
             </span>
           </div>
         </div>
       </div>
 
-      {/* 가격 입력 */}
       <div className="mt-6 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
         <div className="text-[15px] text-[#2C2C2C] mb-2">구매할 가격</div>
         <div className="flex justify-end items-center">
@@ -264,7 +237,6 @@ const BuyDataPage = () => {
         최저가보다 낮은 금액은 구매대기됩니다.
       </div>
 
-      {/* 데이터 양 입력 */}
       <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
         <div className="text-[15px] text-[#2C2C2C] mb-2">데이터</div>
         <div className="flex justify-between items-center mb-2">
@@ -297,7 +269,6 @@ const BuyDataPage = () => {
         최저가의 모든 데이터 양보다 수량이 작으면 구매대기됩니다.
       </div>
 
-      {/* 총 가격 */}
       <div className="mt-6 border-t border-gray-300 pt-4 space-y-2">
         <div className="flex justify-between text-[16px] text-[#5D5D5D]">
           <span>총 결제 포인트</span>

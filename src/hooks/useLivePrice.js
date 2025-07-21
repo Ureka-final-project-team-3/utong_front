@@ -9,34 +9,46 @@ const useLivePrice = (dataCode) => {
     const url = `${import.meta.env.VITE_API_BASE_URL}/api/data/current-prices/stream/${dataCode}`;
     const eventSource = new EventSource(url);
 
-    // 기본 message 이벤트
-    eventSource.onmessage = (event) => {
-      try {
-        const newPrice = JSON.parse(event.data);
-        setPriceList((prev) => [...prev.slice(-49), newPrice]);
-      } catch (e) {
-        console.error('시세 파싱 오류:', e);
-      }
-    };
+    console.log(`[SSE] 연결 시도 → ${url}`);
 
-    // initial-data 이벤트 따로 처리
+    // 📦 초기 데이터 수신
     eventSource.addEventListener('initial-data', (event) => {
       try {
         const initialData = JSON.parse(event.data);
         setPriceList(initialData);
-        console.log('초기 데이터 수신:', initialData);
+        console.log(`[SSE][${dataCode}] 초기 데이터 수신:`, initialData);
       } catch (e) {
-        console.error('초기 데이터 파싱 오류:', e);
+        console.error(`[SSE][${dataCode}] 초기 데이터 파싱 오류:`, e);
       }
     });
 
+    // 📈 실시간 업데이트 수신
+    const hourlyEventName = `${dataCode}-hourly-update`;
+    eventSource.addEventListener(hourlyEventName, (event) => {
+      try {
+        const updates = JSON.parse(event.data);
+        setPriceList((prev) => [...prev.slice(-9), ...updates]);
+        console.log(`[SSE][${dataCode}] 실시간 업데이트 수신:`, updates);
+      } catch (e) {
+        console.error(`[SSE][${dataCode}] 실시간 업데이트 파싱 오류:`, e);
+      }
+    });
+
+    // ❌ 오류 처리 및 재연결 알림
     eventSource.onerror = (err) => {
-      console.error('SSE 연결 오류:', err);
-      eventSource.close();
+      console.error(`[SSE][${dataCode}] SSE 연결 오류 발생`, err);
+
+      if (eventSource.readyState === EventSource.CONNECTING) {
+        console.log(`[SSE][${dataCode}] 서버와 재연결 중...`);
+      } else if (eventSource.readyState === EventSource.CLOSED) {
+        console.warn(`[SSE][${dataCode}] 연결이 닫힘 (서버 또는 네트워크 문제)`);
+      }
+      // eventSource.close(); ← ❌ 자동 재연결을 막으므로 제거
     };
 
     return () => {
-      eventSource.close();
+      console.log(`[SSE][${dataCode}] 연결 해제`);
+      eventSource.close(); // 컴포넌트 언마운트 시 종료
     };
   }, [dataCode]);
 
