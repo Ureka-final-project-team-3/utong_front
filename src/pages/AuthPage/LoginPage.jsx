@@ -27,38 +27,54 @@ const LoginPage = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  // 🔍 쿠키 디버깅 헬퍼 함수들
+  const debugCookies = () => {
+    const cookies = document.cookie.split(';').map((cookie) => cookie.trim());
+    const refreshTokenCookie = cookies.find((cookie) => cookie.startsWith('refresh_token='));
+    // localStorage의 accessToken도 확인
+    const accessToken = localStorage.getItem('accessToken');
+    return {
+      allCookies: document.cookie,
+      hasRefreshToken: !!refreshTokenCookie,
+      refreshTokenValue: refreshTokenCookie,
+      hasAccessToken: !!accessToken,
+    };
+  };
   const handleLogin = async () => {
     if (!validate()) return;
+    debugCookies();
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // 🔍 쿠키 포함하도록 추가
         body: JSON.stringify({ email, password }),
       });
+      const setCookieHeader = response.headers.get('Set-Cookie');
       const data = await response.json();
       if (response.ok && data.data && data.data.accessToken) {
         const { accessToken, refreshToken } = data.data;
         localStorage.setItem('accessToken', accessToken);
+        setTimeout(() => {
+          debugCookies();
+          const cookies = document.cookie.split(';').map((cookie) => cookie.trim());
+          const refreshTokenCookie = cookies.find((cookie) => cookie.startsWith('refresh_token'));
+        }, 100);
         const meResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
+          credentials: 'include', // 🔍 이 요청에도 쿠키 포함
         });
         const meData = await meResponse.json();
         if (meResponse.ok && meData.data) {
           localStorage.setItem('account', JSON.stringify(meData.data));
         }
         navigate('/');
-      } else if (response.status === 401) {
-        alert('아이디 또는 비밀번호가 올바르지 않습니다.');
-      } else {
-        const errorMessage = data.message || (data.data && data.data.message) || '로그인 실패';
-        alert(errorMessage);
       }
     } catch (err) {
-      console.error('로그인 에러:', err);
-      alert('네트워크 오류');
+      console.error('🔍 로그인 에러:', err);
     }
   };
   // 엔터 키 처리 함수
