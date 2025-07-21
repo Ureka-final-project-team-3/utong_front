@@ -136,3 +136,26 @@ body,
 .animate-fade-in-out {
   animation: fadeInOut 2s ease-in-out forwards;
 }
+
+
+@import 'simplebar-react/dist/simplebar.min.css';
+
+.simplebar-scrollbar:before {
+  border-radius: 9999px;
+  width: 3px;
+}
+
+/* 판매입찰 - 빨강 */
+.simplebar-sell .simplebar-scrollbar:before {
+  background-color: #FF4343;
+}
+
+/* 구매입찰 - 파랑 */
+.simplebar-buy .simplebar-scrollbar:before {
+  background-color: #2769F6;
+}
+
+/* 기본(체결거래) - 회색 */
+.simplebar-default .simplebar-scrollbar:before {
+  background-color: #888888;
+}
