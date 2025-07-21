@@ -16,21 +16,26 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { fetchMyInfo } from '@/apis/mypageApi';
 import SyncLoading from '@/components/Loading/SyncLoading';
+import useAuth from '@/hooks/useAuth'; // 커스텀 훅 import
 
 export default function MyPage() {
+  const { user: authUser, isLoading: authLoading } = useAuth(); // 인증 체크
   const [user, setUser] = useState();
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef(null);
   const [isMail, setIsMail] = useState(false);
 
   useEffect(() => {
-    fetchMyInfo()
-      .then((data) => setUser(data))
-      .catch((error) => {
-        console.error('유저 정보 불러오기 실패:', error);
-        console.log('상세 응답:', error.response?.data); // 백엔드 에러 메시지 확인
-      });
-  }, []);
+    // 인증이 완료되고 사용자가 있을 때만 유저 정보를 가져옴
+    if (!authLoading && authUser) {
+      fetchMyInfo()
+        .then((data) => setUser(data))
+        .catch((error) => {
+          console.error('유저 정보 불러오기 실패:', error);
+          console.log('상세 응답:', error.response?.data); // 백엔드 에러 메시지 확인
+        });
+    }
+  }, [authUser, authLoading]);
 
   const apiRequest = async (url, options = {}) => {
     const token = localStorage.getItem('accessToken');
@@ -86,7 +91,8 @@ export default function MyPage() {
     }
   };
 
-  if (!user) {
+  // 인증 로딩 중이거나 유저 데이터 로딩 중일 때 로딩 화면 표시
+  if (authLoading || !user) {
     return <SyncLoading />;
   }
 
@@ -220,8 +226,8 @@ export default function MyPage() {
           onClick={() => {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
-            localStorage.removeItem('user');
-            window.location.href = '/login';
+            localStorage.removeItem('account'); // 'user' -> 'account'로 수정 (다른 코드와 일치하도록)
+            window.location.href = '/start'; // '/login' -> '/start'로 수정 (다른 코드와 일치하도록)
           }}
         >
           로그아웃
