@@ -98,14 +98,22 @@ const SellDataPage = () => {
   }, [price, isPriceValid, hasWarned, minPrice, maxPriceAllowed]);
 
   useEffect(() => {
-    if (dataAmount > canSale && data !== 0) {
-      toast.error(`보유 데이터(${canSale}GB)보다 많은 양을 판매할 수 없어요.`, {
-        autoClose: 3000,
-        onOpen: () => setIsBlockingInput(true),
-        onClose: () => setIsBlockingInput(false),
-      });
-    }
-  }, [dataAmount, canSale, data]);
+  if (dataAmount > canSale && data !== 0) {
+    console.log('토스트 오픈: 보유 데이터 초과');
+    toast.error(`보유 데이터(${canSale}GB)보다 많은 양을 판매할 수 없어요.`, {
+      autoClose: 3000,
+      onOpen: () => {
+        console.log('toast onOpen: 입력 차단 활성화');
+        setIsBlockingInput(true);
+      },
+      onClose: () => {
+        console.log('toast onClose: 입력 차단 해제');
+        setIsBlockingInput(false);
+      },
+    });
+  }
+}, [dataAmount, canSale, data]);
+
 
   useEffect(() => {
     toast.info('거래중개 등 제반 서비스 이용료가 포함됩니다.', {
