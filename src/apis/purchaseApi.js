@@ -18,6 +18,7 @@ API.interceptors.request.use((config) => {
 export const fetchPurchaseData = async (range = 'WEEK') => {
   const res = await API.get(`/data/purchase?range=${range}`);
   console.log('response data:', res.data); // 전체 응답 콘솔 출력
+
   return res.data.data;
 };
 
