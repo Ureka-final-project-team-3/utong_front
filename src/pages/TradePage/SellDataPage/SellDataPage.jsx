@@ -109,6 +109,7 @@ const SellDataPage = () => {
       onClose: () => {
         console.log('toast onClose: 입력 차단 해제');
         setIsBlockingInput(false);
+        setDataAmount(canSale); 
       },
     });
   }
