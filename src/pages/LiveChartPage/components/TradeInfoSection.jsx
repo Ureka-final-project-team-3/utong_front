@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
 import useTradeStore from '@/stores/tradeStore';
 import { mockSellBids, mockBuyBids } from '../mock/mockTradeData';
 
@@ -47,12 +49,6 @@ const TradeInfoSection = () => {
 
   const highlightFirst = tab !== 'settled' && currentData.length > 0;
 
-  const getHighlightBorderColor = () => {
-    if (tab === 'sell') return 'border-[#FF4343]';
-    if (tab === 'buy') return 'border-[#2769F6]';
-    return 'border-[#EEE]';
-  };
-
   const getPricePrefix = () => {
     if (tab === 'sell') return '최저가:';
     if (tab === 'buy') return '최고가:';
@@ -86,11 +82,9 @@ const TradeInfoSection = () => {
         </div>
       </div>
 
-      {/* 고정된 첫 항목 (구매/판매입찰만) */}
+      {/* 고정된 첫 항목 */}
       {highlightFirst && (
-        <div
-          className={`flex py-[6px] text-[12px] min-h-[33px] text-[#777777] font-bold px-2 bg-[#F6F7FC] border ${getHighlightBorderColor()} border-[1px]`}
-        >
+        <div className="flex py-[6px] text-[12px] min-h-[33px] text-gray-800 font-bold px-2 bg-[#F6F7FC] border-b border-[#EEE]">
           <div className="w-1/2 flex justify-center items-center gap-1">
             <span className="text-left whitespace-nowrap">{getPricePrefix()}</span>
             <span>{currentData[0].price.toLocaleString()}P</span>
@@ -113,19 +107,23 @@ const TradeInfoSection = () => {
         </div>
       )}
 
-      {/* 거래 정보 리스트 */}
-      <div
-        className={`overflow-y-auto flex flex-col divide-y divide-[#EEE] px-2 mt-[2px] ${
-          highlightFirst ? 'max-h-[99px]' : 'max-h-[132px]'
-        }`}
-      >
+      {/* 거래 정보 리스트 with SimpleBar */}
+      <SimpleBar
+  style={{
+    maxHeight: highlightFirst ? 99 : 132,
+  }}
+  className={`px-2 mt-[2px] ${
+    tab === 'sell' ? 'simplebar-sell' : tab === 'buy' ? 'simplebar-buy' : 'simplebar-default'
+  }`}
+>
+
         {currentData.length === 0 ? (
           <div className="text-center text-[#777777] py-5">데이터가 없습니다.</div>
         ) : (
           (highlightFirst ? currentData.slice(1) : currentData).map((item, index) => (
             <div
               key={index + (highlightFirst ? 1 : 0)}
-              className="flex py-[6px] text-[12px] text-[#777777] min-h-[33px]"
+              className="flex py-[6px] text-[12px] text-[#777777] min-h-[33px] border-b border-[#EEE]"
             >
               <div className="w-1/2 flex justify-center items-center">
                 {item.price.toLocaleString()}P
@@ -153,7 +151,7 @@ const TradeInfoSection = () => {
             </div>
           ))
         )}
-      </div>
+      </SimpleBar>
     </div>
   );
 };
