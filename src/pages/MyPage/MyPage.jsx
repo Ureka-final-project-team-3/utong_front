@@ -26,6 +26,19 @@ export default function MyPage() {
   const modalRef = useRef(null);
   const [isMail, setIsMail] = useState(false);
 
+  // 전화번호 배열, user 없으면 임시 더미 데이터
+  const phoneNumbers = user?.phoneNumbers ?? ['010-1234-5678', '010-9876-5432'];
+
+  const [selectedLine, setSelectedLine] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  // user가 로드되면 selectedLine 초기화 (예시)
+  useEffect(() => {
+    if (user) {
+      setSelectedLine(user.dataCode === '002' ? '5G' : 'LTE');
+    }
+  }, [user]);
+
   useEffect(() => {
     if (!authLoading && authUser) {
       fetchMyInfo()
@@ -112,7 +125,7 @@ export default function MyPage() {
   ];
 
   return (
-    <div className="h-auto max-h-[650px] overflow-hidden text-black relative">
+    <div className="h-auto max-h-[650px] overflow-visible text-black relative">
       {/* Header */}
       <div
         className={`flex items-center gap-4 pt-5 transition-all duration-700 ${
@@ -127,12 +140,60 @@ export default function MyPage() {
             animation: mounted ? 'bounce-gentle 2s ease-in-out infinite' : 'none',
           }}
         />
-        <h1 className="text-white text-2xl font-bold">{user.name}</h1>
+
+        {user && (
+          <div className="flex items-center gap-2 relative">
+            <h1
+              className="text-white text-2xl font-bold cursor-pointer"
+              onClick={() => {
+                setDropdownOpen(!dropdownOpen);
+              }}
+            >
+              {user.name}
+            </h1>
+
+            <svg
+              className={`w-4 h-4 text-white transition-transform duration-300 ${
+                dropdownOpen ? 'rotate-180' : ''
+              }`}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+
+            {dropdownOpen && (
+              <ul className="absolute top-full left-0 mt-1 bg-white rounded shadow-lg w-30 text-black text-[12px]">
+                {phoneNumbers.map((line) => (
+                  <li
+                    key={line}
+                    className={`px-3 py-1 cursor-pointer hover:bg-blue-100 ${
+                      selectedLine === line ? 'font-bold text-blue-600' : ''
+                    }`}
+                    onClick={() => {
+                      setSelectedLine(line);
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    {line}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Info Card */}
       <div
-        className={`mt-6 bg-[#386DEE] text-white rounded-xl p-3 transition-all duration-700 hover:shadow-2xl hover:scale-[1.02] ${
+        className={`mt-6 bg-[#386DEE] text-white rounded-xl p-3 transition-all duration-700 hover:shadow-2xl hover:scale-[1.02] overflow-visible ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
