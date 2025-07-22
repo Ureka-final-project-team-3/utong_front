@@ -17,7 +17,7 @@ const StartPage = () => {
       // 로고 등장 후 2초 뒤 login 페이지로 이동
       setTimeout(() => {
         navigate('/login');
-      }, 5000);
+      }, 2000);
     }, 1500);
 
     return () => {
