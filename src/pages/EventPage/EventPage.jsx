@@ -12,6 +12,7 @@ import RemainingTimeDisplay from './components/RemainingTimeDisplay';
 import FailRewardModal from './components/FailRewardModal';
 import useAuth from '@/hooks/useAuth'; // useAuth 훅 import
 import { motion, AnimatePresence } from 'framer-motion';
+import SyncLoading from '@/components/Loading/SyncLoading'; // 로딩 컴포넌트 임포트
 
 const isTestMode = false;
 
@@ -216,7 +217,7 @@ const EventPage = () => {
   }
 
   return (
-    <div className="relative overflow-visible pb-12">
+    <div className="relative overflow-hidden pb-12">
       {/* 유통통 - 뒤쪽 레이어 (낮은 z-index) */}
       <div className="relative z-10">
         <EventHeader />
@@ -238,8 +239,8 @@ const EventPage = () => {
       </AnimatePresence>
 
       {loading ? (
-        <div className="p-4 max-w-xl mx-auto text-center text-gray-700 font-semibold text-lg mt-20">
-          이벤트 정보를 불러오는 중입니다...
+        <div className="p-4 max-w-xl mx-auto mt-20">
+          <SyncLoading text="이벤트 정보를 불러오는 중입니다..." />
         </div>
       ) : error ? (
         <motion.div
