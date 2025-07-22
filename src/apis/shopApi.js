@@ -16,6 +16,7 @@ API.interceptors.request.use((config) => {
 // /api/gifticons GET 요청 함수
 export const fetchAllGifticons = async () => {
   const res = await API.get('/gifticons');
+  console.log(res);
   return res.data.data;
 };
 
