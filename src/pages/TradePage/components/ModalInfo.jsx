@@ -50,14 +50,16 @@ const ModalInfo = ({ onClose, color = 'blue' }) => {
           <RuleItem
             type="two"
             color={color}
-            text="보유중인 데이터의 10%만 판매 가능해요."
+            text="사용자 요금제가 제공하는 데이터의 10%만 판매 가능해요."
             sub="정책상 일부만 판매할 수 있도록 제한되어 있어요."
           />
           <RuleItem
             type="three"
             color={color}
-            text="구매 입찰가의 최대가격 이상으로만 거래 할 수 있어요."
-            sub="최대가격은 메인페이지에서 알려드릴게요."
+            text="매물 상황에 따라 자동으로 최적의 거래가 이루어져요."
+sub="판매 시: 등록된 구매 매물 중 가장 높은 가격에 판매돼요.
+구매 시: 등록된 판매 매물 중 가장 낮은 가격에 구매돼요."
+
           />
           <RuleItem
             type="four"

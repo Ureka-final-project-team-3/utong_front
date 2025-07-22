@@ -234,7 +234,7 @@ const BuyDataPage = () => {
       </div>
 
       <div className="mt-4 text-[10px] text-[#386DEE] text-center">
-        최저가보다 낮은 금액은 구매대기됩니다.
+        판매 최저가보다 낮은 금액은 구매대기됩니다.
       </div>
 
       <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
