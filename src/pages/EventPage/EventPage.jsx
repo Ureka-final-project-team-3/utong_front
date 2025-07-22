@@ -3,16 +3,16 @@ import EventHeader from './components/EventHeader';
 import RouletteEventExtras from './components/RouletteEventExtras';
 import RouletteWheel from './components/RouletteWheel';
 import StartButton from './components/StartButton';
-import CouponRewardModal from './components/CouponRewardModal'; // 경로 맞게 수정하세요
+import CouponRewardModal from './components/CouponRewardModal';
 import { fetchRouletteEventStatus, participateInRoulette } from '@/apis/rouletteApi';
 import { useRouletteSpin } from './hooks/useRouletteSpin';
-import useSound from 'use-sound'; // ① useSound import
-import spinSoundSrc from '@/assets/sounds/spin.mp3'; // ② 사운드 파일 import
+import useSound from 'use-sound';
+import spinSoundSrc from '@/assets/sounds/spin.mp3';
 import RemainingTimeDisplay from './components/RemainingTimeDisplay';
 import FailRewardModal from './components/FailRewardModal';
-import useAuth from '@/hooks/useAuth'; // useAuth 훅 import
+import useAuth from '@/hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
-import SyncLoading from '@/components/Loading/SyncLoading'; // 로딩 컴포넌트 임포트
+import SyncLoading from '@/components/Loading/SyncLoading';
 
 const isTestMode = false;
 
@@ -57,7 +57,7 @@ function getRandomNonWinAngle() {
 }
 
 const EventPage = () => {
-  const { user, isLoading: authLoading } = useAuth(); // useAuth 훅 사용
+  const { user, isLoading: authLoading } = useAuth();
 
   const [eventInfo, setEventInfo] = useState(null);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -70,8 +70,7 @@ const EventPage = () => {
   const [showFailModal, setShowFailModal] = useState(false);
 
   const { spinTo } = useRouletteSpin();
-
-  const [playSpin, { stop }] = useSound(spinSoundSrc, { loop: true, volume: 0.1 }); // ③ 루프 재생
+  const [playSpin, { stop }] = useSound(spinSoundSrc, { loop: true, volume: 0.1 });
 
   const getEventData = async () => {
     setError(null);
@@ -82,12 +81,10 @@ const EventPage = () => {
       } else {
         const msg = response.message || response.codeName || '이벤트 정보를 불러오지 못했습니다.';
         setError(msg);
-        // alert(`이벤트 조회 실패: ${msg}`);
       }
     } catch (err) {
       console.error(err);
       setError('이벤트 정보를 불러오는 중 에러가 발생했습니다.');
-      // alert('이벤트 정보를 불러오는 중 에러가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -100,7 +97,6 @@ const EventPage = () => {
   }, [result]);
 
   useEffect(() => {
-    // 인증 로딩이 끝나고 사용자가 있을 때만 이벤트 데이터 가져오기
     if (!authLoading && user) {
       if (isTestMode) {
         setEventInfo({
@@ -116,20 +112,12 @@ const EventPage = () => {
   }, [authLoading, user]);
 
   const startSpin = async () => {
-    if (isSpinning || (!eventInfo?.canParticipate && !isTestMode) || !eventInfo?.eventId) {
-      if (!eventInfo?.canParticipate && !isTestMode) {
-        // alert('현재 이벤트에 참여할 수 없습니다.');
-      } else if (!eventInfo?.eventId) {
-        // alert('이벤트 정보가 불완전하여 참여할 수 없습니다. 잠시 후 다시 시도해주세요.');
-      }
-      return;
-    }
+    if (isSpinning || (!eventInfo?.canParticipate && !isTestMode) || !eventInfo?.eventId) return;
 
     setIsSpinning(true);
     setResult(null);
     setError(null);
-
-    playSpin(); // 회전 시작 시 사운드 재생
+    playSpin();
 
     try {
       const response = isTestMode
@@ -160,22 +148,21 @@ const EventPage = () => {
         duration: 8000,
         onUpdate: setRotation,
         onDone: () => {
-          stop(); // 회전 종료 시 사운드 중지
-
+          stop();
           setResult(participationData);
           getEventData();
           setIsSpinning(false);
           if (participationData.isWinner) {
             const couponData = {
               name: participationData.gifticonDescription || '당첨된 쿠폰',
-              expiredAt: participationData.expiredAt || null, // 유효기간 포함
+              expiredAt: participationData.expiredAt || null,
               statusName: '사용 가능',
               eventTitle: participationData.eventTitle || '',
             };
             setWonCoupon(couponData);
             setShowCouponModal(true);
           } else {
-            setShowFailModal(true); // 꽝일 때 전용 모달
+            setShowFailModal(true);
           }
         },
       });
@@ -183,15 +170,12 @@ const EventPage = () => {
       console.error(err);
       const rawAngle = getRandomNonWinAngle();
       const correctedAngle = toTop0Degree(rawAngle);
-
       spinTo({
         targetAngle: correctedAngle,
         duration: 8000,
         onUpdate: setRotation,
         onDone: () => {
           stop();
-
-          // alert('참여 중 오류가 발생했습니다.');
           setResult({ isWinner: false, message: '참여 중 오류가 발생했습니다.' });
           setIsSpinning(false);
         },
@@ -199,32 +183,21 @@ const EventPage = () => {
     }
   };
 
-  // 인증 로딩 중이면 로딩 화면 표시
-  if (authLoading) {
-    return (
-      <div className="relative overflow-hidden">
-        <EventHeader />
-        <div className="p-4 max-w-xl mx-auto text-center text-gray-700 font-semibold text-lg mt-20">
-          로딩 중입니다...
-        </div>
-      </div>
-    );
+  // ✅ 로딩 중이면 로딩 컴포넌트만 보여주기
+  if (authLoading || loading) {
+    return <SyncLoading />;
   }
 
-  // 사용자가 없으면 useAuth에서 자동으로 로그인 페이지로 리다이렉트
-  if (!user) {
-    return null;
-  }
+  // ✅ 사용자 없으면 아무 것도 렌더링 안함
+  if (!user) return null;
 
   return (
     <div className="relative overflow-hidden pb-12">
-      {/* 유통통 - 뒤쪽 레이어 (낮은 z-index) */}
       <div className="relative z-10">
         <EventHeader />
         <RouletteEventExtras />
       </div>
 
-      {/* 룰렛 - 앞쪽 레이어 (높은 z-index) */}
       <AnimatePresence mode="wait">
         <motion.div
           key="wheel"
@@ -238,11 +211,7 @@ const EventPage = () => {
         </motion.div>
       </AnimatePresence>
 
-      {loading ? (
-        <div className="p-4 max-w-xl mx-auto mt-20">
-          <SyncLoading text="이벤트 정보를 불러오는 중입니다..." />
-        </div>
-      ) : error ? (
+      {error ? (
         <motion.div
           className="p-4 max-w-xl mx-auto text-center text-red-600 font-semibold text-lg mt-20"
           initial={{ x: -10, opacity: 0 }}
@@ -260,7 +229,7 @@ const EventPage = () => {
               duration: 0.6,
               ease: 'easeInOut',
               repeat: Infinity,
-              repeatDelay: 3, // 3초마다 반복
+              repeatDelay: 3,
             }}
           >
             <StartButton
@@ -284,7 +253,7 @@ const EventPage = () => {
             )}
           </AnimatePresence>
 
-          {/* 쿠폰 당첨 모달 */}
+          {/* 모달 */}
           {showCouponModal && (
             <CouponRewardModal coupon={wonCoupon} onClose={() => setShowCouponModal(false)} />
           )}
