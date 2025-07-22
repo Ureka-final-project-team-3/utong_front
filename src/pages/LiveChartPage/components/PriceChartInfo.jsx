@@ -1,26 +1,39 @@
-import React, { useMemo } from 'react';
-import { PriceData5G, PriceDataLTE } from '../mock/mockPriceData';
+import React from 'react';
 import useTradeStore from '@/stores/tradeStore';
+import useOrderQueue from '@/hooks/useOrderQueue';
 
 const PriceChartInfo = () => {
   const { selectedNetwork, selectedRange, setSelectedNetwork, setSelectedRange } = useTradeStore();
 
-  const latestPrice = useMemo(() => {
-    const data = selectedNetwork === '5G' ? PriceData5G : PriceDataLTE;
-    if (!data || data.length === 0) return null;
-    const latest = data[data.length - 1];
-    return latest.price;
-  }, [selectedNetwork]);
+  const networkToDataCode = {
+    LTE: '001',
+    '5G': '002',
+  };
+  const dataCode = networkToDataCode[selectedNetwork] || '002';
+
+  const { queueData, isLoading } = useOrderQueue(dataCode);
+  const recentContracts = queueData?.recentContracts ?? [];
+  const latestContract = recentContracts[0];
+  const latestPrice = latestContract?.price ?? null;
+
+  console.log('📈 최근 거래가:', latestPrice);
 
   return (
     <div className="relative w-full max-w-full sm:max-w-[300px] mt-[20px] mb-[10px] px-4 sm:px-0">
-      {/* 제목 + 가격 */}
       <div className="text-[18px] sm:text-[20px] leading-[24px] text-[#2C2C2C]">최근 거래가</div>
-      <div className="flex items-end gap-2 mt-1">
-        <span className="text-[26px] sm:text-[30px] leading-[32px] sm:leading-[36px] font-bold text-[#EB008B]">
-          {latestPrice?.toLocaleString() ?? '-'}
-        </span>
-        <span className="text-[12px] leading-[15px] text-[#2C2C2C]">원 (1GB)</span>
+      <div className="flex items-end gap-2 mt-1 min-h-[36px]">
+        {isLoading ? (
+          <span className="text-[18px] sm:text-[20px] leading-[24px] sm:leading-[26px] font-medium text-[#999]">
+            최근 거래가 불러오는 중...
+          </span>
+        ) : (
+          <>
+            <span className="text-[26px] sm:text-[30px] leading-[32px] sm:leading-[36px] font-bold text-[#EB008B]">
+              {latestPrice !== null ? latestPrice.toLocaleString() : '-'}
+            </span>
+            <span className="text-[12px] leading-[15px] text-[#2C2C2C]">원 (1GB)</span>
+          </>
+        )}
       </div>
 
       {/* 네트워크 선택 */}

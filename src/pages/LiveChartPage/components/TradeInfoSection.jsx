@@ -3,6 +3,7 @@ import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import useTradeStore from '@/stores/tradeStore';
 import useOrderQueue from '@/hooks/useOrderQueue'; // 실시간 SSE 훅
+import SyncLoading from '@/components/Loading/SyncLoading';
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -23,13 +24,13 @@ const TradeInfoSection = () => {
 
   const handleTabChange = (key) => {
     setTab(key);
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = 0; // 스크롤 초기화
+    if (scrollRef.current && scrollRef.current.getScrollElement) {
+      scrollRef.current.getScrollElement().scrollTop = 0;
     }
   };
 
-  const { buyOrderQuantity, sellOrderQuantity, recentContracts } =
-    useOrderQueue(selectedDataCode);
+  const { queueData, isLoading } = useOrderQueue(selectedDataCode);
+  const { buyOrderQuantity, sellOrderQuantity, recentContracts } = queueData || {};
 
   const currentData = (() => {
     if (tab === 'sell') {
@@ -59,11 +60,7 @@ const TradeInfoSection = () => {
       }));
   })();
 
-  const maxQuantity = Math.max(
-    ...currentData.map((d) => d.quantity || 0),
-    1
-  );
-
+  const maxQuantity = Math.max(...currentData.map((d) => d.quantity || 0), 1);
   const highlightFirst = tab !== 'settled' && currentData.length > 0;
   const getPricePrefix = tab === 'sell' ? '최저가:' : tab === 'buy' ? '최고가:' : '';
 
@@ -91,71 +88,79 @@ const TradeInfoSection = () => {
       </div>
 
       {/* 리스트 */}
-      <SimpleBar
-        style={{ maxHeight: 132 }}
-        scrollableNodeProps={{ ref: scrollRef }}
-        className={`px-2 mt-[2px] ${
-          tab === 'sell' ? 'simplebar-sell' : tab === 'buy' ? 'simplebar-buy' : 'simplebar-default'
-        }`}
-      >
-        {/* 상단 강조 */}
-        {highlightFirst && (
-          <div className="sticky top-0 z-10 flex py-[6px] min-h-[33px] text-[12px] font-bold px-2 bg-[#F6F7FC] border-b border-[#D9D9D9] text-gray-800">
-            <div className="w-1/2 flex justify-center items-center gap-1">
-              <span className="whitespace-nowrap">{getPricePrefix}</span>
-              <span>{currentData[0].price.toLocaleString()}P</span>
-            </div>
-            <div className="w-1/2 flex justify-center items-center px-2">
-              <div className="flex items-center gap-[6px] w-full max-w-[160px]">
-                <div className="w-[40px] text-right">{currentData[0].quantity ?? '-'}GB</div>
-                <div className="flex-1 h-[10px] bg-[#F0F0F0] rounded-sm overflow-hidden">
-                  <div
-                    className={`h-full ${tab === 'sell' ? 'bg-[#FF4343]' : 'bg-[#2769F6]'}`}
-                    style={{
-                      width: `${((currentData[0].quantity ?? 0) / maxQuantity) * 100}%`,
-                      minWidth: '4px',
-                    }}
-                  />
+      {isLoading ? (
+        <SyncLoading text="데이터를 불러오는 중입니다..." />
+      ) : (
+        <SimpleBar
+          style={{ maxHeight: 132 }}
+          scrollableNodeProps={{ ref: scrollRef }}
+          className={`px-2 mt-[2px] ${
+            tab === 'sell'
+              ? 'simplebar-sell'
+              : tab === 'buy'
+                ? 'simplebar-buy'
+                : 'simplebar-default'
+          }`}
+        >
+          {/* 상단 강조 */}
+          {highlightFirst && (
+            <div className="sticky top-0 z-10 flex py-[6px] min-h-[33px] text-[12px] font-bold px-2 bg-[#F6F7FC] border-b border-[#D9D9D9] text-gray-800">
+              <div className="w-1/2 flex justify-center items-center gap-1">
+                <span className="whitespace-nowrap">{getPricePrefix}</span>
+                <span>{currentData[0].price.toLocaleString()}P</span>
+              </div>
+              <div className="w-1/2 flex justify-center items-center px-2">
+                <div className="flex items-center gap-[6px] w-full max-w-[160px]">
+                  <div className="w-[40px] text-right">{currentData[0].quantity ?? '-'}GB</div>
+                  <div className="flex-1 h-[10px] bg-[#F0F0F0] rounded-sm overflow-hidden">
+                    <div
+                      className={`h-full ${tab === 'sell' ? 'bg-[#FF4343]' : 'bg-[#2769F6]'}`}
+                      style={{
+                        width: `${((currentData[0].quantity ?? 0) / maxQuantity) * 100}%`,
+                        minWidth: '4px',
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* 항목 목록 */}
-        {currentData.length === 0 ? (
-          <div className="text-center text-[#777777] py-5">데이터가 없습니다.</div>
-        ) : (
-          (highlightFirst ? currentData.slice(1) : currentData).map((item, idx) => (
-            <div
-              key={idx}
-              className="flex py-[6px] min-h-[33px] text-[12px] text-[#777777] border-b border-[#EEE]"
-            >
-              <div className="w-1/2 flex justify-center items-center">
-                {item.price.toLocaleString()}P
-              </div>
-              <div className="w-1/2 flex justify-center items-center px-2">
-                {tab === 'settled' ? (
-                  <span>{item.createdAt.replace('T', ' ').slice(0, 16)}</span>
-                ) : (
-                  <div className="flex items-center gap-[6px] w-full max-w-[160px]">
-                    <div className="w-[40px] text-right">{item.quantity ?? 0}GB</div>
-                    <div className="flex-1 h-[10px] bg-[#F0F0F0] rounded-sm overflow-hidden">
-                      <div
-                        className={`h-full ${tab === 'sell' ? 'bg-[#FF4343]' : 'bg-[#2769F6]'}`}
-                        style={{
-                          width: `${((item.quantity ?? 0) / maxQuantity) * 100}%`,
-                          minWidth: '4px',
-                        }}
-                      />
+          {/* 항목 목록 */}
+          {currentData.length === 0 ? (
+            <div className="text-center text-[#777777] py-5">데이터가 없습니다.</div>
+          ) : (
+            (highlightFirst ? currentData.slice(1) : currentData).map((item, idx) => (
+              <div
+                key={idx}
+                className="flex py-[6px] min-h-[33px] text-[12px] text-[#777777] border-b border-[#EEE]"
+              >
+                <div className="w-1/2 flex justify-center items-center">
+                  {item.price.toLocaleString()}P
+                </div>
+                <div className="w-1/2 flex justify-center items-center px-2">
+                  {tab === 'settled' ? (
+                    <span>{item.createdAt.replace('T', ' ').slice(0, 16)}</span>
+                  ) : (
+                    <div className="flex items-center gap-[6px] w-full max-w-[160px]">
+                      <div className="w-[40px] text-right">{item.quantity ?? 0}GB</div>
+                      <div className="flex-1 h-[10px] bg-[#F0F0F0] rounded-sm overflow-hidden">
+                        <div
+                          className={`h-full ${tab === 'sell' ? 'bg-[#FF4343]' : 'bg-[#2769F6]'}`}
+                          style={{
+                            width: `${((item.quantity ?? 0) / maxQuantity) * 100}%`,
+                            minWidth: '4px',
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          ))
-        )}
-      </SimpleBar>
+            ))
+          )}
+        </SimpleBar>
+      )}
     </div>
   );
 };

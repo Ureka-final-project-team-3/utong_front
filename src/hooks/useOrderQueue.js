@@ -1,4 +1,3 @@
-// hooks/useOrderQueue.js
 import { useEffect, useState } from 'react';
 
 const useOrderQueue = (dataCode) => {
@@ -8,10 +7,14 @@ const useOrderQueue = (dataCode) => {
     recentContracts: [],
   });
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     if (!dataCode) return;
 
-    const url = `http://54.180.0.98:8080/api/data/order-queue/stream/${dataCode}`;
+    setIsLoading(true); // 데이터 새로 요청 시 로딩 시작
+
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/data/order-queue/stream/${dataCode}`;
     const eventSource = new EventSource(url);
     const eventName = `${dataCode}queue-hourly-update`;
 
@@ -19,6 +22,7 @@ const useOrderQueue = (dataCode) => {
       try {
         const parsed = JSON.parse(e.data);
         setQueueData(parsed);
+        setIsLoading(false); // 데이터 수신 완료
         console.log(`[SSE][${dataCode}] 큐 수신:`, parsed);
       } catch (err) {
         console.error(`[SSE][${dataCode}] 파싱 오류`, err);
@@ -27,6 +31,8 @@ const useOrderQueue = (dataCode) => {
 
     eventSource.onerror = (e) => {
       console.error(`[SSE][${dataCode}] SSE 오류`, e);
+      // 에러시에도 로딩 해제하거나 필요에 따라 다시 시도 로직 가능
+      setIsLoading(false);
     };
 
     return () => {
@@ -35,7 +41,7 @@ const useOrderQueue = (dataCode) => {
     };
   }, [dataCode]);
 
-  return queueData;
+  return { queueData, isLoading };
 };
 
 export default useOrderQueue;

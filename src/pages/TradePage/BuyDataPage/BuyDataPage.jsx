@@ -1,8 +1,8 @@
+// src/pages/BuyDataPage.jsx
 import React, { useEffect, useState } from 'react';
 import BuyDataHeader from './components/BuyDataHeader';
 import Button from '../../../components/common/Button';
 
-import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData';
 import useUserStore from '@/stores/useUserStore';
 import useTradeStore from '@/stores/tradeStore';
 import useModalStore from '@/stores/modalStore';
@@ -13,6 +13,9 @@ import ReservationModal from '../components/ReservationModal';
 import PaymentCompleteModal from '../components/PaymentCompleteModal';
 
 import { postBuyOrder } from '@/apis/dataTradeApi';
+import useOrderQueue from '@/hooks/useOrderQueue';
+
+import SyncLoading from '@/components/Loading/SyncLoading';
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -47,27 +50,25 @@ const BuyDataPage = () => {
     networkToDataCodeMap[selectedNetwork] || '002'
   );
 
-  const userPlanNetwork = codeToNetworkMap[dataCode] || '';
-
-  const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
-  const [selectedDataGB, setSelectedDataGB] = useState(1);
-  const [buyPrice, setBuyPrice] = useState('0');
-
+  // 유저 정보 초기 로딩용
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
 
-  useEffect(() => {
-    const code = networkToDataCodeMap[selectedNetwork] || '002';
-    setLocalDataCode(code);
+  const userPlanNetwork = codeToNetworkMap[dataCode] || '';
 
-    const sellBids = mockSellBids.filter((bid) => bid.dataCode === code);
-    const minSellPrice = sellBids.length ? Math.min(...sellBids.map((b) => b.price)) : 0;
-    setBuyPrice(minSellPrice.toString());
-  }, [selectedNetwork]);
+  // SSE 주문 큐 데이터 구독
+  const { queueData, isLoading } = useOrderQueue(localDataCode);
 
-  const sellBids = mockSellBids.filter((bid) => bid.dataCode === localDataCode);
+  // 판매 입찰 데이터 배열 변환
+  const sellBids = queueData?.sellOrderQuantity
+    ? Object.entries(queueData.sellOrderQuantity).map(([price, quantity]) => ({
+        price: Number(price),
+        quantity,
+      }))
+    : [];
 
+  // 평균 판매가 계산
   const avgPrice = sellBids.length
     ? Math.round(
         sellBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
@@ -76,9 +77,21 @@ const BuyDataPage = () => {
       ) * 100
     : 0;
 
+  // 최저 판매가 계산
   const minPrice = sellBids.length ? Math.min(...sellBids.map((b) => b.price)) : 0;
 
+  const [selectedDataGB, setSelectedDataGB] = useState(1);
+  const [buyPrice, setBuyPrice] = useState(minPrice.toString());
+
+  useEffect(() => {
+    const code = networkToDataCodeMap[selectedNetwork] || '002';
+    setLocalDataCode(code);
+    setBuyPrice(minPrice.toString());
+  }, [selectedNetwork, minPrice]);
+
   const buyPriceNum = Number(buyPrice) || 0;
+
+  const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
 
   const handleGBInputChange = (e) => {
     const val = e.target.value;
@@ -99,7 +112,6 @@ const BuyDataPage = () => {
       const totalPrice = buyPriceNum * selectedQty;
 
       if (point < totalPrice) {
-        console.log('[구매 실패] 포인트 부족', { point, totalPrice });
         openModal('showRechargeModal');
         return;
       }
@@ -111,7 +123,6 @@ const BuyDataPage = () => {
       };
 
       const response = await postBuyOrder(payload);
-      console.log('[API 응답]', response);
 
       switch (response.result) {
         case 'ALL_COMPLETE':
@@ -131,7 +142,6 @@ const BuyDataPage = () => {
     } catch (error) {
       if (error.response) {
         const { data, status } = error.response;
-        console.log('[API 에러 응답]', status, data);
 
         if (status === 400) {
           switch (data.resultCode) {
@@ -160,6 +170,10 @@ const BuyDataPage = () => {
 
   const isUserPlanMatches = userPlanNetwork === selectedNetwork;
   const isButtonEnabled = buyPriceNum > 0 && (Number(selectedDataGB) || 0) > 0 && isUserPlanMatches;
+
+  if (isLoading) {
+    return <SyncLoading text="데이터를 불러오는 중입니다..." />;
+  }
 
   return (
     <div>
