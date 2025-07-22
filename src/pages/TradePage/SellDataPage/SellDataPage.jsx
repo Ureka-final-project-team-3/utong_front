@@ -5,8 +5,9 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import SellDataHeader from './components/SellDataHeader';
 import Button from '../../../components/common/Button';
-import { mockBuyBids } from '../../LiveChartPage/mock/mockTradeData'; // 구매 매물 데이터 import
+import { mockBuyBids } from '../../LiveChartPage/mock/mockTradeData';
 import SellSuccessModal from '../components/SellSuccessModal';
+import SyncLoading from '@/components/Loading/SyncLoading';
 
 import useTradeStore from '@/stores/tradeStore';
 import useUserStore from '@/stores/useUserStore';
@@ -33,94 +34,93 @@ const SellDataPage = () => {
     canSale,
   } = useUserStore();
 
-  const [localDataCode, setLocalDataCode] = useState(
-    networkToDataCodeMap[selectedNetwork] || '002'
-  );
+  const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalStatus, setModalStatus] = useState(null);
   const [isBlockingInput, setIsBlockingInput] = useState(false);
 
-  useEffect(() => {
-    setLocalDataCode(networkToDataCodeMap[selectedNetwork] || '002');
-  }, [selectedNetwork]);
+  const localDataCode = networkToDataCodeMap[selectedNetwork] || '002';
 
   useEffect(() => {
-    fetchUserData();
+    const loadUserData = async () => {
+      setIsLoading(true);
+      await fetchUserData();
+      setIsLoading(false);
+
+      toast.info('거래중개 등 제반 서비스 이용료가 포함됩니다.', {
+        autoClose: 3000,
+        position: 'top-center',
+        toastId: 'welcome-toast',
+      });
+    };
+    loadUserData();
   }, [fetchUserData]);
 
-  // 구매 매물만 필터링 (판매 페이지에서 최고가 표시 목적)
-  const buyBids = mockBuyBids.filter((bid) => bid.dataCode === localDataCode);
+  const buyBids = useMemo(
+    () => mockBuyBids.filter((bid) => bid.dataCode === localDataCode),
+    [localDataCode]
+  );
 
-  // 평균가 계산 (구매 매물 기준)
-  const avgPrice = buyBids.length
-    ? Math.round(
-        buyBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
-          buyBids.reduce((sum, b) => sum + b.quantity, 0) /
-          100
-      ) * 100
-    : 0;
+  const avgPrice = useMemo(() => {
+    if (!buyBids.length) return 0;
+    const totalAmount = buyBids.reduce((sum, b) => sum + b.quantity, 0);
+    const totalValue = buyBids.reduce((sum, b) => sum + b.price * b.quantity, 0);
+    return Math.round(totalValue / totalAmount / 100) * 100;
+  }, [buyBids]);
 
-  // 최고가 계산 (구매 매물 기준)
-  const highestPrice = buyBids.length ? Math.max(...buyBids.map((b) => b.price)) : 0;
+  const highestPrice = useMemo(() => {
+    return buyBids.length ? Math.max(...buyBids.map((b) => b.price)) : 0;
+  }, [buyBids]);
 
-  // 가격 입력 초기값은 평균가
   const [price, setPrice] = useState(highestPrice.toString());
-
   const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
-  const [dataAmount, setDataAmount] = useState(1);
+  const [dataAmount, setDataAmount] = useState('1');
 
-  const priceNum = Number(price) || 0;
-  const minPrice = Math.floor(avgPrice * 0.7);
-  const maxPriceAllowed = Math.ceil(avgPrice * 1.3);
+  const priceNum = useMemo(() => (price === '' ? 0 : Number(price)), [price]);
+  const dataAmountNum = useMemo(() => (dataAmount === '' ? 0 : Number(dataAmount)), [dataAmount]);
 
-  const totalPrice = priceNum * dataAmount;
-  const totalFee = Math.floor(totalPrice * 0.025);
-  const totalAfterPoint = totalPrice - totalFee;
+  const minPrice = useMemo(() => Math.floor(avgPrice * 0.7), [avgPrice]);
+  const maxPriceAllowed = useMemo(() => Math.ceil(avgPrice * 1.3), [avgPrice]);
+  const totalPrice = useMemo(() => priceNum * dataAmountNum, [priceNum, dataAmountNum]);
+  const totalFee = useMemo(() => Math.floor(totalPrice * 0.025), [totalPrice]);
+  const totalAfterPoint = useMemo(() => totalPrice - totalFee, [totalPrice, totalFee]);
 
-  const isPriceValid = priceNum >= minPrice && priceNum <= maxPriceAllowed;
-  const isDataValid = dataAmount > 0 && dataAmount <= canSale;
+  const isPriceValid = useMemo(() => {
+    if (price === '') return false;
+    return priceNum >= minPrice && priceNum <= maxPriceAllowed;
+  }, [price, priceNum, minPrice, maxPriceAllowed]);
 
-  const [hasWarned, setHasWarned] = useState(false);
+  const isDataValid = useMemo(
+    () => dataAmountNum > 0 && dataAmountNum <= canSale,
+    [dataAmountNum, canSale]
+  );
 
   const userPlanNetwork = useMemo(() => codeToNetworkMap[dataCode] || '', [dataCode]);
   const normalizedUserPlanNetwork = userPlanNetwork.toLowerCase();
   const normalizedSelectedNetwork = selectedNetwork.toLowerCase();
 
   useEffect(() => {
-    if (!isPriceValid && price.length > 0 && !hasWarned) {
+    if (!isPriceValid && price.length > 0) {
       toast.error(
         `가격은 ${minPrice.toLocaleString()}원 이상 ${maxPriceAllowed.toLocaleString()}원 이하만 가능합니다.`,
-        { autoClose: 3000 }
+        { autoClose: 3000, toastId: 'price-error-toast' }
       );
-      setHasWarned(true);
     }
-    if (isPriceValid) setHasWarned(false);
-  }, [price, isPriceValid, hasWarned, minPrice, maxPriceAllowed]);
+  }, [price, isPriceValid, minPrice, maxPriceAllowed]);
 
   useEffect(() => {
-  if (dataAmount > canSale && data !== 0) {
-    console.log('토스트 오픈: 보유 데이터 초과');
-    toast.error(`보유 데이터(${canSale}GB)보다 많은 양을 판매할 수 없어요.`, {
-      autoClose: 3000,
-      onOpen: () => {
-        console.log('toast onOpen: 입력 차단 활성화');
-        setIsBlockingInput(true);
-      },
-      onClose: () => {
-        console.log('toast onClose: 입력 차단 해제');
-        setIsBlockingInput(false);
-      },
-    });
-  }
-}, [dataAmount, canSale, data]);
-
-
-  useEffect(() => {
-    toast.info('거래중개 등 제반 서비스 이용료가 포함됩니다.', {
-      autoClose: 3000,
-      position: 'top-center',
-    });
-  }, []);
+    if (dataAmountNum > canSale && data !== 0) {
+      toast.error(`보유 데이터(${canSale}GB)보다 많은 양을 판매할 수 없어요.`, {
+        autoClose: 3000,
+        toastId: 'data-amount-error-toast',
+        onOpen: () => setIsBlockingInput(true),
+        onClose: () => {
+          setIsBlockingInput(false);
+          setDataAmount(String(canSale));
+        },
+      });
+    }
+  }, [dataAmountNum, canSale, data]);
 
   const handleSellClick = async () => {
     if (!isPriceValid || !isDataValid || normalizedUserPlanNetwork !== normalizedSelectedNetwork)
@@ -128,7 +128,7 @@ const SellDataPage = () => {
 
     const payload = {
       price: priceNum,
-      dataAmount,
+      dataAmount: dataAmountNum,
       dataCode: localDataCode,
     };
 
@@ -148,7 +148,7 @@ const SellDataPage = () => {
         setTimeout(() => setShowModal(false), 3000);
       }
 
-      fetchUserData();
+      await fetchUserData();
     } catch (err) {
       console.error('판매 등록 실패:', err);
       setModalStatus(null);
@@ -159,14 +159,14 @@ const SellDataPage = () => {
 
   const handleSelectData = (option) => {
     const val = Number(option.replace('GB', ''));
-    setDataAmount((prev) => prev + val);
+    setDataAmount((prev) => String(Number(prev) + val));
   };
 
-  const isButtonEnabled =
-    isPriceValid &&
-    isDataValid &&
-    dataAmount <= canSale &&
-    normalizedUserPlanNetwork === normalizedSelectedNetwork;
+  const isButtonEnabled = isPriceValid && isDataValid && normalizedUserPlanNetwork === normalizedSelectedNetwork;
+
+  if (isLoading) {
+    return <SyncLoading text="사용자 데이터를 불러오는 중..." />;
+  }
 
   return (
     <div style={{ position: 'relative' }}>
@@ -236,13 +236,15 @@ const SellDataPage = () => {
           <input
             type="text"
             inputMode="numeric"
-            pattern="[0-9]*"
             value={price}
             onChange={(e) => {
-              const value = e.target.value;
-              if (/^\d*$/.test(value)) {
-                setPrice(value);
+              const val = e.target.value;
+              if (!/^\d*$/.test(val)) return;
+              if (val === '') {
+                setPrice('');
+                return;
               }
+              setPrice(String(Number(val)));
             }}
             className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
           />
@@ -265,14 +267,16 @@ const SellDataPage = () => {
             <input
               type="text"
               inputMode="numeric"
-              pattern="[0-9]*"
               value={dataAmount}
               disabled={isBlockingInput}
               onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d*$/.test(value)) {
-                  setDataAmount(Number(value));
+                const val = e.target.value;
+                if (!/^\d*$/.test(val)) return;
+                if (val === '') {
+                  setDataAmount('');
+                  return;
                 }
+                setDataAmount(String(Number(val)));
               }}
               className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
             />
