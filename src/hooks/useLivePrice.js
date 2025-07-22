@@ -6,7 +6,7 @@ const useLivePrice = (dataCode) => {
   useEffect(() => {
     if (!dataCode) return;
 
-    const url = `${import.meta.env.VITE_API_BASE}/api/data/current-prices/stream/${dataCode}`;
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/data/current-prices/stream/${dataCode}`;
     const eventSource = new EventSource(url);
 
     console.log(`[SSE] 연결 시도 → ${url}`);

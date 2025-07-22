@@ -1,16 +1,20 @@
+import SyncLoading from '@/components/Loading/SyncLoading';
 import ChartHeader from './components/ChartHeader';
 import PriceChart from './components/PriceChart';
 import PriceChartInfo from './components/PriceChartInfo';
 import TradeInfoSection from './components/TradeInfoSection';
 import TradeActionButtons from './components/TradeActionButtons';
-import useAuth from '@/hooks/useAuth'; // 커스텀 훅 import
+import useAuth from '@/hooks/useAuth';
 
 const LiveChartPage = () => {
-  const { user, isLoading } = useAuth(); // 인증 체크
+  const { user, isLoading } = useAuth();
 
-  // 인증 로딩 중일 때는 로딩 화면 표시 (또는 null로 아무것도 렌더링하지 않음)
   if (isLoading) {
-    return null; // 또는 <div>Loading...</div>
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <SyncLoading text="데이터를 불러오는 중입니다..." />
+      </div>
+    );
   }
 
   return (
