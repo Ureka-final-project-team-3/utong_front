@@ -20,6 +20,7 @@ export const fetchRouletteEventStatus = async () => {
 
 export const participateInRoulette = async (eventId) => {
   const res = await API.post('/roulette/participate', { eventId });
+  console.log('룰렛 참여 응답:', res.data);  // 여기서 쿠폰 데이터 구조 확인
   return res.data;
 };
 
