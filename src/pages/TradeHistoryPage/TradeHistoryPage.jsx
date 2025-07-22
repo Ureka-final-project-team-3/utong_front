@@ -1,4 +1,3 @@
-// src/pages/TradeHistoryPage.jsx
 import React, { useState, useEffect } from 'react';
 import BackButton from '@/components/BackButton/BackButton';
 import loadingIcon from '@/assets/image/loading.png';
@@ -7,7 +6,7 @@ import redcheckIcon from '@/assets/icon/redcheck.svg';
 import bgImage from '@/assets/image/background4.png';
 import bottomToggleIcon from '@/assets/icon/bottomtoggle.svg';
 import { fetchPurchaseData, fetchSaleData } from '@/apis/purchaseApi';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import NavigationBar from '@/components/NavigationBar/NavigationBar';
 import DateRangeModal from './DateRangeModal';
 
@@ -69,8 +68,8 @@ const TradeHistoryPage = () => {
 
     return Object.entries(grouped).map(([date, list]) => (
       <div key={date}>
-        <p className="text-sm font-bold text-[#444] mt-4 mb-1">{date}</p>
-        <div className="flex flex-col gap-2">
+        <p className="text-xl font-bold text-[#444] mt-6 mb-3">{date}</p>
+        <div className="flex flex-col gap-4 ">
           {list
             .sort((a, b) => (a.isWaiting === b.isWaiting ? 0 : a.isWaiting ? -1 : 1))
             .map((item, idx) => {
@@ -87,22 +86,19 @@ const TradeHistoryPage = () => {
                   : 'text-blue-600';
               const key = `${item.purchaseId || item.saleId}-${idx}`;
               return (
-                <div key={key} className="border-b border-gray-300 py-2">
-                  {/* 상단 상태 + 데이터 타입 */}
-                  <div className="flex items-center gap-2 text-sm">
-                    <img src={icon} alt="status" className="w-4 h-4" />
-                    <span className={`${statusColor} font-medium`}>{status}</span>
-                    <span className="text-black font-medium ml-2">
+                <div key={key} className=" py-2">
+                  <div className="flex justify-between items-start text-sm">
+                    <div className="flex items-center gap-2 w-[40%]">
+                      <img src={icon} alt="status" className="w-6 h-6" />
+                      <span className={`${statusColor} font-bold`}>{status}</span>
+                    </div>
+                    <span className="text-gray-700 font-semibold">
                       {item.dataCode === '001' ? 'LTE 데이터' : '5G 데이터'}
                     </span>
-                  </div>
-
-                  {/* 하단 정보 정렬: 좌측 "1GB당", 우측 "총 가격" */}
-                  <div className="flex justify-between mt-1 text-xs text-gray-600">
-                    <span className="text-left">1GB당 {item.pricePerGb.toLocaleString()}P</span>
-                    <span className="text-right">
-                      {item.quantity}GB / 총 {(item.pricePerGb * item.quantity).toLocaleString()}P
-                    </span>
+                    <div className="flex flex-col text-right text-xs text-gray-600 ">
+                      <span>1GB당 {item.pricePerGb.toLocaleString()}P</span>
+                      <span>총 {(item.pricePerGb * item.quantity).toLocaleString()}P</span>
+                    </div>
                   </div>
                 </div>
               );
@@ -136,7 +132,6 @@ const TradeHistoryPage = () => {
               </div>
             </div>
 
-            {/* 날짜 선택 버튼 */}
             <button
               onClick={() => setShowRangeModal(true)}
               className="flex items-center justify-center text-base text-gray-600 rounded-full px-3 mb-4 mx-auto"
@@ -145,7 +140,6 @@ const TradeHistoryPage = () => {
               <img src={bottomToggleIcon} alt="열기" className="w-3 h-3" />
             </button>
 
-            {/* 요약 정보 */}
             <div className="mb-3 text-sm">
               <div className="flex justify-between text-gray-600">
                 <span>구매 데이터</span>
@@ -155,14 +149,14 @@ const TradeHistoryPage = () => {
                 <span>사용 마일리지</span>
                 <span className="text-black font-medium">{totalMileage.toLocaleString()}P</span>
               </div>
-              <div className="flex justify-between text-gray-600 mt-1">
+              <hr className="border-gray-300 mt-[10px]" />
+              <div className="flex justify-between text-gray-600 mt-3 ">
                 <span>대기중인 거래</span>
                 <span className="text-black font-medium">{data.waiting.length}건</span>
               </div>
             </div>
 
-            {/* 탭 */}
-            <div className="flex border-b border-gray-200 mb-2 text-[15px] font-medium">
+            <div className="relative border-b border-gray-300 mb-2 text-[16px] font-bold flex gap-6">
               {tabs.map((label) => (
                 <button
                   key={label}
@@ -170,14 +164,29 @@ const TradeHistoryPage = () => {
                     setTab(label);
                     setSubTab('전체');
                   }}
-                  className={`flex-1 pb-2 ${tab === label ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+                  className={`pb-2 transition-all duration-200 z-10 ${
+                    tab === label
+                      ? label === '판매 내역'
+                        ? 'text-[#FF4343]'
+                        : 'text-blue-600'
+                      : 'text-gray-500'
+                  }`}
                 >
                   {label}
                 </button>
               ))}
+              <motion.div
+                layoutId="underline"
+                className="absolute bottom-0 h-[2px]"
+                animate={{
+                  width: 70,
+                  x: tab === '판매 내역' ? 94 : 0,
+                  backgroundColor: tab === '판매 내역' ? '#FF4343' : '#2563EB',
+                }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              />
             </div>
 
-            {/* 서브 탭 */}
             <div className="mb-2 text-[14px] text-gray-500">
               {subTabs.map((label) => (
                 <button
@@ -190,13 +199,11 @@ const TradeHistoryPage = () => {
               ))}
             </div>
 
-            {/* 거래 내역 */}
             <div className="text-sm text-black pb-20">
               {renderGroupedItems(filteredData.complete, filteredData.waiting)}
             </div>
           </div>
 
-          {/* 날짜 모달 */}
           <AnimatePresence>
             {showRangeModal && (
               <DateRangeModal
