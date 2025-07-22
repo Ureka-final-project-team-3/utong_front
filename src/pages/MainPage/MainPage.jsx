@@ -42,10 +42,10 @@ const MainPage = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* 환영 메시지와 캐릭터 */}
       <div
-        className={`flex w-[300px] mt-8 items-start transition-all duration-700 ${
+        className={`flex w-[300px] mt-4 items-start transition-all duration-700 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
@@ -68,7 +68,7 @@ const MainPage = () => {
 
       {/* 데이터/포인트 카드 */}
       <div
-        className={`flex justify-between w-[300px] mt-4 space-x-3 transition-all duration-700 delay-200 ${
+        className={`flex justify-between w-[300px] mt-2 space-x-3 transition-all duration-700 delay-200 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
@@ -101,7 +101,7 @@ const MainPage = () => {
 
       {/* 실시간 가격 카드 */}
       <div
-        className={`rounded-xl text-white p-4 mt-4 bg-gradient-market-price w-[300px] h-[80px] transition-all duration-700 hover:shadow-xl hover:scale-[1.02] ${
+        className={`rounded-xl text-white p-4 mt-5 bg-gradient-market-price w-[300px] h-[80px] transition-all duration-700 delay-300 hover:shadow-xl hover:scale-[1.02] ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
@@ -120,7 +120,7 @@ const MainPage = () => {
 
       {/* 메뉴 카드 */}
       <div
-        className="w-[300px] mx-auto mt-6 rounded-3xl overflow-hidden bg-white"
+        className="w-[290px] mx-auto mt-8 rounded-3xl overflow-hidden bg-white flex-shrink-0"
         style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.25)' }}
       >
         <Link to="/chart" className="block transition-transform duration-200 hover:-translate-y-1">
