@@ -13,15 +13,17 @@ import DateRangeModal from './DateRangeModal';
 const tabs = ['구매 내역', '판매 내역'];
 const subTabs = ['전체', '거래완료', '대기중'];
 const ranges = [
+  { label: '전체', value: 'ALL' },
+  { label: '오늘', value: 'TODAY' },
   { label: '일주일', value: 'WEEK' },
   { label: '한달', value: 'MONTH' },
-  { label: '전체', value: 'YEAR' },
+  { label: '일년', value: 'YEAR' },
 ];
 
 const TradeHistoryPage = () => {
   const [tab, setTab] = useState('구매 내역');
   const [subTab, setSubTab] = useState('전체');
-  const [range, setRange] = useState('WEEK');
+  const [range, setRange] = useState('ALL');
   const [showRangeModal, setShowRangeModal] = useState(false);
   const [data, setData] = useState({ complete: [], waiting: [] });
   const [totalData, setTotalData] = useState(0);
@@ -59,6 +61,7 @@ const TradeHistoryPage = () => {
       ...waitingList.map((i) => ({ ...i, isWaiting: true })),
       ...completeList.map((i) => ({ ...i, isWaiting: false })),
     ];
+
     const grouped = allItems.reduce((acc, item) => {
       const date = formatDate(item.tradeDate);
       if (!acc[date]) acc[date] = [];
@@ -66,46 +69,51 @@ const TradeHistoryPage = () => {
       return acc;
     }, {});
 
-    return Object.entries(grouped).map(([date, list]) => (
-      <div key={date}>
-        <p className="text-xl font-bold text-[#444] mt-6 mb-3">{date}</p>
-        <div className="flex flex-col gap-4 ">
-          {list
-            .sort((a, b) => (a.isWaiting === b.isWaiting ? 0 : a.isWaiting ? -1 : 1))
-            .map((item, idx) => {
-              const icon = item.isWaiting
-                ? loadingIcon
-                : tab === '판매 내역'
-                  ? redcheckIcon
-                  : checkIcon;
-              const status = item.isWaiting ? '거래 대기중' : '거래 완료';
-              const statusColor = item.isWaiting
-                ? 'text-gray-400'
-                : tab === '판매 내역'
-                  ? 'text-[#FF4343]'
-                  : 'text-blue-600';
-              const key = `${item.purchaseId || item.saleId}-${idx}`;
-              return (
-                <div key={key} className=" py-2">
-                  <div className="flex justify-between items-start text-sm">
-                    <div className="flex items-center gap-2 w-[40%]">
-                      <img src={icon} alt="status" className="w-6 h-6" />
-                      <span className={`${statusColor} font-bold`}>{status}</span>
-                    </div>
-                    <span className="text-gray-700 font-semibold">
-                      {item.dataCode === '001' ? 'LTE 데이터' : '5G 데이터'}
-                    </span>
-                    <div className="flex flex-col text-right text-xs text-gray-600 ">
-                      <span>1GB당 {item.pricePerGb.toLocaleString()}P</span>
-                      <span>총 {(item.pricePerGb * item.quantity).toLocaleString()}P</span>
+    return Object.entries(grouped)
+      .sort((a, b) => {
+        const dateA = new Date(a[0].replace('월 ', '/').replace('일', ''));
+        const dateB = new Date(b[0].replace('월 ', '/').replace('일', ''));
+        return dateB - dateA;
+      })
+      .map(([date, list]) => (
+        <div key={date}>
+          <p className="text-xl font-bold text-[#444] mt-6 mb-3">{date}</p>
+          <div className="flex flex-col gap-6">
+            {list
+              .sort((a, b) => (a.isWaiting === b.isWaiting ? 0 : a.isWaiting ? -1 : 1))
+              .map((item, idx) => {
+                const icon = item.isWaiting
+                  ? loadingIcon
+                  : tab === '판매 내역'
+                    ? redcheckIcon
+                    : checkIcon;
+                const status = item.isWaiting ? '거래 대기중' : '거래 완료';
+                const statusColor = item.isWaiting
+                  ? 'text-gray-400'
+                  : tab === '판매 내역'
+                    ? 'text-[#FF4343]'
+                    : 'text-blue-600';
+                const key = `${item.purchaseId || item.saleId}-${idx}`;
+                return (
+                  <div key={key} className=" py-2">
+                    <div className="flex justify-between items-start text-sm">
+                      <div className="flex items-center gap-2 w-[40%]">
+                        <img src={icon} alt="status" className="w-6 h-6" />
+                        <span className={`${statusColor} font-bold`}>{status}</span>
+                      </div>
+                      <span className="text-gray-700 font-semibold">
+                        {item.dataCode === '001' ? 'LTE' : '5G'}
+                      </span>
+                      <div className="flex flex-col text-right text-base text-gray-600 ">
+                        <span>{(item.pricePerGb * item.quantity).toLocaleString()}P</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+          </div>
         </div>
-      </div>
-    ));
+      ));
   };
 
   const filteredData = {
@@ -124,8 +132,8 @@ const TradeHistoryPage = () => {
     >
       <div className="relative z-10 w-full h-full flex justify-end items-center">
         <div className="relative w-full h-full sm:w-[360px] sm:h-[780px] bg-white shadow-xl flex flex-col overflow-hidden sm:mr-[500px]">
-          <div className="flex-1 overflow-y-auto px-[30px] pt-[55px] pb-[30px] bg-background relative">
-            <div className="flex items-center mb-4 relative">
+          <div className="sticky top-0 z-20 bg-[#F6F7FC] pb-2">
+            <div className="flex items-center mb-2 relative px-[30px] pt-[55px]">
               <BackButton />
               <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2">
                 <h2 className="text-lg font-bold">거래 내역</h2>
@@ -134,20 +142,30 @@ const TradeHistoryPage = () => {
 
             <button
               onClick={() => setShowRangeModal(true)}
-              className="flex items-center justify-center text-base text-gray-600 rounded-full px-3 mb-4 mx-auto"
+              className="flex items-center justify-center text-base text-gray-600 rounded-full px-3 mb-2 mx-auto"
             >
               <span className="mr-1">{ranges.find((r) => r.value === range)?.label}</span>
               <img src={bottomToggleIcon} alt="열기" className="w-3 h-3" />
             </button>
+          </div>
 
-            <div className="mb-3 text-sm">
+          <div className="flex-1 overflow-y-auto scrollbar-hide px-[30px] pt-[0px] pb-[30px] bg-background relative">
+            <div className="mb-3 text-base">
               <div className="flex justify-between text-gray-600">
-                <span>구매 데이터</span>
-                <span className="text-black font-medium">{totalData}GB</span>
+                <span>{tab === '구매 내역' ? '구매한 데이터' : '판매한 데이터'}</span>
+                <span
+                  className={`font-medium ${tab === '구매 내역' ? 'text-blue-600' : 'text-[#FF4343]'}`}
+                >
+                  {totalData}GB
+                </span>
               </div>
               <div className="flex justify-between text-gray-600">
-                <span>사용 마일리지</span>
-                <span className="text-black font-medium">{totalMileage.toLocaleString()}P</span>
+                <span>{tab === '구매 내역' ? '사용 마일리지' : '획득 마일리지'}</span>
+                <span
+                  className={`font-medium ${tab === '구매 내역' ? 'text-blue-600' : 'text-[#FF4343]'}`}
+                >
+                  {totalMileage.toLocaleString()}P
+                </span>
               </div>
               <hr className="border-gray-300 mt-[10px]" />
               <div className="flex justify-between text-gray-600 mt-3 ">
