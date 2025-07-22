@@ -101,7 +101,7 @@ const MainPage = () => {
 
       {/* 실시간 가격 카드 */}
       <div
-        className={`rounded-xl text-white p-4 mt-4 bg-gradient-market-price w-[300px] h-[80px] transition-all duration-700 delay-300 hover:shadow-xl hover:scale-[1.02] ${
+        className={`rounded-xl text-white p-4 mt-4 bg-gradient-market-price w-[300px] h-[80px] transition-all duration-700 hover:shadow-xl hover:scale-[1.02] ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >

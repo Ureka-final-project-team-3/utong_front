@@ -81,12 +81,12 @@ const EventPage = () => {
       } else {
         const msg = response.message || response.codeName || '이벤트 정보를 불러오지 못했습니다.';
         setError(msg);
-        alert(`이벤트 조회 실패: ${msg}`);
+        // alert(`이벤트 조회 실패: ${msg}`);
       }
     } catch (err) {
       console.error(err);
       setError('이벤트 정보를 불러오는 중 에러가 발생했습니다.');
-      alert('이벤트 정보를 불러오는 중 에러가 발생했습니다.');
+      // alert('이벤트 정보를 불러오는 중 에러가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -117,9 +117,9 @@ const EventPage = () => {
   const startSpin = async () => {
     if (isSpinning || (!eventInfo?.canParticipate && !isTestMode) || !eventInfo?.eventId) {
       if (!eventInfo?.canParticipate && !isTestMode) {
-        alert('현재 이벤트에 참여할 수 없습니다.');
+        // alert('현재 이벤트에 참여할 수 없습니다.');
       } else if (!eventInfo?.eventId) {
-        alert('이벤트 정보가 불완전하여 참여할 수 없습니다. 잠시 후 다시 시도해주세요.');
+        // alert('이벤트 정보가 불완전하여 참여할 수 없습니다. 잠시 후 다시 시도해주세요.');
       }
       return;
     }
@@ -190,7 +190,7 @@ const EventPage = () => {
         onDone: () => {
           stop();
 
-          alert('참여 중 오류가 발생했습니다.');
+          // alert('참여 중 오류가 발생했습니다.');
           setResult({ isWinner: false, message: '참여 중 오류가 발생했습니다.' });
           setIsSpinning(false);
         },
