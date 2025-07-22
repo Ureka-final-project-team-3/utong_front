@@ -217,26 +217,12 @@ const EventPage = () => {
   }
 
   return (
-    <div className="relative overflow-hidden pb-12">
-      {/* 유통통 - 뒤쪽 레이어 (낮은 z-index) */}
-      <div className="relative z-10">
-        <EventHeader />
-        <RouletteEventExtras />
-      </div>
+    <div className="relative overflow-hidden">
+      <EventHeader />
 
-      {/* 룰렛 - 앞쪽 레이어 (높은 z-index) */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key="wheel"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="relative z-20"
-        >
-          <RouletteWheel isSpinning={isSpinning} rotation={rotation} />
-        </motion.div>
-      </AnimatePresence>
+      <RouletteEventExtras />
+
+      <RouletteWheel isSpinning={isSpinning} rotation={rotation} />
 
       {loading ? (
         <div className="p-4 max-w-xl mx-auto mt-20">
@@ -255,7 +241,7 @@ const EventPage = () => {
       ) : (
         <>
           <motion.div
-            animate={{ rotate: [0, -5, 5, -5, 5, 0] }}
+            animate={{ rotate: [0, -3, 3, -3, 3, 0] }}
             transition={{
               duration: 0.6,
               ease: 'easeInOut',
