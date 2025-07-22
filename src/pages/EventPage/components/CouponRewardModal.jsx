@@ -32,7 +32,7 @@ const CouponRewardModal = ({ coupon, onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl text-center font-bold text-blue-600 mb-4">축하합니다!</h2>
-        <p className="text-2xl text-center text-gray-700 mb-6">당첨된 쿠폰이에요!</p>
+        <p className="text-[14px] text-center text-gray-700 mb-6">당첨 된 쿠폰은 마이페이지 쿠폰함에서 확인하실 수 있습니다.</p>
         <CouponCard coupon={coupon} />
         <button
           className="mt-6 w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600"
