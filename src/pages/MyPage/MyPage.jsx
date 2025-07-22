@@ -142,7 +142,7 @@ export default function MyPage() {
         />
 
         {user && (
-          <div className="flex items-center gap-2 relative">
+          <div className="flex items-center gap-2 relative z-100">
             <h1
               className="text-white text-2xl font-bold cursor-pointer"
               onClick={() => {
@@ -170,7 +170,7 @@ export default function MyPage() {
             </svg>
 
             {dropdownOpen && (
-              <ul className="absolute top-full left-0 mt-1 bg-white rounded shadow-lg w-30 text-black text-[12px]">
+              <ul className="absolute top-full left-0 mt-1 bg-white rounded shadow-lg w-30 text-black text-[12px] z-[9999] border border-gray-200">
                 {phoneNumbers.map((line) => (
                   <li
                     key={line}
@@ -193,7 +193,7 @@ export default function MyPage() {
 
       {/* Info Card */}
       <div
-        className={`mt-6 bg-[#386DEE] text-white rounded-xl p-3 transition-all duration-700 hover:shadow-2xl hover:scale-[1.02] overflow-visible ${
+        className={`mt-10 bg-[#386DEE] text-white rounded-xl p-3 transition-all duration-700 hover:shadow-2xl hover:scale-[1.02] overflow-visible relative z-10 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
@@ -246,7 +246,7 @@ export default function MyPage() {
 
       {/* 메뉴 버튼들 */}
       <div
-        className={`grid grid-cols-4 gap-y-6 mt-10 text-center font-Medium text-xs text-[#5F5F5F] transition-all duration-700 delay-400 ${
+        className={`grid grid-cols-4 gap-y-6 mt-10 text-center font-Medium text-xs text-[#5F5F5F] transition-all duration-700 delay-400 relative z-10 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
@@ -274,7 +274,7 @@ export default function MyPage() {
       </div>
 
       <div
-        className={`grid grid-cols-3 gap-y-6 mt-8 px-5 text-center font-Medium text-xs text-[#5F5F5F] transition-all duration-700 delay-600 ${
+        className={`grid grid-cols-3 gap-y-6 mt-8 px-5 text-center font-Medium text-xs text-[#5F5F5F] transition-all duration-700 delay-600 relative z-10 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
@@ -308,7 +308,7 @@ export default function MyPage() {
 
       {/* 모달 */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.5)] animate-fade-in">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[rgba(0,0,0,0.5)] animate-fade-in">
           <div
             ref={modalRef}
             className="bg-white rounded-xl p-6 w-60 shadow-lg animate-modal-slide-up"
