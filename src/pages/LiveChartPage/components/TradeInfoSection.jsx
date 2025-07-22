@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import useTradeStore from '@/stores/tradeStore';
-import { mockSellBids, mockBuyBids } from '../mock/mockTradeData';
+import useOrderQueue from '@/hooks/useOrderQueue'; // 실시간 SSE 훅
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -28,27 +28,39 @@ const TradeInfoSection = () => {
     }
   };
 
+  const { buyOrderQuantity, sellOrderQuantity, recentContracts } =
+    useOrderQueue(selectedDataCode);
+
   const currentData = (() => {
     if (tab === 'sell') {
-      return mockSellBids
-        .filter((item) => item.dataCode === selectedDataCode)
+      return Object.entries(sellOrderQuantity || {})
+        .map(([price, quantity]) => ({
+          price: Number(price),
+          quantity,
+        }))
         .sort((a, b) => a.price - b.price);
     }
+
     if (tab === 'buy') {
-      return mockBuyBids
-        .filter((item) => item.dataCode === selectedDataCode)
+      return Object.entries(buyOrderQuantity || {})
+        .map(([price, quantity]) => ({
+          price: Number(price),
+          quantity,
+        }))
         .sort((a, b) => b.price - a.price);
     }
-    // 체결거래
-    return mockSellBids
-      .filter((item) => item.dataCode === selectedDataCode)
-      .map(({ price, createdAt }) => ({ price, createdAt }));
+
+    return (recentContracts || [])
+      .sort((a, b) => new Date(b.contractedAt) - new Date(a.contractedAt))
+      .map(({ price, quantity, contractedAt }) => ({
+        price,
+        quantity,
+        createdAt: contractedAt,
+      }));
   })();
 
   const maxQuantity = Math.max(
-    ...[...mockSellBids, ...mockBuyBids]
-      .filter((d) => d.dataCode === selectedDataCode)
-      .map((d) => d.quantity || 0),
+    ...currentData.map((d) => d.quantity || 0),
     1
   );
 
