@@ -192,7 +192,7 @@ const EventPage = () => {
 
   // authLoading 또는 이벤트 데이터 로딩 중일 때 로딩 UI 표시
   if (authLoading || loading) {
-   return <SyncLoading />;
+    return <SyncLoading />;
   }
 
   if (!user) {
