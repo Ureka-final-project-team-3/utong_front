@@ -2,17 +2,19 @@ import React, { useEffect, useState } from 'react';
 import BuyDataHeader from './components/BuyDataHeader';
 import Button from '../../../components/common/Button';
 
-import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData'; // 판매 매물 데이터
-import useUserStore from '@/stores/useUserStore'; // ✅ 사용자 Zustand store
+import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData'; 
+import useUserStore from '@/stores/useUserStore'; 
 import useTradeStore from '@/stores/tradeStore';
-import useModalStore from '@/stores/modalStore'; // 모달 Zustand store
+import useModalStore from '@/stores/modalStore'; 
 
 import PointRechargeModal from '../components/PointRechargeModal';
 import BuySuccessModal from '../components/BuySuccessModal';
 import ReservationModal from '../components/ReservationModal';
 import PaymentCompleteModal from '../components/PaymentCompleteModal';
 
-import { postBuyOrder } from '@/apis/dataTradeApi'; // 구매 주문 API import (경로 맞게 수정)
+import { postBuyOrder } from '@/apis/dataTradeApi'; 
+
+import SyncLoading from '@/components/Loading/SyncLoading'; // 로딩 컴포넌트 추가
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -52,19 +54,22 @@ const BuyDataPage = () => {
   const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
   const [selectedDataGB, setSelectedDataGB] = useState(1);
   const [buyPrice, setBuyPrice] = useState('0');
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
   useEffect(() => {
-    fetchUserData();
+    const loadUserData = async () => {
+      setIsLoading(true);
+      await fetchUserData();
+      setIsLoading(false);
+    };
+    loadUserData();
   }, [fetchUserData]);
 
   useEffect(() => {
     const code = networkToDataCodeMap[selectedNetwork] || '002';
     setLocalDataCode(code);
 
-    // 판매 매물 필터링
     const sellBids = mockSellBids.filter((bid) => bid.dataCode === code);
-
-    // 판매 매물 최저가 계산 (최저가가 없으면 0)
     const minSellPrice = sellBids.length ? Math.min(...sellBids.map((b) => b.price)) : 0;
 
     setBuyPrice(minSellPrice.toString());
@@ -160,6 +165,10 @@ const BuyDataPage = () => {
 
   const isUserPlanMatches = userPlanNetwork === selectedNetwork;
   const isButtonEnabled = buyPriceNum > 0 && (Number(selectedDataGB) || 0) > 0 && isUserPlanMatches;
+
+  if (isLoading) {
+    return <SyncLoading text="사용자 데이터를 불러오는 중..." />;
+  }
 
   return (
     <div>

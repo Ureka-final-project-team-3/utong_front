@@ -6,13 +6,13 @@ const useLivePrice = (dataCode) => {
   useEffect(() => {
     if (!dataCode) return;
 
-    const url = `${import.meta.env.VITE_API_BASE_URL}/api/data/current-prices/stream/${dataCode}`;
+    const url = `${import.meta.env.VITE_API_BASE}/api/data/current-prices/stream/${dataCode}`;
     const eventSource = new EventSource(url);
 
     console.log(`[SSE] 연결 시도 → ${url}`);
 
     // 📦 초기 데이터 수신
-    eventSource.addEventListener('initial-data', (event) => {
+    eventSource.addEventListener('chart-initial-data', (event) => {
       try {
         const initialData = JSON.parse(event.data);
         setPriceList(initialData);
@@ -23,7 +23,7 @@ const useLivePrice = (dataCode) => {
     });
 
     // 📈 실시간 업데이트 수신
-    const hourlyEventName = `${dataCode}-hourly-update`;
+    const hourlyEventName = `${dataCode}-chart-hourly-update`;
     eventSource.addEventListener(hourlyEventName, (event) => {
       try {
         const updates = JSON.parse(event.data);
