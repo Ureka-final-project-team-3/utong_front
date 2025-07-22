@@ -2,19 +2,17 @@ import React, { useEffect, useState } from 'react';
 import BuyDataHeader from './components/BuyDataHeader';
 import Button from '../../../components/common/Button';
 
-import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData'; 
-import useUserStore from '@/stores/useUserStore'; 
+import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData';
+import useUserStore from '@/stores/useUserStore';
 import useTradeStore from '@/stores/tradeStore';
-import useModalStore from '@/stores/modalStore'; 
+import useModalStore from '@/stores/modalStore';
 
 import PointRechargeModal from '../components/PointRechargeModal';
 import BuySuccessModal from '../components/BuySuccessModal';
 import ReservationModal from '../components/ReservationModal';
 import PaymentCompleteModal from '../components/PaymentCompleteModal';
 
-import { postBuyOrder } from '@/apis/dataTradeApi'; 
-
-import SyncLoading from '@/components/Loading/SyncLoading'; // 로딩 컴포넌트 추가
+import { postBuyOrder } from '@/apis/dataTradeApi';
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -54,15 +52,9 @@ const BuyDataPage = () => {
   const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
   const [selectedDataGB, setSelectedDataGB] = useState(1);
   const [buyPrice, setBuyPrice] = useState('0');
-  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
   useEffect(() => {
-    const loadUserData = async () => {
-      setIsLoading(true);
-      await fetchUserData();
-      setIsLoading(false);
-    };
-    loadUserData();
+    fetchUserData();
   }, [fetchUserData]);
 
   useEffect(() => {
@@ -71,14 +63,11 @@ const BuyDataPage = () => {
 
     const sellBids = mockSellBids.filter((bid) => bid.dataCode === code);
     const minSellPrice = sellBids.length ? Math.min(...sellBids.map((b) => b.price)) : 0;
-
     setBuyPrice(minSellPrice.toString());
   }, [selectedNetwork]);
 
-  // 판매 매물 필터링
   const sellBids = mockSellBids.filter((bid) => bid.dataCode === localDataCode);
 
-  // 평균가 계산 (수량 가중 평균)
   const avgPrice = sellBids.length
     ? Math.round(
         sellBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
@@ -87,7 +76,6 @@ const BuyDataPage = () => {
       ) * 100
     : 0;
 
-  // 최저가 계산
   const minPrice = sellBids.length ? Math.min(...sellBids.map((b) => b.price)) : 0;
 
   const buyPriceNum = Number(buyPrice) || 0;
@@ -110,11 +98,6 @@ const BuyDataPage = () => {
       const selectedQty = Number(selectedDataGB) || 0;
       const totalPrice = buyPriceNum * selectedQty;
 
-      if (userPlanNetwork !== selectedNetwork) {
-        console.log('[구매 실패] 요금제 불일치', { userPlanNetwork, selectedNetwork });
-        return;
-      }
-
       if (point < totalPrice) {
         console.log('[구매 실패] 포인트 부족', { point, totalPrice });
         openModal('showRechargeModal');
@@ -128,7 +111,6 @@ const BuyDataPage = () => {
       };
 
       const response = await postBuyOrder(payload);
-
       console.log('[API 응답]', response);
 
       switch (response.result) {
@@ -143,32 +125,41 @@ const BuyDataPage = () => {
         case 'WAITING':
           openModal('showReservationModal');
           break;
-        case 'INSUFFICIENT_POINT':
-          openModal('showRechargeModal');
-          break;
-        case 'NEED_DEFAULT_LINE':
-          alert('기본 회선을 설정해 주세요.');
-          break;
-        case 'EXIST_SALE_REQUEST':
-          alert('이미 판매 요청이 존재합니다.');
-          break;
         default:
-          alert('알 수 없는 오류가 발생했습니다.');
+          alert('알 수 없는 성공 응답입니다.');
       }
-
-      fetchUserData();
     } catch (error) {
-      console.error('[구매 요청 오류]', error);
-      alert('구매 요청 중 오류가 발생했습니다.');
+      if (error.response) {
+        const { data, status } = error.response;
+        console.log('[API 에러 응답]', status, data);
+
+        if (status === 400) {
+          switch (data.resultCode) {
+            case 'INSUFFICIENT_POINT':
+              openModal('showRechargeModal');
+              break;
+            case 'NEED_DEFAULT_LINE':
+              alert('기본 회선을 설정해 주세요.');
+              break;
+            case 'EXIST_SALE_REQUEST':
+              alert('이미 판매 요청이 존재합니다.');
+              break;
+            default:
+              alert(data.message || '알 수 없는 오류가 발생했습니다.');
+          }
+        } else {
+          alert('서버 오류가 발생했습니다.');
+        }
+      } else {
+        alert('구매 요청 중 오류가 발생했습니다.');
+      }
+    } finally {
+      fetchUserData();
     }
   };
 
   const isUserPlanMatches = userPlanNetwork === selectedNetwork;
   const isButtonEnabled = buyPriceNum > 0 && (Number(selectedDataGB) || 0) > 0 && isUserPlanMatches;
-
-  if (isLoading) {
-    return <SyncLoading text="사용자 데이터를 불러오는 중..." />;
-  }
 
   return (
     <div>

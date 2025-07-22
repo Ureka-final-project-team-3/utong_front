@@ -136,7 +136,7 @@ const SellDataPage = () => {
       const res = await postSellOrder(payload);
 
       if (res && res.result) {
-        setModalStatus(res.result);
+        setModalStatus(res.result); // ALL_COMPLETE, PART_COMPLETE, WAITING 등
         setShowModal(true);
         setTimeout(() => {
           setShowModal(false);
@@ -149,11 +149,24 @@ const SellDataPage = () => {
       }
 
       await fetchUserData();
-    } catch (err) {
-      console.error('판매 등록 실패:', err);
-      setModalStatus(null);
+    } catch (error) {
+      console.error('판매 등록 실패:', error);
+
+      if (error.response) {
+        if (error.response.status === 400 && error.response.data?.codeName) {
+          setModalStatus(error.response.data.codeName); // BORDERLESS, NEED_DEFAULT_LINE, ...
+        } else {
+          setModalStatus('UNKNOWN_ERROR');
+        }
+      } else {
+        setModalStatus('NETWORK_ERROR');
+      }
+
       setShowModal(true);
-      setTimeout(() => setShowModal(false), 3000);
+      setTimeout(() => {
+        setShowModal(false);
+        setModalStatus(null);
+      }, 5000);
     }
   };
 
