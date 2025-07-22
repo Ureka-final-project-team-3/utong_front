@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import BackButton from '@/components/BackButton/BackButton';
 import { fetchAllGifticons } from '@/apis/shopApi';
 import { fetchMyInfo } from '@/apis/mypageApi';
-import useAuth from '@/hooks/useAuth'; // useAuth 훅 import
+import useAuth from '@/hooks/useAuth';
 import coinIcon from '@/assets/icon/coin.png';
+import { motion } from 'framer-motion';
 
 const PointChargePage = () => {
-  const { user: authUser, isLoading: authLoading } = useAuth(); // useAuth 훅 사용
+  const { user: authUser, isLoading: authLoading } = useAuth();
 
   const [user, setUser] = useState(null);
   const [gifticons, setGifticons] = useState([]);
@@ -49,20 +50,16 @@ const PointChargePage = () => {
   }, []);
 
   useEffect(() => {
-    // 인증 로딩이 끝나고 사용자가 있을 때만 데이터 가져오기
     if (!authLoading && authUser) {
       fetchGifticons(selectedCategory, currentPage);
     }
   }, [fetchGifticons, selectedCategory, currentPage, authLoading, authUser]);
 
   useEffect(() => {
-    // 인증 로딩이 끝나고 사용자가 있을 때만 사용자 정보 가져오기
     if (!authLoading && authUser) {
       fetchMyInfo()
         .then((data) => setUser(data))
-        .catch((err) => {
-          console.error('유저 정보 가져오기 실패:', err);
-        });
+        .catch((err) => console.error('유저 정보 가져오기 실패:', err));
     }
   }, [authLoading, authUser]);
 
@@ -70,11 +67,9 @@ const PointChargePage = () => {
     navigate(`/point-shop/${gifticonId}`);
   };
 
-  // 인증 로딩 중이면 로딩 화면 표시
   if (authLoading) {
     return (
       <div>
-        {/* 헤더 */}
         <div className="relative flex items-center justify-between mb-6">
           <BackButton />
           <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold">
@@ -92,30 +87,29 @@ const PointChargePage = () => {
     );
   }
 
-  // 사용자가 없으면 useAuth에서 자동으로 로그인 페이지로 리다이렉트
-  if (!authUser) {
-    return null;
-  }
+  if (!authUser) return null;
 
   return (
     <div>
-      {/* 헤더 */}
-      <div className="relative flex items-center justify-between mb-6">
+      <motion.div
+        className="relative flex items-center justify-between mb-6"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <BackButton />
         <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold">
           포인트 상점
         </h2>
-
         <span className="flex items-center gap-1 text-base text-blue-600 font-bold">
           <img src={coinIcon} alt="코인 아이콘" className="w-4 h-4" />
           {user?.mileage?.toLocaleString() ?? '...'}P
         </span>
-      </div>
+      </motion.div>
 
-      {/* 카테고리 */}
       <div className="flex gap-6 mb-6 overflow-x-auto">
-        {categories.map((cat) => (
-          <button
+        {categories.map((cat, idx) => (
+          <motion.button
             key={cat.value}
             onClick={() => {
               setSelectedCategory(cat.value);
@@ -126,13 +120,15 @@ const PointChargePage = () => {
                 ? 'border-blue-500 text-blue-600 font-semibold'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.05 }}
           >
             {cat.label}
-          </button>
+          </motion.button>
         ))}
       </div>
 
-      {/* 상태 */}
       {loading && (
         <div className="grid grid-cols-2 gap-4 mb-6 animate-pulse">
           {[...Array(4)].map((_, idx) => (
@@ -157,15 +153,17 @@ const PointChargePage = () => {
         </div>
       )}
 
-      {/* 목록 */}
       {!loading && !error && (
         <>
           <div className="grid grid-cols-2 gap-4 mb-6">
-            {gifticons.map((item) => (
-              <div
+            {gifticons.map((item, idx) => (
+              <motion.div
                 key={item.id}
                 onClick={() => handleViewDetails(item.id)}
                 className="bg-white rounded-2xl p-2 shadow-sm cursor-pointer hover:shadow-md transition"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: idx * 0.05 }}
               >
                 <div className="flex flex-col items-start">
                   <div className="w-full h-20 rounded-xl flex items-center justify-center mb-3">
@@ -183,13 +181,17 @@ const PointChargePage = () => {
                     {item.price.toLocaleString()}P
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
 
-          {/* 페이지네이션 */}
           {totalPages > 1 && (
-            <div className="flex justify-center gap-4">
+            <motion.div
+              className="flex justify-center gap-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
               <button
                 onClick={() => setCurrentPage((prev) => prev - 1)}
                 disabled={currentPage === 1}
@@ -207,7 +209,7 @@ const PointChargePage = () => {
               >
                 다음
               </button>
-            </div>
+            </motion.div>
           )}
         </>
       )}
