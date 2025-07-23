@@ -6,13 +6,13 @@ const formatDate = (dateStr) => {
 const CouponCard = ({ coupon }) => {
   return (
     <div
-      className={`relative flex justify-between items-center p-4 rounded-xl border border-gray-300 bg-white ${
+      className={`relative flex justify-between items-center p-3 rounded-xl border border-gray-300 bg-white ${
         coupon.statusName === '사용불가' ? 'opacity-60' : ''
       }`}
     >
       {/* 오른쪽 컬러 바 */}
       <div
-        className={`absolute right-0 top-0 bottom-0 w-1 ${
+        className={`absolute right-0 top-0 bottom-0 w-1.5 ${
           coupon.statusName === '사용 가능' ? 'bg-blue-500' : 'bg-red-500'
         } rounded-r-xl`}
       />

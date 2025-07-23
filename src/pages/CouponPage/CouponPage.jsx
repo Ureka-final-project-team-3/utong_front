@@ -29,7 +29,7 @@ const CouponPage = () => {
   return (
     <div className="h-full flex flex-col">
       {/* 헤더 */}
-      <div className="flex items-center justify-between relative px-4 py-4 shrink-0">
+      <div className="flex items-center justify-between relative  shrink-0">
         <BackButton />
         <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold text-gray-800">
           쿠폰함
