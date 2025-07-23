@@ -6,6 +6,7 @@ import shop from '@/assets/icon/shop.png';
 import event from '@/assets/icon/event.png';
 import wifi from '@/assets/icon/wifi.png';
 import coin from '@/assets/icon/coin.png';
+import { useLocation } from 'react-router-dom';
 import { fetchMyInfo } from '@/apis/mypageApi';
 import useAuth from '@/hooks/useAuth';
 const MainPage = () => {
@@ -13,6 +14,32 @@ const MainPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [mounted, setMounted] = useState(false);
   const [currentPrice, setCurrentPrice] = useState(8700);
+  const location = useLocation();
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const accessToken = params.get('accessToken');
+    const oauth = params.get('oauth');
+    if (accessToken && oauth === 'success') {
+      localStorage.setItem('accessToken', accessToken);
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.data) {
+            localStorage.setItem('account', JSON.stringify(data.data));
+          }
+          window.history.replaceState({}, document.title, '/');
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.error('사용자 정보 조회 실패:', error);
+        });
+    }
+  }, [location.search]);
   useEffect(() => {
     if (!isLoading && user) {
       fetchMyInfo()
