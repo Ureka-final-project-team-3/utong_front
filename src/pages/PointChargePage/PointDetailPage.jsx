@@ -97,7 +97,7 @@ const PointDetailPage = () => {
 
       {/* 확인 모달 */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white w-80 p-6 rounded-xl shadow-md text-center animate-fadeIn">
             <p className="text-sm text-gray-800 mb-6">
               해당 상품은 <span className="font-semibold">환불이 불가능합니다.</span>
@@ -127,7 +127,7 @@ const PointDetailPage = () => {
 
       {/* 완료 모달 */}
       {isSuccessModalOpen && (
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white w-72 p-6 rounded-xl shadow-md text-center animate-fadeIn">
             <p className="text-sm text-gray-800 mb-4">교환이 완료되었습니다!</p>
             <button

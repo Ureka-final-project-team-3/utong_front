@@ -6,11 +6,10 @@ import shop from '@/assets/icon/shop.png';
 import event from '@/assets/icon/event.png';
 import wifi from '@/assets/icon/wifi.png';
 import coin from '@/assets/icon/coin.png';
-
+import { useLocation } from 'react-router-dom';
 import { fetchMyInfo } from '@/apis/mypageApi';
 import useAuth from '@/hooks/useAuth';
 import useOrderQueue from '@/hooks/useOrderQueue';
-
 const MainPage = () => {
   const { user, isLoading } = useAuth();
   const [userInfo, setUserInfo] = useState(null);
@@ -18,50 +17,65 @@ const MainPage = () => {
   const [currentPrice, setCurrentPrice] = useState(null);
   const [previousPrice, setPreviousPrice] = useState(null);
   const [priceAnimation, setPriceAnimation] = useState('');
-
   const dataCode = userInfo?.dataCode ?? '002';
-
   const { queueData, isLoading: isQueueLoading } = useOrderQueue(dataCode);
-
   const recentContracts = queueData?.recentContracts ?? [];
   const latestContract = recentContracts.length > 0 ? recentContracts[0] : null;
   const latestPrice = latestContract?.price ?? null;
-
+  const location = useLocation();
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const accessToken = params.get('accessToken');
+    const oauth = params.get('oauth');
+    if (accessToken && oauth === 'success') {
+      localStorage.setItem('accessToken', accessToken);
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.data) {
+            localStorage.setItem('account', JSON.stringify(data.data));
+          }
+          window.history.replaceState({}, document.title, '/');
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.error('사용자 정보 조회 실패:', error);
+        });
+    }
+  }, [location.search]);
   // 가격이 변경될 때 애니메이션 트리거
   useEffect(() => {
     if (latestPrice !== null && latestPrice !== previousPrice) {
       setPreviousPrice(currentPrice);
       setCurrentPrice(latestPrice);
-
       // 가격 변화 애니메이션 클래스 적용
       setPriceAnimation('pulse-price');
-
       // 애니메이션 완료 후 클래스 제거
       const timer = setTimeout(() => {
         setPriceAnimation('');
       }, 1500);
-
       return () => clearTimeout(timer);
     }
   }, [latestPrice, currentPrice, previousPrice]);
-
   useEffect(() => {
     if (!isLoading && user) {
       fetchMyInfo()
         .then((data) => setUserInfo(data))
         .catch((err) => console.error('메인페이지 유저 정보 불러오기 실패:', err));
     }
-
     setTimeout(() => setMounted(true), 100);
   }, [user, isLoading]);
-
   if (isLoading) return null;
-
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* 환영 메시지와 캐릭터 */}
       <div
-        className={`flex w-[300px] mx-auto mt-4 items-start transition-all duration-700 ${
+        className={`flex w-[300px] mt-4 items-start transition-all duration-700 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
@@ -69,7 +83,6 @@ const MainPage = () => {
           <p className="text-[24px] font-semibold leading-tight">{user?.nickname || '게스트'}님,</p>
           <p className="text-[24px] font-semibold leading-tight">안녕하세요!</p>
         </div>
-
         <img
           src={tongtong2}
           alt="통통이"
@@ -81,10 +94,9 @@ const MainPage = () => {
           }}
         />
       </div>
-
       {/* 데이터/포인트 카드 */}
       <div
-        className={`flex justify-between w-[300px] mx-auto mt-2 space-x-3 transition-all duration-700 delay-200 ${
+        className={`flex justify-between w-[300px] mt-2 space-x-3 transition-all duration-700 delay-200 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
@@ -100,7 +112,6 @@ const MainPage = () => {
             GB
           </p>
         </div>
-
         <div className="flex flex-col justify-between bg-blue-100 rounded-xl shadow p-2 flex-1 h-[60px] hover:shadow-lg hover:scale-105 transition-all duration-300">
           <div className="flex items-center">
             <img src={coin} alt="포인트" className="w-[20px] h-[20px] mr-1" />
@@ -114,16 +125,14 @@ const MainPage = () => {
           </p>
         </div>
       </div>
-
-      {/* 실시간 가격 카드 */}
+      {/* 실시간가격카드 */}
       <div
-        className={`rounded-xl text-white p-4 mt-5 bg-gradient-market-price w-[300px] mx-auto h-[80px] transition-all duration-700 delay-300 hover:shadow-xl hover:scale-[1.02] ${
+        className={`rounded-xl text-white p-4 mt-5 bg-gradient-market-price w-[300px] h-[80px] transition-all duration-700 delay-300 hover:shadow-xl hover:scale-[1.02] ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
         <div className="flex flex-col justify-between h-full">
           <p className="text-[14px] font-bold text-left">실시간 데이터 거래가격</p>
-
           <p className="text-right leading-5 self-end">
             {isQueueLoading ? (
               <span className="text-[20px] font-bold transition-all duration-500">
@@ -147,7 +156,6 @@ const MainPage = () => {
           </p>
         </div>
       </div>
-
       {/* 메뉴 카드 */}
       <div
         className="w-[290px] mx-auto mt-8 rounded-3xl overflow-hidden bg-white flex-shrink-0"
@@ -162,9 +170,7 @@ const MainPage = () => {
             <span className="text-gray-400 pr-4">{'>'}</span>
           </div>
         </Link>
-
         <div className="border-t border-gray-200" />
-
         <Link to="/event" className="block transition-transform duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between pl-6 pr-4 py-4">
             <div className="flex items-center space-x-3">
@@ -174,9 +180,7 @@ const MainPage = () => {
             <span className="text-gray-400 pr-4">{'>'}</span>
           </div>
         </Link>
-
         <div className="border-t border-gray-200" />
-
         <Link to="/shop" className="block transition-transform duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between pl-6 pr-4 py-4">
             <div className="flex items-center space-x-3">
@@ -187,7 +191,6 @@ const MainPage = () => {
           </div>
         </Link>
       </div>
-
       {/* 애니메이션 스타일 */}
       <style jsx>{`
         @keyframes float {
@@ -199,7 +202,6 @@ const MainPage = () => {
             transform: translateY(-10px) rotate(2deg);
           }
         }
-
         @keyframes pulse-price {
           0%,
           100% {
@@ -213,5 +215,4 @@ const MainPage = () => {
     </div>
   );
 };
-
 export default MainPage;

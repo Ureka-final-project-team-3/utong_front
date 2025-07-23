@@ -1,18 +1,48 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import BackButton from '../../components/BackButton/BackButton.jsx';
 import Button from '../../components/common/Button.jsx';
 import utong2 from '@/assets/image/utong2.png';
 import googleIcon from '@/assets/image/google.png';
 import kakaoIcon from '@/assets/image/kakao.png';
 import naverIcon from '@/assets/image/naver.png';
-import bgImage from '@/assets/image/background4.png'; // 배경 이미지 추가
+import bgImage from '@/assets/image/background4.png';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const accessToken = params.get('accessToken');
+    const oauth = params.get('oauth');
+    if (accessToken && oauth === 'success') {
+      localStorage.setItem('accessToken', accessToken);
+      const fetchUserInfo = async () => {
+        try {
+          const meResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+
+          const meData = await meResponse.json();
+          if (meResponse.ok && meData.data) {
+            localStorage.setItem('account', JSON.stringify(meData.data));
+          }
+          navigate('/', { replace: true });
+        } catch (error) {
+          console.error('사용자 정보 조회 실패:', error);
+          alert('로그인 처리 중 오류가 발생했습니다.');
+        }
+      };
+      fetchUserInfo();
+    }
+  }, [location, navigate]);
 
   const validate = () => {
     const newErrors = {};
@@ -47,7 +77,6 @@ const LoginPage = () => {
       if (response.ok && data.data && data.data.accessToken) {
         const { accessToken, refreshToken } = data.data;
         localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
 
         const meResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
           method: 'GET',
@@ -75,7 +104,6 @@ const LoginPage = () => {
     }
   };
 
-  // 엔터 키 처리 함수
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleLogin();
@@ -108,7 +136,6 @@ const LoginPage = () => {
             </div>
 
             <div className="space-y-4">
-              {/* 이메일 입력 */}
               <div>
                 <label className="block text-gray-500 text-sm font-bold mb-1">아이디</label>
                 <input
@@ -124,7 +151,6 @@ const LoginPage = () => {
                 </p>
               </div>
 
-              {/* 비밀번호 입력 */}
               <div>
                 <label className="block text-gray-500 text-sm font-bold mb-1">비밀번호</label>
                 <input
@@ -151,22 +177,21 @@ const LoginPage = () => {
               <Link to="/signup">회원가입</Link>
             </div>
 
-            {/* 소셜 로그인 */}
             <div className="flex justify-center space-x-6">
               <a
-                href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/google`}
+                href={`${import.meta.env.VITE_API_BASE_URL}/api/oauth2/authorization/google`}
                 className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-white"
               >
                 <img src={googleIcon} alt="Google" className="w-10 h-10" />
               </a>
               <a
-                href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/kakao`}
+                href={`${import.meta.env.VITE_API_BASE_URL}/api/oauth2/authorization/kakao`}
                 className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#FEE500]"
               >
                 <img src={kakaoIcon} alt="Kakao" className="w-10 h-10" />
               </a>
               <a
-                href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/naver`}
+                href={`${import.meta.env.VITE_API_BASE_URL}/api/oauth2/authorization/naver`}
                 className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#03C75A]"
               >
                 <img src={naverIcon} alt="Naver" className="w-10 h-10" />

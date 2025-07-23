@@ -25,14 +25,10 @@ export default function MyPage() {
   const [mounted, setMounted] = useState(false);
   const modalRef = useRef(null);
   const [isMail, setIsMail] = useState(false);
-
-  // 전화번호 배열, user 없으면 임시 더미 데이터
   const phoneNumbers = user?.phoneNumbers ?? ['010-1234-5678', '010-9876-5432'];
-
   const [selectedLine, setSelectedLine] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // user가 로드되면 selectedLine 초기화 (예시)
   useEffect(() => {
     if (user) {
       setSelectedLine(user.dataCode === '002' ? '5G' : 'LTE');
@@ -49,7 +45,6 @@ export default function MyPage() {
         });
     }
 
-    // 마운트 애니메이션 시작
     setTimeout(() => setMounted(true), 100);
   }, [authUser, authLoading]);
 
