@@ -12,6 +12,11 @@ import useUserStore from '@/stores/useUserStore';
 import { postSellOrder } from '@/apis/dataTradeApi';
 import useOrderQueue from '@/hooks/useOrderQueue';
 
+import questionIcon from '@/assets/icon/question.svg';
+
+// 가격 범위 상수 import
+import { MIN_PRICE_FLOOR_BY_NETWORK, MAX_PRICE_CEIL_BY_NETWORK } from '../constants/priceRange';
+
 const networkToDataCodeMap = {
   LTE: '001',
   '5G': '002',
@@ -40,7 +45,6 @@ const SellDataPage = () => {
 
   const localDataCode = networkToDataCodeMap[selectedNetwork] || '002';
 
-  // 유저 데이터 로드
   useEffect(() => {
     const loadUserData = async () => {
       setIsLoading(true);
@@ -56,10 +60,8 @@ const SellDataPage = () => {
     loadUserData();
   }, [fetchUserData]);
 
-  // SSE 실시간 주문 큐 데이터 구독 및 로딩 상태 받기
   const { queueData, isLoading: isQueueLoading } = useOrderQueue(localDataCode);
 
-  // buyOrderQuantity 객체를 배열 형태로 변환 [{price, quantity}, ...]
   const buyBids = useMemo(() => {
     if (!queueData.buyOrderQuantity) return [];
     return Object.entries(queueData.buyOrderQuantity).map(([price, quantity]) => ({
@@ -68,28 +70,46 @@ const SellDataPage = () => {
     }));
   }, [queueData]);
 
-  // 평균가 계산
   const avgPrice = useMemo(() => {
-    if (!buyBids.length) return 0;
-    const totalAmount = buyBids.reduce((sum, b) => sum + b.quantity, 0);
-    const totalValue = buyBids.reduce((sum, b) => sum + b.price * b.quantity, 0);
-    return Math.round(totalValue / totalAmount / 100) * 100;
+    if (buyBids.length) {
+      const totalAmount = buyBids.reduce((sum, b) => sum + b.quantity, 0);
+      if (totalAmount === 0) return 0;
+      const totalValue = buyBids.reduce((sum, b) => sum + b.price * b.quantity, 0);
+      return Math.round(totalValue / totalAmount / 100) * 100;
+    }
+    return 0;
   }, [buyBids]);
 
-  // 최고가 계산
   const highestPrice = useMemo(() => {
-    return buyBids.length ? Math.max(...buyBids.map((b) => b.price)) : 0;
+    if (buyBids.length) {
+      return Math.max(...buyBids.map((b) => b.price));
+    }
+    return MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
   }, [buyBids]);
 
-  const [price, setPrice] = useState(highestPrice.toString());
+  const minPrice = useMemo(() => {
+    if (avgPrice === 0) return MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
+    return Math.floor(avgPrice * 0.7);
+  }, [avgPrice, selectedNetwork]);
+
+  const maxPriceAllowed = useMemo(() => {
+    if (avgPrice === 0) return MAX_PRICE_CEIL_BY_NETWORK[selectedNetwork] || 11000;
+    return Math.min(Math.ceil(avgPrice * 1.3), MAX_PRICE_CEIL_BY_NETWORK[selectedNetwork] || 11000);
+  }, [avgPrice, selectedNetwork]);
+
+  // 여기서 highestPrice가 0이면 최소가격으로 초기값 세팅
+  const [price, setPrice] = useState(() =>
+    highestPrice === 0
+      ? (MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000).toString()
+      : highestPrice.toString()
+  );
+
   const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
   const [dataAmount, setDataAmount] = useState('1');
 
   const priceNum = useMemo(() => (price === '' ? 0 : Number(price)), [price]);
   const dataAmountNum = useMemo(() => (dataAmount === '' ? 0 : Number(dataAmount)), [dataAmount]);
 
-  const minPrice = useMemo(() => Math.floor(avgPrice * 0.7), [avgPrice]);
-  const maxPriceAllowed = useMemo(() => Math.ceil(avgPrice * 1.3), [avgPrice]);
   const totalPrice = useMemo(() => priceNum * dataAmountNum, [priceNum, dataAmountNum]);
   const totalFee = useMemo(() => Math.floor(totalPrice * 0.025), [totalPrice]);
   const totalAfterPoint = useMemo(() => totalPrice - totalFee, [totalPrice, totalFee]);
@@ -97,7 +117,7 @@ const SellDataPage = () => {
   const isPriceValid = useMemo(() => {
     if (price === '') return false;
     return priceNum >= minPrice && priceNum <= maxPriceAllowed;
-  }, [price, priceNum, minPrice, maxPriceAllowed]);
+  }, [priceNum, minPrice, maxPriceAllowed]);
 
   const isDataValid = useMemo(
     () => dataAmountNum > 0 && dataAmountNum <= canSale,
@@ -145,7 +165,7 @@ const SellDataPage = () => {
       const res = await postSellOrder(payload);
 
       if (res && res.result) {
-        setModalStatus(res.result); // ALL_COMPLETE, PART_COMPLETE, WAITING 등
+        setModalStatus(res.result);
         setShowModal(true);
         setTimeout(() => {
           setShowModal(false);
@@ -163,7 +183,7 @@ const SellDataPage = () => {
 
       if (error.response) {
         if (error.response.status === 400 && error.response.data?.codeName) {
-          setModalStatus(error.response.data.codeName); // BORDERLESS, NEED_DEFAULT_LINE, ...
+          setModalStatus(error.response.data.codeName);
         } else {
           setModalStatus('UNKNOWN_ERROR');
         }
@@ -184,15 +204,25 @@ const SellDataPage = () => {
     setDataAmount((prev) => String(Number(prev) + val));
   };
 
+  const handleFeeInfoClick = () => {
+    toast.info('거래중개 등 제반 서비스 이용료가 포함됩니다.', {
+      autoClose: 3000,
+      position: 'top-center',
+      toastId: 'fee-info-toast',
+    });
+  };
+
   const isButtonEnabled =
     isPriceValid && isDataValid && normalizedUserPlanNetwork === normalizedSelectedNetwork;
 
-  // 가격 최고가가 바뀔 때 price 상태 초기화
   useEffect(() => {
-    setPrice(highestPrice.toString());
-  }, [highestPrice]);
+    setPrice(
+      highestPrice === 0
+        ? (MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000).toString()
+        : highestPrice.toString()
+    );
+  }, [highestPrice, selectedNetwork]);
 
-  // 유저 데이터 로딩 or SSE 실시간 주문 큐 로딩 중이면 로딩 컴포넌트 렌더링
   if (isLoading || isQueueLoading) {
     return <SyncLoading text="거래 데이터를 불러오는 중..." />;
   }
@@ -260,7 +290,9 @@ const SellDataPage = () => {
       </div>
 
       <div className="mt-6 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
-        <div className="text-[15px] text-[#2C2C2C] mb-2">판매할 가격</div>
+        <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between items-center">
+          <div>판매할 가격</div>
+        </div>
         <div className="flex justify-end items-center">
           <input
             type="text"
@@ -286,7 +318,7 @@ const SellDataPage = () => {
       </div>
 
       <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
-        <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between">
+        <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between items-center">
           <div>데이터</div>
           <div>판매가능 데이터 : {canSale}GB</div>
         </div>
@@ -329,9 +361,20 @@ const SellDataPage = () => {
 
       <div className="mt-6 border-t border-gray-300 pt-4 space-y-2">
         <div className="flex justify-between text-[16px] text-[#777]">
-          <span>수수료 2.5%</span>
+          <div className="flex items-center gap-1">
+            <span>수수료 2.5%</span>
+            <button
+              type="button"
+              onClick={handleFeeInfoClick}
+              className="w-4 h-4"
+              aria-label="수수료 안내"
+            >
+              <img src={questionIcon} alt="수수료 안내" className="w-full h-full" />
+            </button>
+          </div>
           <span className="text-[#2C2C2C] font-medium">{totalFee.toLocaleString()} P</span>
         </div>
+
         <div className="flex justify-between text-[16px] text-[#5D5D5D]">
           <span>총 판매 포인트</span>
           <span className="text-[20px] text-[#2C2C2C] font-medium">

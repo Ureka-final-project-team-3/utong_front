@@ -1,4 +1,3 @@
-// src/pages/BuyDataPage.jsx
 import React, { useEffect, useState } from 'react';
 import BuyDataHeader from './components/BuyDataHeader';
 import Button from '../../../components/common/Button';
@@ -16,6 +15,9 @@ import { postBuyOrder } from '@/apis/dataTradeApi';
 import useOrderQueue from '@/hooks/useOrderQueue';
 
 import SyncLoading from '@/components/Loading/SyncLoading';
+
+// 여기서 priceRange 상수 import
+import { MIN_PRICE_FLOOR_BY_NETWORK } from '../constants/priceRange';
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -77,8 +79,10 @@ const BuyDataPage = () => {
       ) * 100
     : 0;
 
-  // 최저 판매가 계산
-  const minPrice = sellBids.length ? Math.min(...sellBids.map((b) => b.price)) : 0;
+  // 최저 판매가 계산 (판매 매물이 없으면 네트워크별 기본 최소가 사용)
+  const minPrice = sellBids.length
+    ? Math.min(...sellBids.map((b) => b.price))
+    : MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
 
   const [selectedDataGB, setSelectedDataGB] = useState(1);
   const [buyPrice, setBuyPrice] = useState(minPrice.toString());
