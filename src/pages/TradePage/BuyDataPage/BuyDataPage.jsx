@@ -160,17 +160,22 @@ const BuyDataPage = () => {
       return;
     }
 
+    // 100원 단위 반올림
+    const roundedPrice = Math.round(Number(buyPrice) / 100) * 100;
+    setBuyPrice(String(roundedPrice)); // 상태 업데이트 (필요하면)
+
+    const buyPriceRoundedNum = roundedPrice;
+    const selectedQty = Number(selectedDataGB) || 0;
+    const totalPrice = buyPriceRoundedNum * selectedQty;
+
+    if (point < totalPrice) {
+      openModal('showRechargeModal');
+      return;
+    }
+
     try {
-      const selectedQty = Number(selectedDataGB) || 0;
-      const totalPrice = buyPriceNum * selectedQty;
-
-      if (point < totalPrice) {
-        openModal('showRechargeModal');
-        return;
-      }
-
       const payload = {
-        price: buyPriceNum,
+        price: buyPriceRoundedNum,
         dataAmount: selectedQty,
         dataCode: localDataCode,
       };
@@ -309,8 +314,14 @@ const BuyDataPage = () => {
             pattern="[0-9]*"
             value={buyPrice}
             onChange={handleBuyPriceChange}
+            onBlur={() => {
+              if (buyPrice === '') return;
+              const rounded = Math.round(Number(buyPrice) / 100) * 100;
+              setBuyPrice(String(rounded));
+            }}
             className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
           />
+
           <span className="ml-1 text-[20px] text-[#2C2C2C]">P</span>
         </div>
       </div>
