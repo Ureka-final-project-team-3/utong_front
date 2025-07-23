@@ -1,409 +1,194 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Transcation from '@/assets/icon/Transcation.svg';
-import Couponbox from '@/assets/icon/Couponbox.svg';
-import storagebox from '@/assets/icon/storagebox.svg';
-import Editinformation from '@/assets/icon/Editinformation.svg';
-import Notificationbox from '@/assets/icon/Notificationbox.svg';
-import ServiceGuide from '@/assets/icon/ServiceGuide.svg';
-import Notificationsettings from '@/assets/icon/Notificationsettings.svg';
-import dataIcon from '@/assets/image/data.svg';
-import pointIcon from '@/assets/image/point.svg';
-import utong from '@/assets/image/MyPageutong.svg';
-
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import tongtong2 from '@/assets/image/tongtong2.png';
+import trade from '@/assets/icon/trade.png';
+import shop from '@/assets/icon/shop.png';
+import event from '@/assets/icon/event.png';
+import wifi from '@/assets/icon/wifi.png';
+import coin from '@/assets/icon/coin.png';
+import { useLocation } from 'react-router-dom';
 import { fetchMyInfo } from '@/apis/mypageApi';
-import SyncLoading from '@/components/Loading/SyncLoading';
 import useAuth from '@/hooks/useAuth';
-
-export default function MyPage() {
-  const { user: authUser, isLoading: authLoading } = useAuth();
-  const [user, setUser] = useState();
-  const [showModal, setShowModal] = useState(false);
+const MainPage = () => {
+  const { user, isLoading } = useAuth();
+  const [userInfo, setUserInfo] = useState(null);
   const [mounted, setMounted] = useState(false);
-  const modalRef = useRef(null);
-  const [isMail, setIsMail] = useState(false);
-
-  // 전화번호 배열, user 없으면 임시 더미 데이터
-  const phoneNumbers = user?.phoneNumbers ?? ['010-1234-5678', '010-9876-5432'];
-
-  const [selectedLine, setSelectedLine] = useState('');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  // user가 로드되면 selectedLine 초기화 (예시)
+  const [currentPrice, setCurrentPrice] = useState(8700);
+  const location = useLocation();
   useEffect(() => {
-    if (user) {
-      setSelectedLine(user.dataCode === '002' ? '5G' : 'LTE');
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (!authLoading && authUser) {
-      fetchMyInfo()
-        .then((data) => setUser(data))
+    const params = new URLSearchParams(location.search);
+    const accessToken = params.get('accessToken');
+    const oauth = params.get('oauth');
+    if (accessToken && oauth === 'success') {
+      console.log('OAuth 로그인 성공, 토큰 저장');
+      localStorage.setItem('accessToken', accessToken);
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.data) {
+            localStorage.setItem('account', JSON.stringify(data.data));
+          }
+          window.history.replaceState({}, document.title, '/');
+          window.location.reload();
+        })
         .catch((error) => {
-          console.error('유저 정보 불러오기 실패:', error);
-          console.log('상세 응답:', error.response?.data);
+          console.error('사용자 정보 조회 실패:', error);
         });
     }
-
+  }, [location.search]);
+  useEffect(() => {
+    if (!isLoading && user) {
+      fetchMyInfo()
+        .then((data) => setUserInfo(data))
+        .catch((err) => console.error('메인페이지 유저 정보 불러오기 실패:', err));
+    }
     // 마운트 애니메이션 시작
     setTimeout(() => setMounted(true), 100);
-  }, [authUser, authLoading]);
-
-  const apiRequest = async (url, options = {}) => {
-    const token = localStorage.getItem('accessToken');
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}${url}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token ? `Bearer ${token}` : '',
-        },
-        credentials: 'include',
-        ...options,
-      });
-      const data = await response.json();
-      console.log('API Response:', data);
-      return { success: data.resultCode === 200, data };
-    } catch (error) {
-      console.error('API Error', error);
-      return { success: false, data: null };
-    }
-  };
-
+  }, [user, isLoading]);
+  // 실시간 가격 애니메이션 효과
   useEffect(() => {
-    if (!showModal) return;
-
-    const fetchSetting = async () => {
-      const result = await apiRequest('/api/auth/mail-settings');
-      if (result.success) {
-        const mailStatus = result.data.data.isMail;
-        setIsMail(mailStatus);
-      }
-    };
-    fetchSetting();
-
-    const handleClickOutside = (e) => {
-      if (modalRef.current && !modalRef.current.contains(e.target)) {
-        setShowModal(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showModal]);
-
-  const handleToggle = async () => {
-    const result = await apiRequest('/api/auth/mail-settings/toggle', { method: 'POST' });
-    if (result.success) {
-      const mailStatus = result.data.data.isMail;
-      setIsMail(mailStatus);
-      toast.success(result.data.data.message);
-    } else {
-      toast.error('알림 설정 변경 실패');
-    }
-  };
-
-  if (authLoading || !user) {
-    return <SyncLoading />;
+    const interval = setInterval(() => {
+      const change = Math.floor(Math.random() * 201) - 100; // -100 ~ +100
+      setCurrentPrice((prev) => Math.max(8000, Math.min(10000, prev + change)));
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+  if (isLoading) {
+    return null;
   }
-
-  const menuItems = [
-    { icon: Transcation, label: '거래 내역', path: '/tradehistory' },
-    { icon: Couponbox, label: '쿠폰함', path: '/coupon' },
-    { icon: storagebox, label: '보관함', path: '/storage' },
-    { icon: Editinformation, label: '정보 수정', path: '/edit-profile' },
-  ];
-
-  const subMenuItems = [
-    { icon: Notificationbox, label: '알림함', path: '/alarm' },
-    { icon: ServiceGuide, label: '서비스 가이드', path: '/guide' },
-    { icon: Notificationsettings, label: '알림 설정', onClick: () => setShowModal(true) },
-  ];
-
   return (
-    <div className="h-auto max-h-[650px] overflow-visible text-black relative">
-      {/* Header */}
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* 환영 메시지와 캐릭터 */}
       <div
-        className={`flex items-center gap-4 pt-5 transition-all duration-700 ${
-          mounted ? 'translate-x-0 opacity-100' : '-translate-x-8 opacity-0'
+        className={`flex w-[300px] mt-4 items-start transition-all duration-700 ${
+          mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
+        <div className="text-white text-left mr-2">
+          <p className="text-[24px] font-semibold leading-tight">{user?.nickname || '게스트'}님,</p>
+          <p className="text-[24px] font-semibold leading-tight">안녕하세요!</p>
+        </div>
         <img
-          src={utong}
-          alt="유통이"
-          className="w-[100px] h-auto transition-all duration-1000 hover:scale-110"
+          src={tongtong2}
+          alt="통통이"
+          className={`w-[160px] h-[160px] transition-all duration-1000 ${
+            mounted ? 'scale-100 rotate-0' : 'scale-75 -rotate-12'
+          }`}
           style={{
-            animation: mounted ? 'bounce-gentle 2s ease-in-out infinite' : 'none',
+            animation: mounted ? 'float 3s ease-in-out infinite' : 'none',
           }}
         />
-
-        {user && (
-          <div className="flex items-center gap-2 relative z-100">
-            <h1
-              className="text-white text-2xl font-bold cursor-pointer"
-              onClick={() => {
-                setDropdownOpen(!dropdownOpen);
-              }}
-            >
-              {user.name}
-            </h1>
-
-            <svg
-              className={`w-4 h-4 text-white transition-transform duration-300 ${
-                dropdownOpen ? 'rotate-180' : ''
-              }`}
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-
-            {dropdownOpen && (
-              <ul className="absolute top-full left-0 mt-1 bg-white rounded shadow-lg w-30 text-black text-[12px] z-[9999] border border-gray-200">
-                {phoneNumbers.map((line) => (
-                  <li
-                    key={line}
-                    className={`px-3 py-1 cursor-pointer hover:bg-blue-100 ${
-                      selectedLine === line ? 'font-bold text-blue-600' : ''
-                    }`}
-                    onClick={() => {
-                      setSelectedLine(line);
-                      setDropdownOpen(false);
-                    }}
-                  >
-                    {line}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
       </div>
-
-      {/* Info Card */}
+      {/* 데이터/포인트 카드 */}
       <div
-        className={`mt-10 bg-[#386DEE] text-white rounded-xl p-3 transition-all duration-700 hover:shadow-2xl hover:scale-[1.02] overflow-visible relative z-10 ${
+        className={`flex justify-between w-[300px] mt-2 space-x-3 transition-all duration-700 delay-200 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
-        <div className="flex justify-between items-start mb-2">
-          {/* 판매 가능 데이터 */}
-          <div className="w-full pr-1">
-            <div className="flex items-center gap-1">
-              <img src={dataIcon} alt="데이터 아이콘" className="w-5 h-5" />
-              <div className="text-base">판매 가능 데이터</div>
-            </div>
-            <div className="text-base flex justify-between pl-6.5">
-              <div>{user.dataCode === '002' ? '5G' : 'LTE'}</div>
-              <div className="transition-all duration-500"> {user.canSale ?? 0}GB</div>
-            </div>
+        <div className="flex flex-col justify-between bg-white rounded-xl shadow p-2 flex-1 h-[60px] hover:shadow-lg hover:scale-105 transition-all duration-300">
+          <div className="flex items-center">
+            <img src={wifi} alt="데이터" className="w-[23px] h-[16px] mr-1" />
+            <p className="text-xs text-gray-500">데이터</p>
           </div>
-
-          {/* 포인트 */}
-          <div className="w-full pl-2">
-            <div className="flex items-center gap-1">
-              <img src={pointIcon} alt="포인트 아이콘" className="w-5 h-5" />
-              <div className="text-base ">포인트</div>
-            </div>
-            <div className="text-base text-right transition-all duration-500">
-              {(user.mileage ?? 0).toLocaleString()}P
-            </div>
-          </div>
+          <p className="text-sm font-bold self-end">
+            <span className="text-blue-600 transition-all duration-500">
+              {userInfo?.remainingData ?? 0}
+            </span>
+            GB
+          </p>
         </div>
-
-        <div className="flex justify-between gap-2 mb-3">
-          <Link to="/chart" className="flex-1">
-            <button className="w-full bg-[#1355E0] text-base text-white py-1 rounded-md hover:brightness-90 hover:scale-105 transition-all duration-300">
-              거래하기
-            </button>
-          </Link>
-          <Link to="/chargePage" className="flex-1">
-            <button className="w-full bg-[#1355E0] text-base text-white py-1 rounded-md hover:brightness-90 hover:scale-105 transition-all duration-300">
-              충전하기
-            </button>
-          </Link>
-        </div>
-
-        <div className="flex w-full">
-          <img src={dataIcon} alt="데이터 아이콘" className="w-5 h-5" />
-          <div className="w-full text-base pl-1">전체 데이터</div>
-          <div className="w-full text-base text-right transition-all duration-500">
-            {user.remainingData ?? 0}GB
+        <div className="flex flex-col justify-between bg-blue-100 rounded-xl shadow p-2 flex-1 h-[60px] hover:shadow-lg hover:scale-105 transition-all duration-300">
+          <div className="flex items-center">
+            <img src={coin} alt="포인트" className="w-[20px] h-[20px] mr-1" />
+            <p className="text-xs text-gray-500">포인트</p>
           </div>
+          <p className="text-sm font-bold self-end">
+            <span className="text-blue-600 transition-all duration-500">
+              {(userInfo?.mileage ?? 0).toLocaleString()}
+            </span>
+            P
+          </p>
         </div>
       </div>
-
-      {/* 메뉴 버튼들 */}
+      {/* 실시간 가격 카드 */}
       <div
-        className={`grid grid-cols-4 gap-y-6 mt-10 text-center font-Medium text-xs text-[#5F5F5F] transition-all duration-700 delay-400 relative z-10 ${
+        className={`rounded-xl text-white p-4 mt-5 bg-gradient-market-price w-[300px] h-[80px] transition-all duration-700 delay-300 hover:shadow-xl hover:scale-[1.02] ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
-        {menuItems.map(({ icon, label, path }, index) => (
-          <Link to={path} key={label}>
-            <div
-              className="flex flex-col items-center cursor-pointer hover:opacity-80 transition-all duration-300 group"
-              style={{
-                animation: mounted ? `slide-up 0.6s ease-out ${index * 0.1}s both` : 'none',
-              }}
-            >
-              <div className="w-14 h-14 rounded-full bg-[#386DEE] flex items-center justify-center mb-1 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 group-hover:shadow-lg">
-                <img
-                  src={icon}
-                  alt={label}
-                  className="w-[22px] h-[22px] transition-transform duration-300"
-                />
-              </div>
-              <span className="group-hover:text-[#386DEE] transition-colors duration-300">
-                {label}
-              </span>
-            </div>
-          </Link>
-        ))}
-      </div>
-
-      <div
-        className={`grid grid-cols-3 gap-y-6 mt-8 px-5 text-center font-Medium text-xs text-[#5F5F5F] transition-all duration-700 delay-600 relative z-10 ${
-          mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-        }`}
-      >
-        {subMenuItems.map(({ icon, label, path, onClick }, index) => {
-          const Component = path ? Link : 'div';
-          const props = path ? { to: path } : { onClick };
-
-          return (
-            <Component {...props} key={label}>
-              <div
-                className="flex flex-col items-center cursor-pointer hover:opacity-80 transition-all duration-300 group"
-                style={{
-                  animation: mounted ? `slide-up 0.6s ease-out ${(index + 4) * 0.1}s both` : 'none',
-                }}
-              >
-                <div className="w-14 h-14 rounded-full bg-[#386DEE] flex items-center justify-center mb-1 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 group-hover:shadow-lg">
-                  <img
-                    src={icon}
-                    alt={label}
-                    className="w-[22px] h-[22px] transition-transform duration-300"
-                  />
-                </div>
-                <span className="group-hover:text-[#386DEE] transition-colors duration-300">
-                  {label}
-                </span>
-              </div>
-            </Component>
-          );
-        })}
-      </div>
-
-      {/* 모달 */}
-      {showModal && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center animate-fade-in">
-          <div
-            ref={modalRef}
-            className="bg-white rounded-xl p-6 w-60 shadow-lg animate-modal-slide-up"
-          >
-            <h2 className="text-lg font-bold mb-4">백그라운드 알림</h2>
-            <div className="flex justify-between items-center">
-              <span>수신여부</span>
-              <button
-                onClick={handleToggle}
-                className={`w-14 h-7 rounded-full p-1 focus:outline-none transition-all duration-300 ${
-                  isMail ? 'bg-blue-500' : 'bg-gray-300'
-                }`}
-              >
-                <div
-                  className={`bg-white w-5 h-5 rounded-full shadow transform transition-all duration-300 ${
-                    isMail ? 'translate-x-7' : ''
-                  }`}
-                />
-              </button>
-            </div>
-          </div>
+        <div className="flex flex-col justify-between h-full">
+          <p className="text-[14px] font-bold text-left">실시간 데이터 거래가격</p>
+          <p className="text-right leading-5 self-end">
+            <span className="text-[10px]">현재 </span>
+            <span className="text-[24px] font-bold transition-all duration-500">
+              {currentPrice.toLocaleString()}원
+            </span>
+            <span className="text-[10px]"> (1GB)</span>
+          </p>
         </div>
-      )}
-
-      {/* 로그아웃 */}
-      <div
-        className={`mt-20 text-center transition-all duration-700 delay-800 ${
-          mounted ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-        }`}
-      >
-        <button
-          className="text-blue-600 cursor-pointer hover:underline hover:scale-105 transition-all duration-300"
-          onClick={() => {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('account');
-            window.location.href = '/start';
-          }}
-        >
-          로그아웃
-        </button>
       </div>
-
-      <ToastContainer position="top-center" autoClose={2000} />
-
+      {/* 메뉴 카드 */}
+      <div
+        className="w-[290px] mx-auto mt-8 rounded-3xl overflow-hidden bg-white flex-shrink-0"
+        style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.25)' }}
+      >
+        <Link to="/chart" className="block transition-transform duration-200 hover:-translate-y-1">
+          <div className="flex items-center justify-between pl-6 pr-4 py-4">
+            <div className="flex items-center space-x-3">
+              <img src={trade} alt="거래하기" className="w-5 h-5" />
+              <span className="font-bold text-[16px] leading-[20px] pl-2">데이터 거래하기</span>
+            </div>
+            <span className="text-gray-400 pr-4">{'>'}</span>
+          </div>
+        </Link>
+        <div className="border-t border-gray-200" />
+        <Link to="/event" className="block transition-transform duration-200 hover:-translate-y-1">
+          <div className="flex items-center justify-between pl-6 pr-4 py-4">
+            <div className="flex items-center space-x-3">
+              <img src={event} alt="이벤트" className="w-5 h-5" />
+              <span className="font-bold text-[16px] leading-[20px] pl-2">이벤트</span>
+            </div>
+            <span className="text-gray-400 pr-4">{'>'}</span>
+          </div>
+        </Link>
+        <div className="border-t border-gray-200" />
+        <Link to="/shop" className="block transition-transform duration-200 hover:-translate-y-1">
+          <div className="flex items-center justify-between pl-6 pr-4 py-4">
+            <div className="flex items-center space-x-3">
+              <img src={shop} alt="상점" className="w-5 h-5" />
+              <span className="font-bold text-[16px] leading-[20px] pl-2">포인트 상점</span>
+            </div>
+            <span className="text-gray-400 pr-4">{'>'}</span>
+          </div>
+        </Link>
+      </div>
       {/* 애니메이션 스타일 */}
       <style jsx>{`
-        @keyframes bounce-gentle {
+        @keyframes float {
           0%,
           100% {
-            transform: translateY(0px) rotate(-2deg);
+            transform: translateY(0px) rotate(0deg);
           }
           50% {
-            transform: translateY(-5px) rotate(2deg);
+            transform: translateY(-10px) rotate(2deg);
           }
         }
-
-        @keyframes slide-up {
-          0% {
-            opacity: 0;
-            transform: translateY(20px) scale(0.8);
-          }
+        @keyframes pulse-price {
+          0%,
           100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: scale(1);
           }
-        }
-
-        @keyframes fade-in {
-          0% {
-            opacity: 0;
+          50% {
+            transform: scale(1.05);
           }
-          100% {
-            opacity: 1;
-          }
-        }
-
-        @keyframes modal-slide-up {
-          0% {
-            opacity: 0;
-            transform: translateY(20px) scale(0.9);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-
-        .animate-modal-slide-up {
-          animation: modal-slide-up 0.4s ease-out;
         }
       `}</style>
     </div>
   );
-}
+};
+export default MainPage;
