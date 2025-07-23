@@ -1,17 +1,16 @@
-// src/pages/SellDataPage.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import SellDataHeader from './components/SellDataHeader';
 import Button from '../../../components/common/Button';
-import { mockBuyBids } from '../../LiveChartPage/mock/mockTradeData';
 import SellSuccessModal from '../components/SellSuccessModal';
 import SyncLoading from '@/components/Loading/SyncLoading';
 
 import useTradeStore from '@/stores/tradeStore';
 import useUserStore from '@/stores/useUserStore';
 import { postSellOrder } from '@/apis/dataTradeApi';
+import useOrderQueue from '@/hooks/useOrderQueue';
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -41,6 +40,7 @@ const SellDataPage = () => {
 
   const localDataCode = networkToDataCodeMap[selectedNetwork] || '002';
 
+  // 유저 데이터 로드
   useEffect(() => {
     const loadUserData = async () => {
       setIsLoading(true);
@@ -56,11 +56,19 @@ const SellDataPage = () => {
     loadUserData();
   }, [fetchUserData]);
 
-  const buyBids = useMemo(
-    () => mockBuyBids.filter((bid) => bid.dataCode === localDataCode),
-    [localDataCode]
-  );
+  // SSE 실시간 주문 큐 데이터 구독 및 로딩 상태 받기
+  const { queueData, isLoading: isQueueLoading } = useOrderQueue(localDataCode);
 
+  // buyOrderQuantity 객체를 배열 형태로 변환 [{price, quantity}, ...]
+  const buyBids = useMemo(() => {
+    if (!queueData.buyOrderQuantity) return [];
+    return Object.entries(queueData.buyOrderQuantity).map(([price, quantity]) => ({
+      price: Number(price),
+      quantity: Number(quantity),
+    }));
+  }, [queueData]);
+
+  // 평균가 계산
   const avgPrice = useMemo(() => {
     if (!buyBids.length) return 0;
     const totalAmount = buyBids.reduce((sum, b) => sum + b.quantity, 0);
@@ -68,6 +76,7 @@ const SellDataPage = () => {
     return Math.round(totalValue / totalAmount / 100) * 100;
   }, [buyBids]);
 
+  // 최고가 계산
   const highestPrice = useMemo(() => {
     return buyBids.length ? Math.max(...buyBids.map((b) => b.price)) : 0;
   }, [buyBids]);
@@ -136,7 +145,7 @@ const SellDataPage = () => {
       const res = await postSellOrder(payload);
 
       if (res && res.result) {
-        setModalStatus(res.result);
+        setModalStatus(res.result); // ALL_COMPLETE, PART_COMPLETE, WAITING 등
         setShowModal(true);
         setTimeout(() => {
           setShowModal(false);
@@ -149,11 +158,24 @@ const SellDataPage = () => {
       }
 
       await fetchUserData();
-    } catch (err) {
-      console.error('판매 등록 실패:', err);
-      setModalStatus(null);
+    } catch (error) {
+      console.error('판매 등록 실패:', error);
+
+      if (error.response) {
+        if (error.response.status === 400 && error.response.data?.codeName) {
+          setModalStatus(error.response.data.codeName); // BORDERLESS, NEED_DEFAULT_LINE, ...
+        } else {
+          setModalStatus('UNKNOWN_ERROR');
+        }
+      } else {
+        setModalStatus('NETWORK_ERROR');
+      }
+
       setShowModal(true);
-      setTimeout(() => setShowModal(false), 3000);
+      setTimeout(() => {
+        setShowModal(false);
+        setModalStatus(null);
+      }, 5000);
     }
   };
 
@@ -162,10 +184,17 @@ const SellDataPage = () => {
     setDataAmount((prev) => String(Number(prev) + val));
   };
 
-  const isButtonEnabled = isPriceValid && isDataValid && normalizedUserPlanNetwork === normalizedSelectedNetwork;
+  const isButtonEnabled =
+    isPriceValid && isDataValid && normalizedUserPlanNetwork === normalizedSelectedNetwork;
 
-  if (isLoading) {
-    return <SyncLoading text="사용자 데이터를 불러오는 중..." />;
+  // 가격 최고가가 바뀔 때 price 상태 초기화
+  useEffect(() => {
+    setPrice(highestPrice.toString());
+  }, [highestPrice]);
+
+  // 유저 데이터 로딩 or SSE 실시간 주문 큐 로딩 중이면 로딩 컴포넌트 렌더링
+  if (isLoading || isQueueLoading) {
+    return <SyncLoading text="거래 데이터를 불러오는 중..." />;
   }
 
   return (

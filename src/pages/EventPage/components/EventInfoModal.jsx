@@ -1,4 +1,3 @@
-// ModalInfo.jsx
 import React from 'react';
 import OneIcon from '@/assets/icon/one.svg';
 import TwoIcon from '@/assets/icon/two.svg';
@@ -16,11 +15,11 @@ const iconMap = {
 const EventInfoModal = ({ onClose }) => {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.5)]"
+      className="absolute inset-0 z-50 flex items-center justify-center animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="relative z-60 w-[300px] bg-white rounded-[20px] p-6"
+        className="relative z-60 w-[300px] bg-white rounded-[20px] p-6 shadow-lg animate-modal-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-[20px] font-bold text-center text-[#2C2C2C] mb-6">이벤트 안내</h2>
@@ -75,11 +74,12 @@ const RuleItem = ({ type, text, sub }) => {
       {/* 오른쪽 텍스트 */}
       <div className="flex flex-col">
         <p className="text-[12px] text-[#2C2C2C] leading-[15px] font-medium">{text}</p>
-        <p className="text-[12px] text-[#777777] leading-[15px] whitespace-pre-line mt-[4px]">{sub}</p>
+        <p className="text-[12px] text-[#777777] leading-[15px] whitespace-pre-line mt-[4px]">
+          {sub}
+        </p>
       </div>
     </div>
   );
 };
-
 
 export default EventInfoModal;

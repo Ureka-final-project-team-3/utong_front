@@ -1,20 +1,21 @@
+// src/pages/BuyDataPage.jsx
 import React, { useEffect, useState } from 'react';
 import BuyDataHeader from './components/BuyDataHeader';
 import Button from '../../../components/common/Button';
 
-import { mockSellBids } from '../../LiveChartPage/mock/mockTradeData'; 
-import useUserStore from '@/stores/useUserStore'; 
+import useUserStore from '@/stores/useUserStore';
 import useTradeStore from '@/stores/tradeStore';
-import useModalStore from '@/stores/modalStore'; 
+import useModalStore from '@/stores/modalStore';
 
 import PointRechargeModal from '../components/PointRechargeModal';
 import BuySuccessModal from '../components/BuySuccessModal';
 import ReservationModal from '../components/ReservationModal';
 import PaymentCompleteModal from '../components/PaymentCompleteModal';
 
-import { postBuyOrder } from '@/apis/dataTradeApi'; 
+import { postBuyOrder } from '@/apis/dataTradeApi';
+import useOrderQueue from '@/hooks/useOrderQueue';
 
-import SyncLoading from '@/components/Loading/SyncLoading'; // 로딩 컴포넌트 추가
+import SyncLoading from '@/components/Loading/SyncLoading';
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -49,36 +50,25 @@ const BuyDataPage = () => {
     networkToDataCodeMap[selectedNetwork] || '002'
   );
 
-  const userPlanNetwork = codeToNetworkMap[dataCode] || '';
-
-  const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
-  const [selectedDataGB, setSelectedDataGB] = useState(1);
-  const [buyPrice, setBuyPrice] = useState('0');
-  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
-
+  // 유저 정보 초기 로딩용
   useEffect(() => {
-    const loadUserData = async () => {
-      setIsLoading(true);
-      await fetchUserData();
-      setIsLoading(false);
-    };
-    loadUserData();
+    fetchUserData();
   }, [fetchUserData]);
 
-  useEffect(() => {
-    const code = networkToDataCodeMap[selectedNetwork] || '002';
-    setLocalDataCode(code);
+  const userPlanNetwork = codeToNetworkMap[dataCode] || '';
 
-    const sellBids = mockSellBids.filter((bid) => bid.dataCode === code);
-    const minSellPrice = sellBids.length ? Math.min(...sellBids.map((b) => b.price)) : 0;
+  // SSE 주문 큐 데이터 구독
+  const { queueData, isLoading } = useOrderQueue(localDataCode);
 
-    setBuyPrice(minSellPrice.toString());
-  }, [selectedNetwork]);
+  // 판매 입찰 데이터 배열 변환
+  const sellBids = queueData?.sellOrderQuantity
+    ? Object.entries(queueData.sellOrderQuantity).map(([price, quantity]) => ({
+        price: Number(price),
+        quantity,
+      }))
+    : [];
 
-  // 판매 매물 필터링
-  const sellBids = mockSellBids.filter((bid) => bid.dataCode === localDataCode);
-
-  // 평균가 계산 (수량 가중 평균)
+  // 평균 판매가 계산
   const avgPrice = sellBids.length
     ? Math.round(
         sellBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
@@ -87,10 +77,21 @@ const BuyDataPage = () => {
       ) * 100
     : 0;
 
-  // 최저가 계산
+  // 최저 판매가 계산
   const minPrice = sellBids.length ? Math.min(...sellBids.map((b) => b.price)) : 0;
 
+  const [selectedDataGB, setSelectedDataGB] = useState(1);
+  const [buyPrice, setBuyPrice] = useState(minPrice.toString());
+
+  useEffect(() => {
+    const code = networkToDataCodeMap[selectedNetwork] || '002';
+    setLocalDataCode(code);
+    setBuyPrice(minPrice.toString());
+  }, [selectedNetwork, minPrice]);
+
   const buyPriceNum = Number(buyPrice) || 0;
+
+  const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
 
   const handleGBInputChange = (e) => {
     const val = e.target.value;
@@ -110,13 +111,7 @@ const BuyDataPage = () => {
       const selectedQty = Number(selectedDataGB) || 0;
       const totalPrice = buyPriceNum * selectedQty;
 
-      if (userPlanNetwork !== selectedNetwork) {
-        console.log('[구매 실패] 요금제 불일치', { userPlanNetwork, selectedNetwork });
-        return;
-      }
-
       if (point < totalPrice) {
-        console.log('[구매 실패] 포인트 부족', { point, totalPrice });
         openModal('showRechargeModal');
         return;
       }
@@ -128,8 +123,6 @@ const BuyDataPage = () => {
       };
 
       const response = await postBuyOrder(payload);
-
-      console.log('[API 응답]', response);
 
       switch (response.result) {
         case 'ALL_COMPLETE':
@@ -143,23 +136,35 @@ const BuyDataPage = () => {
         case 'WAITING':
           openModal('showReservationModal');
           break;
-        case 'INSUFFICIENT_POINT':
-          openModal('showRechargeModal');
-          break;
-        case 'NEED_DEFAULT_LINE':
-          alert('기본 회선을 설정해 주세요.');
-          break;
-        case 'EXIST_SALE_REQUEST':
-          alert('이미 판매 요청이 존재합니다.');
-          break;
         default:
-          alert('알 수 없는 오류가 발생했습니다.');
+          alert('알 수 없는 성공 응답입니다.');
       }
-
-      fetchUserData();
     } catch (error) {
-      console.error('[구매 요청 오류]', error);
-      alert('구매 요청 중 오류가 발생했습니다.');
+      if (error.response) {
+        const { data, status } = error.response;
+
+        if (status === 400) {
+          switch (data.resultCode) {
+            case 'INSUFFICIENT_POINT':
+              openModal('showRechargeModal');
+              break;
+            case 'NEED_DEFAULT_LINE':
+              alert('기본 회선을 설정해 주세요.');
+              break;
+            case 'EXIST_SALE_REQUEST':
+              alert('이미 판매 요청이 존재합니다.');
+              break;
+            default:
+              alert(data.message || '알 수 없는 오류가 발생했습니다.');
+          }
+        } else {
+          alert('서버 오류가 발생했습니다.');
+        }
+      } else {
+        alert('구매 요청 중 오류가 발생했습니다.');
+      }
+    } finally {
+      fetchUserData();
     }
   };
 
@@ -167,7 +172,7 @@ const BuyDataPage = () => {
   const isButtonEnabled = buyPriceNum > 0 && (Number(selectedDataGB) || 0) > 0 && isUserPlanMatches;
 
   if (isLoading) {
-    return <SyncLoading text="사용자 데이터를 불러오는 중..." />;
+    return <SyncLoading text="데이터를 불러오는 중입니다..." />;
   }
 
   return (
@@ -243,7 +248,7 @@ const BuyDataPage = () => {
       </div>
 
       <div className="mt-4 text-[10px] text-[#386DEE] text-center">
-        최저가보다 낮은 금액은 구매대기됩니다.
+        판매 최저가보다 낮은 금액은 구매대기됩니다.
       </div>
 
       <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">

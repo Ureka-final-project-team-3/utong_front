@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import BackButton from '../../../components/BackButton/BackButton';
+
 // import help from '@/assets/icon/help.svg';
 // import EventInfoModal from './EventInfoModal';
 

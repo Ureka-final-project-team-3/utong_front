@@ -308,7 +308,7 @@ export default function MyPage() {
 
       {/* 모달 */}
       {showModal && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[rgba(0,0,0,0.5)] animate-fade-in">
+        <div className="absolute inset-0 z-50 flex items-center justify-center animate-fade-in">
           <div
             ref={modalRef}
             className="bg-white rounded-xl p-6 w-60 shadow-lg animate-modal-slide-up"
