@@ -120,7 +120,7 @@ const FindPasswordPage = () => {
             <label className="block text-sm font-bold text-gray-500 mb-1">휴대폰 번호</label>
             <input
               type="tel"
-              placeholder="000-0000-0000"
+              placeholder="전화번호를 입력해주세요"
               value={phone}
               onChange={handlePhoneChange}
               onKeyDown={handleKeyDown}
