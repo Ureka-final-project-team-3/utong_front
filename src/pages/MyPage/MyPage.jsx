@@ -45,7 +45,6 @@ export default function MyPage() {
         });
     }
 
-    // 마운트 애니메이션 시작
     setTimeout(() => setMounted(true), 100);
   }, [authUser, authLoading]);
 

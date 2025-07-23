@@ -114,7 +114,7 @@ const MainPage = () => {
           </p>
         </div>
       </div>
-      {/* 실시간 가격 카드 */}
+      {/* 실시간가격카드 */}
       <div
         className={`rounded-xl text-white p-4 mt-5 bg-gradient-market-price w-[300px] h-[80px] transition-all duration-700 delay-300 hover:shadow-xl hover:scale-[1.02] ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
