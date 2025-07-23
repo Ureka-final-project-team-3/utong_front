@@ -21,7 +21,6 @@ const LoginPage = () => {
     const oauth = params.get('oauth');
     if (accessToken && oauth === 'success') {
       localStorage.setItem('accessToken', accessToken);
-
       const fetchUserInfo = async () => {
         try {
           const meResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
@@ -35,9 +34,6 @@ const LoginPage = () => {
           if (meResponse.ok && meData.data) {
             localStorage.setItem('account', JSON.stringify(meData.data));
           }
-
-          window.history.replaceState({}, document.title, '/login');
-
           navigate('/', { replace: true });
         } catch (error) {
           console.error('사용자 정보 조회 실패:', error);
