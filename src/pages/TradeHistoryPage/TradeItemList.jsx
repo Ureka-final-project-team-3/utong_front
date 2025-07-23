@@ -37,6 +37,7 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
       alert('거래가 취소되었습니다.');
       window.location.reload();
     } catch (err) {
+      console.error(err);
       alert('거래 취소 실패');
     }
   };
