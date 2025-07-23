@@ -3,9 +3,12 @@ import BackButton from '@/components/BackButton/BackButton';
 import { fetchCoupons } from '@/apis/mypageApi';
 import CouponCard from './CouponCard';
 import SyncLoading from '../../components/Loading/SyncLoading';
+import CouponModal from './CouponModal';
+
 const CouponPage = () => {
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
 
   useEffect(() => {
     fetchCoupons()
@@ -16,7 +19,6 @@ const CouponPage = () => {
       })
       .catch((err) => {
         console.log('쿠폰 목록 불러오기 실패:', err);
-        // 404면 쿠폰이 없는 것으로 처리
         if (err.response?.status === 404) {
           setCoupons([]);
         }
@@ -45,9 +47,25 @@ const CouponPage = () => {
           {coupons.length === 0 ? (
             <div className="text-center text-gray-500">보유 중인 쿠폰이 없습니다.</div>
           ) : (
-            coupons.map((coupon) => <CouponCard key={coupon.couponId} coupon={coupon} />)
+            coupons.map((coupon, index) => (
+              <div
+                key={`${coupon.couponId}-${index}`}
+                onClick={() => {
+                  if (coupon.statusName === '사용 가능') {
+                    setSelectedCoupon(coupon);
+                  }
+                }}
+              >
+                <CouponCard coupon={coupon} />
+              </div>
+            ))
           )}
         </div>
+      )}
+
+      {/* 모달 */}
+      {selectedCoupon && (
+        <CouponModal coupon={selectedCoupon} onClose={() => setSelectedCoupon(null)} />
       )}
     </div>
   );

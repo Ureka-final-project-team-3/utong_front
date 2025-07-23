@@ -27,3 +27,16 @@ export const fetchSaleData = async (range = 'WEEK') => {
   const res = await API.get(`/data/sale?range=${range}`);
   return res.data.data;
 };
+
+// 거래 대기 삭제 (구매/판매 공통)
+export const deletePendingTrade = async (id, type = 'purchase') => {
+  try {
+    const endpoint = type === 'purchase' ? `/data/purchase` : `/data/sale`;
+    const body = { orderId: id }; // ✅ 서버가 요구하는 구조
+    const res = await API.delete(endpoint, { data: body }); // ✅ 두 번째 인자로 data 전달
+    return res.data;
+  } catch (err) {
+    console.error('거래 대기 삭제 실패:', err);
+    throw err;
+  }
+};

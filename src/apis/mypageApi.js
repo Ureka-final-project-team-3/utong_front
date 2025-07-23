@@ -37,3 +37,10 @@ export const fetchCoupons = async () => {
   const res = await API.get('/coupons');
   return res.data.data;
 };
+
+export const fetchCouponUse = async (userCouponId) => {
+  const res = await API.post('/coupons', {
+    userCouponId,
+  });
+  return res.data.data;
+};

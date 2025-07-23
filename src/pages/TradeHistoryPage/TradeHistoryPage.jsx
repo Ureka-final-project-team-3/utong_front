@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import BackButton from '@/components/BackButton/BackButton';
-import loadingIcon from '@/assets/image/loading.png';
-import checkIcon from '@/assets/image/check.png';
-import redcheckIcon from '@/assets/icon/redcheck.svg';
 import bgImage from '@/assets/image/background4.png';
 import bottomToggleIcon from '@/assets/icon/bottomtoggle.svg';
 import { fetchPurchaseData, fetchSaleData } from '@/apis/purchaseApi';
 import { AnimatePresence, motion } from 'framer-motion';
 import NavigationBar from '@/components/NavigationBar/NavigationBar';
 import DateRangeModal from './DateRangeModal';
+import TradeItemList from './TradeItemList';
 
 const tabs = ['구매 내역', '판매 내역'];
 const subTabs = ['전체', '거래완료', '대기중'];
@@ -51,71 +49,6 @@ const TradeHistoryPage = () => {
     fetchData();
   }, [tab, range]);
 
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return `${date.getMonth() + 1}월 ${String(date.getDate()).padStart(2, '0')}일`;
-  };
-
-  const renderGroupedItems = (completeList, waitingList) => {
-    const allItems = [
-      ...waitingList.map((i) => ({ ...i, isWaiting: true })),
-      ...completeList.map((i) => ({ ...i, isWaiting: false })),
-    ];
-
-    const grouped = allItems.reduce((acc, item) => {
-      const date = formatDate(item.tradeDate);
-      if (!acc[date]) acc[date] = [];
-      acc[date].push(item);
-      return acc;
-    }, {});
-
-    return Object.entries(grouped)
-      .sort((a, b) => {
-        const dateA = new Date(a[0].replace('월 ', '/').replace('일', ''));
-        const dateB = new Date(b[0].replace('월 ', '/').replace('일', ''));
-        return dateB - dateA;
-      })
-      .map(([date, list]) => (
-        <div key={date}>
-          <p className="text-xl font-bold text-[#444] mt-6 mb-3">{date}</p>
-          <div className="flex flex-col gap-6">
-            {list
-              .sort((a, b) => (a.isWaiting === b.isWaiting ? 0 : a.isWaiting ? -1 : 1))
-              .map((item, idx) => {
-                const icon = item.isWaiting
-                  ? loadingIcon
-                  : tab === '판매 내역'
-                    ? redcheckIcon
-                    : checkIcon;
-                const status = item.isWaiting ? '거래 대기중' : '거래 완료';
-                const statusColor = item.isWaiting
-                  ? 'text-gray-400'
-                  : tab === '판매 내역'
-                    ? 'text-[#FF4343]'
-                    : 'text-blue-600';
-                const key = `${item.purchaseId || item.saleId}-${idx}`;
-                return (
-                  <div key={key} className=" py-2">
-                    <div className="flex justify-between items-start text-sm">
-                      <div className="flex items-center gap-2 w-[40%]">
-                        <img src={icon} alt="status" className="w-6 h-6" />
-                        <span className={`${statusColor} font-bold`}>{status}</span>
-                      </div>
-                      <span className="text-gray-700 font-semibold">
-                        {item.dataCode === '001' ? 'LTE' : '5G'}
-                      </span>
-                      <div className="flex flex-col text-right text-base text-gray-600 ">
-                        <span>{(item.pricePerGb * item.quantity).toLocaleString()}P</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
-      ));
-  };
-
   const filteredData = {
     complete: subTab === '전체' || subTab === '거래완료' ? data.complete : [],
     waiting: subTab === '전체' || subTab === '대기중' ? data.waiting : [],
@@ -132,6 +65,7 @@ const TradeHistoryPage = () => {
     >
       <div className="relative z-10 w-full h-full flex justify-end items-center">
         <div className="relative w-full h-full sm:w-[360px] sm:h-[780px] bg-white shadow-xl flex flex-col overflow-hidden sm:mr-[500px]">
+          {/* 헤더 */}
           <div className="sticky top-0 z-20 bg-[#F6F7FC] pb-2">
             <div className="flex items-center mb-2 relative px-[30px] pt-[55px]">
               <BackButton />
@@ -149,12 +83,15 @@ const TradeHistoryPage = () => {
             </button>
           </div>
 
+          {/* 내용 */}
           <div className="flex-1 overflow-y-auto scrollbar-hide px-[30px] pt-[0px] pb-[30px] bg-background relative">
             <div className="mb-3 text-base">
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between text-gray-600 ">
                 <span>{tab === '구매 내역' ? '구매한 데이터' : '판매한 데이터'}</span>
                 <span
-                  className={`font-medium ${tab === '구매 내역' ? 'text-blue-600' : 'text-[#FF4343]'}`}
+                  className={`font-medium ${
+                    tab === '구매 내역' ? 'text-blue-600' : 'text-[#FF4343]'
+                  }`}
                 >
                   {totalData}GB
                 </span>
@@ -162,7 +99,9 @@ const TradeHistoryPage = () => {
               <div className="flex justify-between text-gray-600">
                 <span>{tab === '구매 내역' ? '사용 마일리지' : '획득 마일리지'}</span>
                 <span
-                  className={`font-medium ${tab === '구매 내역' ? 'text-blue-600' : 'text-[#FF4343]'}`}
+                  className={`font-medium ${
+                    tab === '구매 내역' ? 'text-blue-600' : 'text-[#FF4343]'
+                  }`}
                 >
                   {totalMileage.toLocaleString()}P
                 </span>
@@ -174,7 +113,8 @@ const TradeHistoryPage = () => {
               </div>
             </div>
 
-            <div className="relative border-b border-gray-300 mb-2 text-[16px] font-bold flex gap-6">
+            {/* 탭 */}
+            <div className="relative border-b border-gray-300 mb-2 text-[16px] font-bold flex gap-6 pt-[14px]">
               {tabs.map((label) => (
                 <button
                   key={label}
@@ -205,23 +145,32 @@ const TradeHistoryPage = () => {
               />
             </div>
 
+            {/* 서브 탭 */}
             <div className="mb-2 text-[14px] text-gray-500">
               {subTabs.map((label) => (
                 <button
                   key={label}
                   onClick={() => setSubTab(label)}
-                  className={`flex-1 mr-2 pb-2 ${subTab === label ? 'text-black font-semibold' : ''}`}
+                  className={`flex-1 mr-2 pb-2 ${
+                    subTab === label ? 'text-black font-semibold' : ''
+                  }`}
                 >
                   {label}
                 </button>
               ))}
             </div>
 
+            {/* 거래 내역 리스트 */}
             <div className="text-sm text-black pb-20">
-              {renderGroupedItems(filteredData.complete, filteredData.waiting)}
+              <TradeItemList
+                tab={tab}
+                completeList={filteredData.complete}
+                waitingList={filteredData.waiting}
+              />
             </div>
           </div>
 
+          {/* 날짜 필터 모달 */}
           <AnimatePresence>
             {showRangeModal && (
               <DateRangeModal
@@ -237,6 +186,7 @@ const TradeHistoryPage = () => {
             )}
           </AnimatePresence>
 
+          {/* 하단 내비게이션 */}
           <div className="h-[49px] w-full fixed bottom-0 left-1/2 -translate-x-1/2 sm:static sm:left-auto sm:translate-x-0 z-10">
             <NavigationBar />
           </div>
