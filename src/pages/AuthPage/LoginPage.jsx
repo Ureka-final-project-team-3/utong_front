@@ -154,19 +154,19 @@ const LoginPage = () => {
             {/* 소셜 로그인 */}
             <div className="flex justify-center space-x-6">
               <a
-                href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/google`}
+                href={`${import.meta.env.VITE_API_BASE_URL}/api/oauth2/authorization/google`}
                 className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-white"
               >
                 <img src={googleIcon} alt="Google" className="w-10 h-10" />
               </a>
               <a
-                href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/kakao`}
+                href={`${import.meta.env.VITE_API_BASE_URL}/api/oauth2/authorization/kakao`}
                 className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#FEE500]"
               >
                 <img src={kakaoIcon} alt="Kakao" className="w-10 h-10" />
               </a>
               <a
-                href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/naver`}
+                href={`${import.meta.env.VITE_API_BASE_URL}/api/oauth2/authorization/naver`}
                 className="w-10 h-10 rounded-full flex justify-center items-center shadow bg-[#03C75A]"
               >
                 <img src={naverIcon} alt="Naver" className="w-10 h-10" />
