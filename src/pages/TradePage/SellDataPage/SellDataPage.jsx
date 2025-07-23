@@ -313,15 +313,17 @@ const SellDataPage = () => {
             value={price}
             onChange={(e) => {
               const val = e.target.value;
-              if (!/^\d*$/.test(val)) return;
-              if (val === '') {
-                setPrice('');
-                return;
-              }
-              setPrice(String(Number(val)));
+              if (!/^\d*$/.test(val)) return; // 숫자만 허용
+              setPrice(val); // 그대로 입력
+            }}
+            onBlur={() => {
+              if (price === '') return;
+              const rounded = Math.round(Number(price) / 100) * 100;
+              setPrice(String(rounded));
             }}
             className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
           />
+
           <span className="ml-1 text-[20px] text-[#2C2C2C]">P</span>
         </div>
       </div>
