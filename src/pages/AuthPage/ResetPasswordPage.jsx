@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import BackButton from '../../components/BackButton/BackButton.jsx';
 import utongLogo from '@/assets/image/utong2.png';
 import Button from '../../components/common/Button.jsx';
@@ -8,7 +8,8 @@ import bgImage from '@/assets/image/background4.png'; // 배경 이미지 import
 const ResetPasswordPage = () => {
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
-  const { token } = useParams();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
   const navigate = useNavigate();
 
   const handleResetPassword = async () => {
