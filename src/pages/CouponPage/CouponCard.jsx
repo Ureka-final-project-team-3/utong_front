@@ -20,8 +20,8 @@ const CouponCard = ({ coupon }) => {
       {/* 왼쪽: 쿠폰 정보 */}
       <div className="flex-1 pr-4">
         <div className="font-medium text-lg text-gray-800 mt-2">
-  {coupon.name || coupon.gifticonDescription || coupon.couponId || '이름 없는 쿠폰'}
-</div>
+          {coupon.name || coupon.gifticonDescription || coupon.couponId || '이름 없는 쿠폰'}
+        </div>
 
         <div className="text-xs text-gray-400  text-right">
           {coupon.expiredAt ? `${formatDate(coupon.expiredAt)}까지` : '유효기간 없음'}
