@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import BackButton from '../../../components/BackButton/BackButton';
-import help from '@/assets/icon/help.svg';
-import EventInfoModal from './EventInfoModal';
+
+// import help from '@/assets/icon/help.svg';
+// import EventInfoModal from './EventInfoModal';
 
 const EventHeader = () => {
   const [showModal, setShowModal] = useState(false);
@@ -18,18 +19,18 @@ const EventHeader = () => {
         </h1>
 
         <div className="absolute right-0 flex items-center">
-          <img
+          {/* <img
             src={help}
             alt="도움말"
             draggable={false}
             className="cursor-pointer"
             onClick={() => setShowModal(true)}
-          />
+          /> */}
           <div className="w-[20px]"></div>
         </div>
       </div>
 
-      {showModal && <EventInfoModal onClose={() => setShowModal(false)} color="blue" />}
+      {/* {showModal && <EventInfoModal onClose={() => setShowModal(false)} color="blue" />} */}
     </>
   );
 };
