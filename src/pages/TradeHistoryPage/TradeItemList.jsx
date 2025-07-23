@@ -49,7 +49,7 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
     <>
       {sortedGroups.map(([date, list]) => (
         <div key={date}>
-          <p className="text-xl font-bold text-[#444] mt-6 mb-3">{date}</p>
+          <p className="text-[16px] font-bold text-gray-600 mt-6 mb-3">{date}</p>
           <div className="flex flex-col gap-4">
             {list
               .sort((a, b) => (a.isWaiting === b.isWaiting ? 0 : a.isWaiting ? -1 : 1))

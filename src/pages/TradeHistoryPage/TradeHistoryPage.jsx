@@ -7,6 +7,24 @@ import { AnimatePresence, motion } from 'framer-motion';
 import NavigationBar from '@/components/NavigationBar/NavigationBar';
 import DateRangeModal from './DateRangeModal';
 import TradeItemList from './TradeItemList';
+import dayjs from 'dayjs';
+
+const getDateLabelByRange = (range) => {
+  const today = dayjs();
+  switch (range) {
+    case 'TODAY':
+      return today.format('M월 D일');
+    case 'WEEK':
+      return `${today.subtract(6, 'day').format('M월 D일')} ~ ${today.format('M월 D일')}`;
+    case 'MONTH':
+      return `${today.startOf('month').format('M월 D일')} ~ ${today.format('M월 D일')}`;
+    case 'YEAR':
+      return `${today.startOf('year').format('YYYY년 M월 D일')} ~ ${today.format('M월 D일')}`;
+    case 'ALL':
+    default:
+      return '전체 기간';
+  }
+};
 
 const tabs = ['구매 내역', '판매 내역'];
 const subTabs = ['전체', '거래완료', '대기중'];
@@ -14,7 +32,7 @@ const ranges = [
   { label: '전체', value: 'ALL' },
   { label: '오늘', value: 'TODAY' },
   { label: '일주일', value: 'WEEK' },
-  { label: '한달', value: 'MONTH' },
+  { label: '이번달', value: 'MONTH' },
   { label: '일년', value: 'YEAR' },
 ];
 
@@ -84,9 +102,12 @@ const TradeHistoryPage = () => {
           </div>
 
           {/* 내용 */}
-          <div className="flex-1 overflow-y-auto scrollbar-hide px-[30px] pt-[0px] pb-[30px] bg-background relative">
-            <div className="mb-3 text-base">
-              <div className="flex justify-between text-gray-600 ">
+          <div className="flex-1  overflow-y-auto scrollbar-hide px-[30px] pt-[10px] pb-[30px] bg-background relative">
+            <div className="mb-3 text-base ">
+              <span className="mb-3 font-bold text-gray-600 text-[16px]">
+                {getDateLabelByRange(range)}
+              </span>
+              <div className="flex justify-between text-gray-600 pt-2 ">
                 <span>{tab === '구매 내역' ? '구매한 데이터' : '판매한 데이터'}</span>
                 <span
                   className={`font-medium ${
@@ -96,7 +117,7 @@ const TradeHistoryPage = () => {
                   {totalData}GB
                 </span>
               </div>
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between text-gray-600  pt-2">
                 <span>{tab === '구매 내역' ? '사용 마일리지' : '획득 마일리지'}</span>
                 <span
                   className={`font-medium ${
@@ -114,7 +135,7 @@ const TradeHistoryPage = () => {
             </div>
 
             {/* 탭 */}
-            <div className="relative border-b border-gray-300 mb-2 text-[16px] font-bold flex gap-6 pt-[14px]">
+            <div className="relative border-b border-gray-300 mb-2 text-[16px] font-bold flex gap-6 pt-[10px]">
               {tabs.map((label) => (
                 <button
                   key={label}
@@ -146,13 +167,13 @@ const TradeHistoryPage = () => {
             </div>
 
             {/* 서브 탭 */}
-            <div className="mb-2 text-[14px] text-gray-500">
+            <div className="mb-2 text-[14px] text-gray-400">
               {subTabs.map((label) => (
                 <button
                   key={label}
                   onClick={() => setSubTab(label)}
                   className={`flex-1 mr-2 pb-2 ${
-                    subTab === label ? 'text-black font-semibold' : ''
+                    subTab === label ? 'text-gray-600 font-semibold' : ''
                   }`}
                 >
                   {label}
