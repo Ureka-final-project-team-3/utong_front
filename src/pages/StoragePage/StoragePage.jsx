@@ -51,7 +51,7 @@ const StoragePage = () => {
   return (
     <div>
       {/* 헤더 */}
-      <div className="relative flex items-center justify-between px-4 py-0 mb-10">
+      <div className="relative flex items-center justify-between  mb-10 scrollbar-hide">
         <BackButton />
         <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold pb-0">
           보관함

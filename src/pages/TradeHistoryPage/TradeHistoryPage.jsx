@@ -63,10 +63,10 @@ const TradeHistoryPage = () => {
         backgroundPosition: 'center',
       }}
     >
-      <div className="relative z-10 w-full h-full flex justify-end items-center">
-        <div className="relative w-full h-full sm:w-[360px] sm:h-[780px] bg-white shadow-xl flex flex-col overflow-hidden sm:mr-[500px]">
+      <div className="relative z-1 w-full h-full flex justify-end items-center">
+        <div className="relative w-full h-full sm:w-[360px] sm:h-[780px] bg-white shadow-xl flex flex-col overflow-hidden sm:mr-[500px] z-10">
           {/* 헤더 */}
-          <div className="sticky top-0 z-20 bg-[#F6F7FC] pb-2">
+          <div className="sticky top-0 z-0 bg-[#F6F7FC] pb-2">
             <div className="flex items-center mb-2 relative px-[30px] pt-[55px]">
               <BackButton />
               <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2">

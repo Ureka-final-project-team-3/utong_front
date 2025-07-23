@@ -3,9 +3,12 @@ import loadingIcon from '@/assets/image/loading.png';
 import checkIcon from '@/assets/image/check.png';
 import redcheckIcon from '@/assets/icon/redcheck.svg';
 import { deletePendingTrade } from '@/apis/purchaseApi';
-import { motion, AnimatePresence } from 'framer-motion'; // 👈 추가
+import { motion, AnimatePresence } from 'framer-motion';
+
 const TradeItemList = ({ tab, completeList, waitingList }) => {
   const [expandedIndex, setExpandedIndex] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -30,11 +33,11 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
     return dateB - dateA;
   });
 
-  const handleCancel = async (id) => {
+  const handleCancelConfirm = async () => {
     const type = tab === '구매 내역' ? 'purchase' : 'sale';
     try {
-      await deletePendingTrade(id, type);
-      alert('거래가 취소되었습니다.');
+      await deletePendingTrade(selectedId, type);
+      setIsModalOpen(false);
       window.location.reload();
     } catch (err) {
       console.error(err);
@@ -56,7 +59,12 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
                   : tab === '판매 내역'
                     ? redcheckIcon
                     : checkIcon;
-                const status = item.isWaiting ? '거래 대기중' : '거래 완료';
+                const status = item.isWaiting
+                  ? '거래 대기중'
+                  : tab === '구매 내역'
+                    ? '구매 완료'
+                    : '판매 완료';
+
                 const statusColor = item.isWaiting
                   ? 'text-gray-400'
                   : tab === '판매 내역'
@@ -84,8 +92,6 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
                       </div>
                     </div>
 
-                    {/* 확장 영역 */}
-                    {/* 확장 영역 애니메이션 */}
                     <AnimatePresence initial={false}>
                       {isExpanded && (
                         <motion.div
@@ -95,7 +101,6 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
                           transition={{ duration: 0.3, ease: 'easeInOut' }}
                           className="mt-2 pl-8 text-sm text-gray-700 overflow-hidden border-b border-gray-300"
                         >
-                          {/* 전화번호 + 단가 한 줄 */}
                           <div className="flex justify-between items-center mb-3 text-[13px]">
                             <span className="font-medium">{item.phoneNumber}</span>
                             <span className="text-gray-600 font-normal">
@@ -103,14 +108,14 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
                             </span>
                           </div>
 
-                          {/* 거래 취소 버튼 가운데 정렬 */}
                           {item.isWaiting && (
                             <div className="flex justify-center">
                               <button
                                 className="text-base px-4 py-1 border border-gray-400 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200 mb-3"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleCancel(item.purchaseId || item.saleId);
+                                  setSelectedId(item.purchaseId || item.saleId);
+                                  setIsModalOpen(true);
                                 }}
                               >
                                 거래 취소하기
@@ -126,6 +131,33 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
           </div>
         </div>
       ))}
+
+      {/* 취소 확인 모달 */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white w-72 p-6 rounded-xl shadow-md text-center animate-fadeIn">
+            <p className="text-sm text-gray-800 mb-4">
+              <span className="font-semibold">거래 취소</span>
+              <br />
+              해당 거래는 되돌릴 수 없습니다.
+            </p>
+            <div className="flex justify-center gap-4 mt-4">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 rounded bg-gray-200 text-gray-600 text-sm"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleCancelConfirm}
+                className="px-4 py-2 rounded bg-blue-600 text-white text-sm font-semibold"
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
