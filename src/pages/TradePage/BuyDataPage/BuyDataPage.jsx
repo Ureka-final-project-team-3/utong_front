@@ -1,5 +1,7 @@
-// src/pages/BuyDataPage.jsx
 import React, { useEffect, useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import BuyDataHeader from './components/BuyDataHeader';
 import Button from '../../../components/common/Button';
 
@@ -16,6 +18,8 @@ import { postBuyOrder } from '@/apis/dataTradeApi';
 import useOrderQueue from '@/hooks/useOrderQueue';
 
 import SyncLoading from '@/components/Loading/SyncLoading';
+
+import { MIN_PRICE_FLOOR_BY_NETWORK } from '../constants/priceRange';
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -68,31 +72,56 @@ const BuyDataPage = () => {
       }))
     : [];
 
-  // 평균 판매가 계산
+  // 평균 판매가 계산 (매물이 없으면 네트워크별 최소가 사용)
   const avgPrice = sellBids.length
     ? Math.round(
         sellBids.reduce((sum, b) => sum + b.price * b.quantity, 0) /
           sellBids.reduce((sum, b) => sum + b.quantity, 0) /
           100
       ) * 100
-    : 0;
+    : MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
 
-  // 최저 판매가 계산
-  const minPrice = sellBids.length ? Math.min(...sellBids.map((b) => b.price)) : 0;
+  // 최저 판매가 계산 (매물이 없으면 네트워크별 최소가 사용)
+  const minPrice = sellBids.length
+    ? Math.min(...sellBids.map((b) => b.price))
+    : MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
+
+  // 가격 최소, 최대 제한 계산
+  const networkMinPrice = MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
+  const rawPriceFloor = avgPrice > 0 ? Math.floor(avgPrice * 0.7) : networkMinPrice;
+  const priceFloor = rawPriceFloor < networkMinPrice ? networkMinPrice : rawPriceFloor;
+  const priceCeiling = avgPrice > 0 ? Math.ceil(avgPrice * 1.3) : 999999;
 
   const [selectedDataGB, setSelectedDataGB] = useState(1);
-  const [buyPrice, setBuyPrice] = useState(minPrice.toString());
+  const [buyPrice, setBuyPrice] = useState(priceFloor.toString());
 
+  // selectedNetwork 혹은 priceFloor 변경 시 초기값 셋팅
   useEffect(() => {
     const code = networkToDataCodeMap[selectedNetwork] || '002';
     setLocalDataCode(code);
-    setBuyPrice(minPrice.toString());
-  }, [selectedNetwork, minPrice]);
+    setBuyPrice(priceFloor.toString());
+    setSelectedDataGB(1);
+  }, [selectedNetwork, priceFloor]);
 
   const buyPriceNum = Number(buyPrice) || 0;
 
   const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
 
+  // 유효성 체크 : 가격은 priceFloor 이상 priceCeiling 이하
+  const isPriceValid = buyPriceNum >= priceFloor && buyPriceNum <= priceCeiling;
+  const isDataValid = selectedDataGB > 0;
+  const isUserPlanMatches = userPlanNetwork === selectedNetwork;
+  const isButtonEnabled = isPriceValid && isDataValid && isUserPlanMatches;
+
+  // 가격 입력 핸들러
+  const handleBuyPriceChange = (e) => {
+    const val = e.target.value;
+    if (/^\d*$/.test(val)) {
+      setBuyPrice(val);
+    }
+  };
+
+  // 데이터 용량 입력 핸들러
   const handleGBInputChange = (e) => {
     const val = e.target.value;
     if (/^\d*$/.test(val)) {
@@ -101,12 +130,36 @@ const BuyDataPage = () => {
     }
   };
 
+  // 데이터 옵션 추가
   const addDataGB = (gbString) => {
     const gbNum = Number(gbString.replace('GB', ''));
     setSelectedDataGB((prev) => (Number(prev) || 0) + gbNum);
   };
 
+  // 유효성 에러 토스트 알림 (중복 방지 위해 toastId 사용)
+  useEffect(() => {
+    if (buyPrice !== '' && !isPriceValid) {
+      toast.error(
+        `가격은 ${priceFloor.toLocaleString()}원 이상, ${priceCeiling.toLocaleString()}원 이하이어야 합니다.`,
+        {
+          toastId: 'buy-price-error',
+        }
+      );
+    }
+  }, [buyPrice, isPriceValid, priceFloor, priceCeiling]);
+
+  useEffect(() => {
+    if (selectedDataGB < 0) {
+      toast.error(`데이터 용량은 0 이상이어야 합니다.`, { toastId: 'buy-data-error' });
+    }
+  }, [selectedDataGB]);
+
   const handleBuyClick = async () => {
+    if (!isButtonEnabled) {
+      toast.error('입력값을 확인해 주세요.', { toastId: 'buy-button-error' });
+      return;
+    }
+
     try {
       const selectedQty = Number(selectedDataGB) || 0;
       const totalPrice = buyPriceNum * selectedQty;
@@ -168,16 +221,30 @@ const BuyDataPage = () => {
     }
   };
 
-  const isUserPlanMatches = userPlanNetwork === selectedNetwork;
-  const isButtonEnabled = buyPriceNum > 0 && (Number(selectedDataGB) || 0) > 0 && isUserPlanMatches;
-
   if (isLoading) {
     return <SyncLoading text="데이터를 불러오는 중입니다..." />;
   }
 
   return (
     <div>
-      <BuyDataHeader />
+      <div style={{ position: 'relative' }}>
+        <BuyDataHeader />
+
+        <ToastContainer
+          position="top-center"
+          autoClose={3000}
+          style={{
+            position: 'absolute',
+            bottom: '100%', // 헤더 바로 위로 띄움
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '100%',
+            maxWidth: 400,
+            zIndex: 9999,
+            pointerEvents: 'auto',
+          }}
+        />
+      </div>
 
       <PointRechargeModal
         show={showRechargeModal}
@@ -212,11 +279,17 @@ const BuyDataPage = () => {
 
         <div className="flex-1 space-y-2 text-[14px]">
           <div className="flex justify-between">
-            <span className="text-[#4B4B4B]">판매 평균가</span>
-            <span className="text-[#2C2C2C] font-medium">
-              {avgPrice.toLocaleString()}
-              <span className="text-[#565656]"> 원</span>
-            </span>
+            {!sellBids.length ? (
+              <span className="text-[#2769f6] font-semibold">현재 매물이 없습니다</span>
+            ) : (
+              <>
+                <span>판매 평균가</span>
+                <span className="text-[#2C2C2C]">
+                  {avgPrice.toLocaleString()}
+                  <span className="text-[#565656]"> 원</span>
+                </span>
+              </>
+            )}
           </div>
           <div className="flex justify-between">
             <span className="text-[#5D5D5D]">판매 최저가</span>
@@ -235,12 +308,7 @@ const BuyDataPage = () => {
             inputMode="numeric"
             pattern="[0-9]*"
             value={buyPrice}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (/^\d*$/.test(val)) {
-                setBuyPrice(val);
-              }
-            }}
+            onChange={handleBuyPriceChange}
             className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
           />
           <span className="ml-1 text-[20px] text-[#2C2C2C]">P</span>
@@ -248,7 +316,7 @@ const BuyDataPage = () => {
       </div>
 
       <div className="mt-4 text-[10px] text-[#386DEE] text-center">
-        판매 최저가보다 낮은 금액은 구매대기됩니다.
+        판매 평균가 기준 ±30% 범위 내에서만 유효한 가격입니다.
       </div>
 
       <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
