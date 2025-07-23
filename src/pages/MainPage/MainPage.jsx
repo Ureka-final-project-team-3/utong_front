@@ -9,11 +9,19 @@ import coin from '@/assets/icon/coin.png';
 import { useLocation } from 'react-router-dom';
 import { fetchMyInfo } from '@/apis/mypageApi';
 import useAuth from '@/hooks/useAuth';
+import useOrderQueue from '@/hooks/useOrderQueue';
 const MainPage = () => {
   const { user, isLoading } = useAuth();
   const [userInfo, setUserInfo] = useState(null);
   const [mounted, setMounted] = useState(false);
-  const [currentPrice, setCurrentPrice] = useState(8700);
+  const [currentPrice, setCurrentPrice] = useState(null);
+  const [previousPrice, setPreviousPrice] = useState(null);
+  const [priceAnimation, setPriceAnimation] = useState('');
+  const dataCode = userInfo?.dataCode ?? '002';
+  const { queueData, isLoading: isQueueLoading } = useOrderQueue(dataCode);
+  const recentContracts = queueData?.recentContracts ?? [];
+  const latestContract = recentContracts.length > 0 ? recentContracts[0] : null;
+  const latestPrice = latestContract?.price ?? null;
   const location = useLocation();
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -40,26 +48,29 @@ const MainPage = () => {
         });
     }
   }, [location.search]);
+  // 가격이 변경될 때 애니메이션 트리거
+  useEffect(() => {
+    if (latestPrice !== null && latestPrice !== previousPrice) {
+      setPreviousPrice(currentPrice);
+      setCurrentPrice(latestPrice);
+      // 가격 변화 애니메이션 클래스 적용
+      setPriceAnimation('pulse-price');
+      // 애니메이션 완료 후 클래스 제거
+      const timer = setTimeout(() => {
+        setPriceAnimation('');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [latestPrice, currentPrice, previousPrice]);
   useEffect(() => {
     if (!isLoading && user) {
       fetchMyInfo()
         .then((data) => setUserInfo(data))
         .catch((err) => console.error('메인페이지 유저 정보 불러오기 실패:', err));
     }
-    // 마운트 애니메이션 시작
     setTimeout(() => setMounted(true), 100);
   }, [user, isLoading]);
-  // 실시간 가격 애니메이션 효과
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const change = Math.floor(Math.random() * 201) - 100; // -100 ~ +100
-      setCurrentPrice((prev) => Math.max(8000, Math.min(10000, prev + change)));
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-  if (isLoading) {
-    return null;
-  }
+  if (isLoading) return null;
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* 환영 메시지와 캐릭터 */}
@@ -123,11 +134,25 @@ const MainPage = () => {
         <div className="flex flex-col justify-between h-full">
           <p className="text-[14px] font-bold text-left">실시간 데이터 거래가격</p>
           <p className="text-right leading-5 self-end">
-            <span className="text-[10px]">현재 </span>
-            <span className="text-[24px] font-bold transition-all duration-500">
-              {currentPrice.toLocaleString()}원
-            </span>
-            <span className="text-[10px]"> (1GB)</span>
+            {isQueueLoading ? (
+              <span className="text-[20px] font-bold transition-all duration-500">
+                불러오는 중...
+              </span>
+            ) : (
+              <>
+                <span className="text-[10px]">현재 </span>
+                <span
+                  className="text-[24px] font-bold transition-all duration-500"
+                  style={{
+                    animation: priceAnimation ? `${priceAnimation} 1.5s ease-in-out` : 'none',
+                  }}
+                >
+                  {currentPrice !== null ? currentPrice.toLocaleString() : '-'}
+                </span>
+                <span className="text-[10px]"> 원</span>
+                <span className="text-[10px]"> (1GB)</span>
+              </>
+            )}
           </p>
         </div>
       </div>
