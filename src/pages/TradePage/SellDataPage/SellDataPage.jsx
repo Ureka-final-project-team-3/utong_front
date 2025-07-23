@@ -70,26 +70,31 @@ const SellDataPage = () => {
     }));
   }, [queueData]);
 
+  // avgPrice 계산: 0 대신 최소 가격으로 대체
   const avgPrice = useMemo(() => {
     if (buyBids.length) {
       const totalAmount = buyBids.reduce((sum, b) => sum + b.quantity, 0);
-      if (totalAmount === 0) return 0;
+      if (totalAmount === 0) return MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
       const totalValue = buyBids.reduce((sum, b) => sum + b.price * b.quantity, 0);
       return Math.round(totalValue / totalAmount / 100) * 100;
     }
-    return 0;
-  }, [buyBids]);
+    return MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
+  }, [buyBids, selectedNetwork]);
 
+  // highestPrice도 0일 경우 최소 가격으로 초기화
   const highestPrice = useMemo(() => {
     if (buyBids.length) {
-      return Math.max(...buyBids.map((b) => b.price));
+      const maxPrice = Math.max(...buyBids.map((b) => b.price));
+      return maxPrice === 0 ? MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000 : maxPrice;
     }
     return MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
-  }, [buyBids]);
+  }, [buyBids, selectedNetwork]);
 
+  // 📍 minPrice 계산 부분만 아래처럼 수정
   const minPrice = useMemo(() => {
-    if (avgPrice === 0) return MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
-    return Math.floor(avgPrice * 0.7);
+    const floor = MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
+    const computed = Math.floor(avgPrice * 0.7);
+    return Math.max(computed, floor);
   }, [avgPrice, selectedNetwork]);
 
   const maxPriceAllowed = useMemo(() => {
@@ -97,7 +102,7 @@ const SellDataPage = () => {
     return Math.min(Math.ceil(avgPrice * 1.3), MAX_PRICE_CEIL_BY_NETWORK[selectedNetwork] || 11000);
   }, [avgPrice, selectedNetwork]);
 
-  // 여기서 highestPrice가 0이면 최소가격으로 초기값 세팅
+  // 초기 price 상태 설정 (highestPrice가 0이면 최소가격으로)
   const [price, setPrice] = useState(() =>
     highestPrice === 0
       ? (MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000).toString()
@@ -215,6 +220,7 @@ const SellDataPage = () => {
   const isButtonEnabled =
     isPriceValid && isDataValid && normalizedUserPlanNetwork === normalizedSelectedNetwork;
 
+  // highestPrice 또는 selectedNetwork 변경 시 price 값 재설정
   useEffect(() => {
     setPrice(
       highestPrice === 0
@@ -273,12 +279,19 @@ const SellDataPage = () => {
         <div className="w-px h-[35px] bg-[#D9D9D9]" />
         <div className="flex-1 space-y-2 text-[14px]">
           <div className="flex justify-between">
-            <span className="text-[#4B4B4B]">구매 평균가</span>
-            <span className="text-[#2C2C2C]">
-              {avgPrice.toLocaleString()}
-              <span className="text-[#565656]"> 원</span>
-            </span>
+            {avgPrice === (MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000) ? (
+              <span className="text-[#FF4343] font-semibold">현재 매물이 없습니다</span>
+            ) : (
+              <>
+                <span>구매 평균가</span>
+                <span className="text-[#2C2C2C]">
+                  {avgPrice.toLocaleString()}
+                  <span className="text-[#565656]"> 원</span>
+                </span>
+              </>
+            )}
           </div>
+
           <div className="flex justify-between">
             <span className="text-[#5D5D5D]">구매 최고가</span>
             <span className="text-[#2C2C2C]">
