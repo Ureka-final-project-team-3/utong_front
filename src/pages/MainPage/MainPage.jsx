@@ -9,20 +9,12 @@ import coin from '@/assets/icon/coin.png';
 
 import { fetchMyInfo } from '@/apis/mypageApi';
 import useAuth from '@/hooks/useAuth';
-import useOrderQueue from '@/hooks/useOrderQueue';
 
 const MainPage = () => {
   const { user, isLoading } = useAuth();
   const [userInfo, setUserInfo] = useState(null);
   const [mounted, setMounted] = useState(false);
-
-  const dataCode = userInfo?.dataCode ?? '002';
-
-  const { queueData, isLoading: isQueueLoading } = useOrderQueue(dataCode);
-
-  const recentContracts = queueData?.recentContracts ?? [];
-  const latestContract = recentContracts.length > 0 ? recentContracts[0] : null;
-  const latestPrice = latestContract?.price ?? null;
+  const [currentPrice, setCurrentPrice] = useState(8700);
 
   useEffect(() => {
     if (!isLoading && user) {
@@ -31,10 +23,23 @@ const MainPage = () => {
         .catch((err) => console.error('메인페이지 유저 정보 불러오기 실패:', err));
     }
 
+    // 마운트 애니메이션 시작
     setTimeout(() => setMounted(true), 100);
   }, [user, isLoading]);
 
-  if (isLoading) return null;
+  // 실시간 가격 애니메이션 효과
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const change = Math.floor(Math.random() * 201) - 100; // -100 ~ +100
+      setCurrentPrice((prev) => Math.max(8000, Math.min(10000, prev + change)));
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -104,26 +109,11 @@ const MainPage = () => {
           <p className="text-[14px] font-bold text-left">실시간 데이터 거래가격</p>
 
           <p className="text-right leading-5 self-end">
-            {isQueueLoading ? (
-              <span
-                className="text-[24px] font-bold transition-all duration-500"
-                style={{ animation: 'none' }}
-              >
-                불러오는 중...
-              </span>
-            ) : (
-              <>
-                <span className="text-[10px]">현재 </span>
-                <span
-                  className="text-[24px] font-bold transition-all duration-500"
-                  style={{ animation: 'pulse-price 1.5s ease-in-out' }}
-                >
-                  {latestPrice !== null ? latestPrice.toLocaleString() : '-'}
-                </span>
-                <span className="text-[10px]"> 원</span>
-                <span className="text-[10px]"> (1GB)</span>
-              </>
-            )}
+            <span className="text-[10px]">현재 </span>
+            <span className="text-[24px] font-bold transition-all duration-500">
+              {currentPrice.toLocaleString()}원
+            </span>
+            <span className="text-[10px]"> (1GB)</span>
           </p>
         </div>
       </div>
