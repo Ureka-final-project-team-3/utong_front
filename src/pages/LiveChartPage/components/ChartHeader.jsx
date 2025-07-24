@@ -2,6 +2,8 @@
 import React from 'react';
 import BackButton from '../../../components/BackButton/BackButton';
 
+import tradeGuide from '@/assets/icon/tradeguide.svg';
+
 const ChartHeader = () => {
   return (
     <div className="w-full   flex items-center justify-between">
@@ -11,7 +13,7 @@ const ChartHeader = () => {
         데이터 거래하기
       </h1>
 
-      <div className="w-[20px]" />
+      <img src={tradeGuide} alt="TradeGuide" draggable={false} />
     </div>
   );
 };

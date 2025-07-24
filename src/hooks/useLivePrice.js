@@ -1,56 +1,67 @@
 import { useEffect, useState } from 'react';
 
-const useLivePrice = (dataCode) => {
+const useLivePrice = (targetDataCode) => {
   const [priceList, setPriceList] = useState([]);
 
   useEffect(() => {
-    if (!dataCode) return;
+    if (!targetDataCode) return;
 
-    const url = `${import.meta.env.VITE_API_BASE_URL}/api/data/current-prices/stream/${dataCode}`;
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/data/current-prices/stream`;
     const eventSource = new EventSource(url);
+    console.log(`[SSE] 통합 스트림 연결 시도 → ${url}`);
 
-    console.log(`[SSE] 연결 시도 → ${url}`);
+   eventSource.addEventListener('all-chart-initial-data', (event) => {
+  try {
+    console.log(`[SSE][${targetDataCode}] 전체 초기 데이터 수신 (event.data):`, event.data); 
 
-    // 📦 초기 데이터 수신
-    eventSource.addEventListener('chart-initial-data', (event) => {
-      try {
-        const initialData = JSON.parse(event.data);
-        setPriceList(initialData);
-        console.log(`[SSE][${dataCode}] 초기 데이터 수신:`, initialData);
-      } catch (e) {
-        console.error(`[SSE][${dataCode}] 초기 데이터 파싱 오류:`, e);
-      }
-    });
+    const allData = JSON.parse(event.data); 
+    console.log(`[SSE][${targetDataCode}] allData:`, allData); 
 
-    // 📈 실시간 업데이트 수신
-    const hourlyEventName = `${dataCode}-chart-hourly-update`;
-    eventSource.addEventListener(hourlyEventName, (event) => {
-      try {
-        const updates = JSON.parse(event.data);
-        setPriceList((prev) => [...prev.slice(-9), ...updates]);
-        console.log(`[SSE][${dataCode}] 실시간 업데이트 수신:`, updates);
-      } catch (e) {
-        console.error(`[SSE][${dataCode}] 실시간 업데이트 파싱 오류:`, e);
-      }
-    });
+    const chart = allData.find(c => c.dataCode === targetDataCode);
+    console.log(`[SSE][${targetDataCode}] 필터링된 chart:`, chart); 
 
-    // ❌ 오류 처리 및 재연결 알림
+   if (chart) {
+  setPriceList(chart.avgPerHourList); 
+  console.log(`[SSE][${targetDataCode}] 초기 데이터 수신 완료:`, chart.avgPerHourList); 
+}
+
+  } catch (e) {
+    console.error(`[SSE][${targetDataCode}] 초기 데이터 파싱 오류`, e);
+  }
+});
+
+
+    eventSource.addEventListener('all-chart-hourly-update', (event) => {
+  try {
+    console.log(`[SSE][${targetDataCode}] 실시간 데이터 수신 (event.data):`, event.data); 
+
+    const allData = JSON.parse(event.data);
+    console.log(`[SSE][${targetDataCode}] allData (hourly):`, allData); 
+
+    const chart = allData.find(c => c.dataCode === targetDataCode);
+    console.log(`[SSE][${targetDataCode}] 실시간 chart:`, chart); 
+
+    if (chart) {
+      const updates = chart.avgPerHourList; 
+
+      setPriceList(prev => [...prev.slice(-9), ...updates]);
+      console.log(`[SSE][${targetDataCode}] 실시간 업데이트 완료:`, updates);
+    }
+  } catch (e) {
+    console.error(`[SSE][${targetDataCode}] 업데이트 파싱 오류`, e);
+  }
+});
+
+
     eventSource.onerror = (err) => {
-      console.error(`[SSE][${dataCode}] SSE 연결 오류 발생`, err);
-
-      if (eventSource.readyState === EventSource.CONNECTING) {
-        console.log(`[SSE][${dataCode}] 서버와 재연결 중...`);
-      } else if (eventSource.readyState === EventSource.CLOSED) {
-        console.warn(`[SSE][${dataCode}] 연결이 닫힘 (서버 또는 네트워크 문제)`);
-      }
-      // eventSource.close(); ← ❌ 자동 재연결을 막으므로 제거
+      console.error(`[SSE][${targetDataCode}] SSE 오류 발생`, err);
     };
 
     return () => {
-      console.log(`[SSE][${dataCode}] 연결 해제`);
-      eventSource.close(); // 컴포넌트 언마운트 시 종료
+      console.log(`[SSE][${targetDataCode}] 연결 해제`);
+      eventSource.close();
     };
-  }, [dataCode]);
+  }, [targetDataCode]);
 
   return priceList;
 };

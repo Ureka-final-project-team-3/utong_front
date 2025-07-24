@@ -26,6 +26,7 @@ import ChargePage from '../pages/ChargePage/ChargePage';
 import BuyDataPage from '../pages/TradePage/BuyDataPage/BuyDataPage.jsx';
 import SellDataPage from '../pages/TradePage/SellDataPage/SellDataPage.jsx';
 import MyGifticonDetail from '@/pages/StoragePage/MyGifticonDetail';
+import TradeGuidePage from '../pages/TradePage/TradeGuidePage/TradeGuidePage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
       {
         path: '/selldata',
         element: <SellDataPage />,
+      },
+      {
+        path: '/tradeguide',
+        element: <TradeGuidePage />,
       },
       {
         path: '/mypage',
