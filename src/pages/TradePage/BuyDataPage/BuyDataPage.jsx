@@ -84,14 +84,18 @@ const BuyDataPage = () => {
   const priceFloor = MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
 
   const [selectedDataGB, setSelectedDataGB] = useState(1);
-  const [buyPrice, setBuyPrice] = useState(priceFloor.toString());
+  const [buyPrice, setBuyPrice] = useState(minPrice.toString());
+
+  // minPrice 변경 시 buyPrice도 갱신하도록 추가
+  useEffect(() => {
+    setBuyPrice(minPrice.toString());
+  }, [minPrice]);
 
   useEffect(() => {
     const code = networkToDataCodeMap[selectedNetwork] || '002';
     setLocalDataCode(code);
-    setBuyPrice(priceFloor.toString());
     setSelectedDataGB(1);
-  }, [selectedNetwork, priceFloor]);
+  }, [selectedNetwork]);
 
   const buyPriceNum = Number(buyPrice) || 0;
   const dataOptions = ['1GB', '2GB', '3GB', '5GB'];
@@ -120,20 +124,6 @@ const BuyDataPage = () => {
     const gbNum = Number(gbString.replace('GB', ''));
     setSelectedDataGB((prev) => (Number(prev) || 0) + gbNum);
   };
-
-  useEffect(() => {
-    if (buyPrice !== '' && !isPriceValid) {
-      toast.error(`가격은 ${priceFloor.toLocaleString()}원 이상이어야 합니다.`, {
-        toastId: 'buy-price-error',
-      });
-    }
-  }, [buyPrice, isPriceValid, priceFloor]);
-
-  useEffect(() => {
-    if (selectedDataGB < 0) {
-      toast.error(`데이터 용량은 0 이상이어야 합니다.`, { toastId: 'buy-data-error' });
-    }
-  }, [selectedDataGB]);
 
   const handleBuyClick = async () => {
     if (!isButtonEnabled) {
@@ -283,6 +273,8 @@ const BuyDataPage = () => {
           </div>
         </div>
       </div>
+
+      {/* 가격 입력 영역 */}
       <div className="mt-6 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
         <div className="text-[15px] text-[#2C2C2C] mb-2">구매할 가격</div>
         <div className="flex justify-end items-center">
@@ -295,16 +287,28 @@ const BuyDataPage = () => {
             onBlur={() => {
               if (buyPrice === '') return;
               const rounded = Math.round(Number(buyPrice) / 100) * 100;
-              setBuyPrice(String(rounded));
+
+              if (rounded < priceFloor) {
+                toast.error(`가격은 ${priceFloor.toLocaleString()}원 이상이어야 합니다.`, {
+                  autoClose: 3000,
+                  toastId: 'buy-price-error',
+                });
+                setBuyPrice(String(minPrice));
+              } else {
+                setBuyPrice(String(rounded));
+              }
             }}
             className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
           />
           <span className="ml-1 text-[20px] text-[#2C2C2C]">P</span>
         </div>
       </div>
+
       <div className="mt-4 text-[11px] text-[#386DEE] text-center">
         현재 평균 가격에서 ±30% 범위 안에서만 거래할 수 있어요.
       </div>
+
+      {/* 데이터 GB 입력 영역 */}
       <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
         <div className="text-[15px] text-[#2C2C2C] mb-2">데이터</div>
         <div className="flex justify-between items-center mb-2">
@@ -315,17 +319,25 @@ const BuyDataPage = () => {
             pattern="[0-9]*"
             value={selectedDataGB}
             onChange={handleGBInputChange}
+            onBlur={() => {
+              if (selectedDataGB < 0) {
+                toast.error(`데이터 용량은 0 이상이어야 합니다.`, {
+                  toastId: 'buy-data-error',
+                });
+              }
+            }}
             className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
           />
           <span className="ml-1 text-[13px] text-[#565656]">GB</span>
         </div>
+
         <div className="flex gap-2 mt-2">
           {dataOptions.map((option) => (
             <button
               key={option}
               onClick={() => addDataGB(option)}
               className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center
-              hover:border-[#386DEE] hover:bg-[#E6EEFF] hover:text-[#386DEE]"
+                hover:border-[#386DEE] hover:bg-[#E6EEFF] hover:text-[#386DEE]"
             >
               {option}
             </button>
