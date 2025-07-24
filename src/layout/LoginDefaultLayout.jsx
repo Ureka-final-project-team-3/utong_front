@@ -12,16 +12,15 @@ const DefaultLayout = () => {
 
   return (
     <div className="absolute inset-0 z-0 bg-[#FFF9F1] flex items-center justify-center sm:gap-30">
-      {/* 전체 2분할 구조 */}
       <div className="hidden md:flex flex-1 justify-end h-full">
         <div className="flex flex-col justify-center w-full max-w-[360px]  text-sm leading-relaxed  text-center items-center">
           <img src={utongLogo} alt="유통 로고" className="w-30 mb-4" />
-          <h2 className="text-[22px] font-bold text-gray-500 mb-10">너로 통하다</h2>
-          <p className="mb-5 text-[18px] font-bold text-gray-500">
+          <h2 className="text-[18px] font-bold text-gray-500 mb-2">너로 통하다</h2>
+          <p className="mb-6 text-[18px] font-bold text-gray-500">
             데이터를 쉽고, 안전하게 거래하세요.
           </p>
 
-          <ul className="space-y-6 text-gray-500 text-[17px] font-bold">
+          <ul className="space-y-6 text-gray-500 text-[18px] font-bold">
             {[
               '실시간 가격 반영',
               '간편한 포인트 결제',
@@ -29,9 +28,7 @@ const DefaultLayout = () => {
               '매일 제공되는 이벤트',
             ].map((text, index) => (
               <li key={index} className="flex items-center gap-x-6">
-                {' '}
-                {/* gap 조정 */}
-                <div className="w-8 h-8 flex-shrink-0">
+                <div className="w-12 h-12 flex-shrink-0">
                   <img src={bgcheck} alt="체크 아이콘" className="w-full h-full object-contain" />
                 </div>
                 <div className="flex-1 flex items-center h-12">
@@ -69,10 +66,6 @@ const DefaultLayout = () => {
                 <Outlet />
               </motion.div>
             </AnimatePresence>
-          </div>
-
-          <div className="h-[49px] w-full fixed bottom-0 left-1/2 -translate-x-1/2 sm:static sm:left-auto sm:translate-x-0 z-10">
-            <NavigationBar />
           </div>
         </div>
       </div>

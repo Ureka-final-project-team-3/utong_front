@@ -111,26 +111,10 @@ const LoginPage = () => {
   };
 
   return (
-    <div
-      className="absolute inset-0 z-0"
-      style={{
-        backgroundImage: `url(${bgImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <div className="relative z-10 w-full h-full flex justify-end items-center">
-        <div
-          className="
-            w-full h-full
-            sm:w-[360px] sm:h-[780px]
-            bg-white shadow-xl relative flex flex-col overflow-hidden
-            sm:mr-[500px]
-          "
-        >
-          <div className="flex-1 overflow-y-auto px-[30px] pt-[55px] pb-[30px] bg-background">
-            <BackButton />
-
+    <div>
+      <div>
+        <div>
+          <div>
             <div className="flex justify-center mb-8">
               <img src={utong2} alt="로고" className="w-[100px] h-auto" />
             </div>
