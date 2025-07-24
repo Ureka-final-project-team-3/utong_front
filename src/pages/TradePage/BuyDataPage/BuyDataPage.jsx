@@ -211,7 +211,7 @@ const BuyDataPage = () => {
   }
 
   return (
-    <div>
+    <div className="relative h-full">
       <div style={{ position: 'relative' }}>
         <BuyDataHeader />
         <ToastContainer

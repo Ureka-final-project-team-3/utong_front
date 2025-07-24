@@ -39,7 +39,7 @@ const SellSuccessModal = ({ show, statusKey, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
+    <div className="absolute inset-0 z-50 flex items-center justify-center">
       <div className="w-[300px] min-h-[140px] bg-[#F6F6F6] rounded-[10px] flex flex-col items-center justify-center px-4 py-4 text-center space-y-4 relative">
         <p className={`text-[18px] text-[#2C2C2C] font-bold ${color}`}>{text}</p>
         <p className="text-[14px] text-gray-600">{sub}</p>
