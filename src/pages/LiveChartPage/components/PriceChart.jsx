@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import {
   LineChart,
   Line,
@@ -8,9 +8,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { getAveragePriceByDate } from '../../../utils/getAveragePriceByDate';
 import useTradeStore from '@/stores/tradeStore';
-import useLivePrice from '@/hooks/useLivePrice'; // 실시간 시세 훅
+import useLivePrice from '@/hooks/useLivePrice';
+import { getWeeklyPrices } from '@/apis/weekprice';
 
 const PriceChartContainer = () => {
   const selectedNetwork = useTradeStore((state) => state.selectedNetwork);
@@ -18,22 +18,47 @@ const PriceChartContainer = () => {
 
   const dataCode = selectedNetwork === '5G' ? '002' : '001';
 
-  // 실시간 시세 데이터 (SSE)
+  // 오늘 실시간 데이터
   const liveData = useLivePrice(dataCode);
 
-  console.log('liveData (SSE 수신 데이터):', liveData);
+  // 주간 시세 API 결과 상태
+  const [weeklyData, setWeeklyData] = useState([]);
+
+  // selectedRange가 'today'가 아닌 경우에 주간 시세 API 호출
+  useEffect(() => {
+    if (selectedRange !== 'today') {
+      getWeeklyPrices(dataCode)
+        .then((res) => {
+          console.log('주간 시세 API 응답:', res);
+          if (res?.data?.dailyChartDtoList) {
+            const chartData = res.data.dailyChartDtoList.map((item) => ({
+              timestamp: item.date,
+              price: item.avgPrice,
+              volume: 0,
+            }));
+            console.log('주간 시세 데이터:', chartData);
+            setWeeklyData(chartData);
+          } else {
+            setWeeklyData([]);
+          }
+        })
+        .catch((e) => {
+          console.error('주간 시세 API 호출 오류:', e);
+          setWeeklyData([]);
+        });
+    }
+  }, [selectedRange, dataCode]);
 
   const filteredData = useMemo(() => {
-    if (!liveData || liveData.length === 0) return [];
-
     if (selectedRange === 'today') {
+      if (!liveData || liveData.length === 0) return [];
+
       const todayStrKST = new Date().toLocaleDateString('ko-KR', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
       });
 
-      // today 필터링 기준은 aggregatedAt 사용
       const filtered = liveData.filter((item) => {
         const itemDateStr = new Date(item.aggregatedAt).toLocaleDateString('ko-KR', {
           year: 'numeric',
@@ -43,34 +68,16 @@ const PriceChartContainer = () => {
         return itemDateStr === todayStrKST;
       });
 
-      const mapped = filtered.map((item) => ({
+      return filtered.map((item) => ({
         timestamp: item.aggregatedAt,
         price: item.avgPrice,
         volume: item.volume || 0,
       }));
-
-      console.log('filteredData (today 필터링 결과):', mapped);
-
-      return mapped;
     } else {
-      // 전체 기간 평균값 계산 시 필드명 변환 후 getAveragePriceByDate 호출
-      const mappedData = liveData.map((item) => ({
-        timestamp: item.aggregatedAt,
-        price: item.avgPrice,
-        volume: item.volume || 0,
-      }));
-
-      const averaged = getAveragePriceByDate(mappedData).map((d) => ({
-        timestamp: d.date,
-        price: d.averagePrice,
-        volume: d.totalVolume,
-      }));
-
-      console.log('filteredData (평균값 계산 결과):', averaged);
-
-      return averaged;
+      // 주간 데이터는 API에서 받은 데이터 사용
+      return weeklyData;
     }
-  }, [liveData, selectedRange]);
+  }, [liveData, selectedRange, weeklyData]);
 
   return (
     <div className="bg-gradient-to-r from-[#2769F6] to-[#757AD0] rounded-[8px] shadow-md overflow-hidden flex flex-col">
@@ -92,11 +99,7 @@ const PriceChartContainer = () => {
                       day: '2-digit',
                     });
               }}
-              tick={{
-                fontSize: 8,
-                fill: '#FFFFFF',
-                opacity: 0.6,
-              }}
+              tick={{ fontSize: 8, fill: '#FFFFFF', opacity: 0.6 }}
               axisLine={false}
               tickLine={false}
               interval="preserveStartEnd"
@@ -121,7 +124,7 @@ const PriceChartContainer = () => {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
-                  hour: 'numeric',
+                  hour: selectedRange === 'today' ? 'numeric' : undefined,
                   hour12: true,
                 });
 
