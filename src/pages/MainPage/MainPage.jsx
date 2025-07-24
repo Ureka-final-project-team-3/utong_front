@@ -117,7 +117,7 @@ const MainPage = () => {
 
       {/* 데이터/포인트 카드 */}
       <div
-        className={`flex justify-between w-[300px] mx-auto mt-2 space-x-3 transition-all duration-700 delay-200 ${
+        className={`flex justify-between w-[300px] mx-auto mt-2 space-x-3 transition-all duration-700 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
@@ -144,7 +144,7 @@ const MainPage = () => {
       {/* 실시간 가격 카드 (5G / LTE) */}
       <div className="space-y-3 mt-5 w-[300px] mx-auto">
         {/* 5G */}
-        <div className="rounded-xl text-white p-4 bg-gradient-market-price h-[110px] hover:shadow-xl hover:scale-[1.02] transition-all duration-700 delay-300">
+        <div className="rounded-xl text-white p-4 bg-gradient-market-price h-[110px] hover:shadow-xl hover:scale-[1.02] transition-all duration-700 ">
           <div className="flex flex-col justify-between h-full">
             <p className="text-[14px] font-bold text-left">실시간 데이터 거래가격</p>
             <p className="text-right leading-5 self-end">
@@ -174,12 +174,14 @@ const MainPage = () => {
                   <span
                     className="text-[24px] font-bold"
                     style={{
-                      animation: priceAnimationLTE ? `${priceAnimationLTE} 1.5s ease-in-out` : 'none',
+                      animation: priceAnimationLTE
+                        ? `${priceAnimationLTE} 1.5s ease-in-out`
+                        : 'none',
                     }}
                   >
                     {currentPriceLTE !== null ? currentPriceLTE.toLocaleString() : '-'}
                   </span>
-                  
+
                   <span className="text-[10px]"> 원 (1GB)</span>
                 </div>
               )}
@@ -189,7 +191,10 @@ const MainPage = () => {
       </div>
 
       {/* 메뉴 카드 */}
-      <div className="w-[290px] mx-auto mt-8 rounded-3xl overflow-hidden bg-white" style={{ boxShadow: '0 0 10px rgba(0,0,0,0.25)' }}>
+      <div
+        className="w-[290px] mx-auto mt-8 rounded-3xl overflow-hidden bg-white"
+        style={{ boxShadow: '0 0 10px rgba(0,0,0,0.25)' }}
+      >
         <Link to="/chart" className="block transition-transform duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between pl-6 pr-4 py-4">
             <div className="flex items-center space-x-3">
