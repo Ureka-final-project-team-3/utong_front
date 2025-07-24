@@ -115,77 +115,87 @@ const MainPage = () => {
         />
       </div>
 
-      {/* 데이터/포인트 카드 */}
       <div
         className={`flex justify-between w-[300px] mx-auto mt-2 space-x-3 transition-all duration-700 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
-        <div className="flex flex-col justify-between bg-white rounded-xl shadow p-2 flex-1 h-[60px] hover:shadow-lg hover:scale-105 transition-all duration-300">
-          <div className="flex items-center">
-            <img src={wifi} alt="데이터" className="w-[23px] h-[16px] mr-1" />
-            <p className="text-xs text-gray-500">데이터</p>
+        {/* 데이터 카드 */}
+        <div className="flex-1 overflow-hidden rounded-xl">
+          <div className="flex flex-col justify-between bg-white shadow p-2 h-[60px] transition-all duration-300 hover:scale-105">
+            <div className="flex items-center">
+              <img src={wifi} alt="데이터" className="w-[23px] h-[16px] mr-1" />
+              <p className="text-xs text-gray-500">데이터</p>
+            </div>
+            <p className="text-sm font-bold self-end">
+              <span className="text-blue-600">{userInfo?.remainingData ?? 0}</span>GB
+            </p>
           </div>
-          <p className="text-sm font-bold self-end">
-            <span className="text-blue-600">{userInfo?.remainingData ?? 0}</span>GB
-          </p>
         </div>
-        <div className="flex flex-col justify-between bg-blue-100 rounded-xl shadow p-2 flex-1 h-[60px] hover:shadow-lg hover:scale-105 transition-all duration-300">
-          <div className="flex items-center">
-            <img src={coin} alt="포인트" className="w-[20px] h-[20px] mr-1" />
-            <p className="text-xs text-gray-500">포인트</p>
+
+        {/* 포인트 카드 */}
+        <div className="flex-1 overflow-hidden rounded-xl">
+          <div className="flex flex-col justify-between bg-blue-100 shadow p-2 h-[60px] transition-all duration-300 hover:scale-105">
+            <div className="flex items-center">
+              <img src={coin} alt="포인트" className="w-[20px] h-[20px] mr-1" />
+              <p className="text-xs text-gray-500">포인트</p>
+            </div>
+            <p className="text-sm font-bold self-end">
+              <span className="text-blue-600">{(userInfo?.mileage ?? 0).toLocaleString()}</span>P
+            </p>
           </div>
-          <p className="text-sm font-bold self-end">
-            <span className="text-blue-600">{(userInfo?.mileage ?? 0).toLocaleString()}</span>P
-          </p>
         </div>
       </div>
 
       {/* 실시간 가격 카드 (5G / LTE) */}
       <div className="space-y-3 mt-5 w-[300px] mx-auto">
         {/* 5G */}
-        <div className="rounded-xl text-white p-4 bg-gradient-market-price h-[110px] hover:shadow-xl hover:scale-[1.02] transition-all duration-700 ">
-          <div className="flex flex-col justify-between h-full">
-            <p className="text-[14px] font-bold text-left">실시간 데이터 거래가격</p>
-            <p className="text-right leading-5 self-end">
-              {isQueueLoading5G ? (
-                <span className="text-[20px] font-bold">불러오는 중...</span>
-              ) : (
-                <div className="mb-[5px]">
-                  <span className="text-[14px]">5G </span>
-                  <span
-                    className="text-[24px] font-bold"
-                    style={{
-                      animation: priceAnimation5G ? `${priceAnimation5G} 1.5s ease-in-out` : 'none',
-                    }}
-                  >
-                    {currentPrice5G !== null ? currentPrice5G.toLocaleString() : '-'}
-                  </span>
-                  <span className="text-[10px]"> 원 (1GB)</span>
-                </div>
-              )}
-            </p>
-            <p className="text-right leading-5 self-end">
-              {isQueueLoadingLTE ? (
-                <span className="text-[20px] font-bold">불러오는 중...</span>
-              ) : (
-                <div>
-                  <span className="text-[14px]">LTE </span>
-                  <span
-                    className="text-[24px] font-bold"
-                    style={{
-                      animation: priceAnimationLTE
-                        ? `${priceAnimationLTE} 1.5s ease-in-out`
-                        : 'none',
-                    }}
-                  >
-                    {currentPriceLTE !== null ? currentPriceLTE.toLocaleString() : '-'}
-                  </span>
+        <div className="rounded-xl text-white p-4 bg-gradient-market-price h-[110px] transition-all duration-700 overflow-hidden">
+          <div className="hover:scale-[1.02] transition-transform duration-300 transform-origin-center">
+            <div className="flex flex-col justify-between h-full">
+              <p className="text-[14px] font-bold text-left">실시간 데이터 거래가격</p>
+              <p className="text-right leading-5 self-end">
+                {isQueueLoading5G ? (
+                  <span className="text-[20px] font-bold">불러오는 중...</span>
+                ) : (
+                  <div className="mb-[5px]">
+                    <span className="text-[14px]">5G </span>
+                    <span
+                      className="text-[24px] font-bold"
+                      style={{
+                        animation: priceAnimation5G
+                          ? `${priceAnimation5G} 1.5s ease-in-out`
+                          : 'none',
+                      }}
+                    >
+                      {currentPrice5G !== null ? currentPrice5G.toLocaleString() : '-'}
+                    </span>
+                    <span className="text-[10px]"> 원 (1GB)</span>
+                  </div>
+                )}
+              </p>
+              <p className="text-right leading-5 self-end">
+                {isQueueLoadingLTE ? (
+                  <span className="text-[20px] font-bold">불러오는 중...</span>
+                ) : (
+                  <div>
+                    <span className="text-[14px]">LTE </span>
+                    <span
+                      className="text-[24px] font-bold"
+                      style={{
+                        animation: priceAnimationLTE
+                          ? `${priceAnimationLTE} 1.5s ease-in-out`
+                          : 'none',
+                      }}
+                    >
+                      {currentPriceLTE !== null ? currentPriceLTE.toLocaleString() : '-'}
+                    </span>
 
-                  <span className="text-[10px]"> 원 (1GB)</span>
-                </div>
-              )}
-            </p>
+                    <span className="text-[10px]"> 원 (1GB)</span>
+                  </div>
+                )}
+              </p>
+            </div>
           </div>
         </div>
       </div>
