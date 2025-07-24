@@ -10,6 +10,7 @@ import { useLocation } from 'react-router-dom';
 import { fetchMyInfo } from '@/apis/mypageApi';
 import useAuth from '@/hooks/useAuth';
 import useOrderQueue from '@/hooks/useOrderQueue';
+
 const MainPage = () => {
   const { user, isLoading } = useAuth();
   const [userInfo, setUserInfo] = useState(null);
@@ -22,11 +23,14 @@ const MainPage = () => {
   const recentContracts = queueData?.recentContracts ?? [];
   const latestContract = recentContracts.length > 0 ? recentContracts[0] : null;
   const latestPrice = latestContract?.price ?? null;
+
   const location = useLocation();
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const accessToken = params.get('accessToken');
     const oauth = params.get('oauth');
+
     if (accessToken && oauth === 'success') {
       localStorage.setItem('accessToken', accessToken);
       fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
@@ -48,20 +52,25 @@ const MainPage = () => {
         });
     }
   }, [location.search]);
+
   // 가격이 변경될 때 애니메이션 트리거
   useEffect(() => {
     if (latestPrice !== null && latestPrice !== previousPrice) {
       setPreviousPrice(currentPrice);
       setCurrentPrice(latestPrice);
+
       // 가격 변화 애니메이션 클래스 적용
       setPriceAnimation('pulse-price');
+
       // 애니메이션 완료 후 클래스 제거
       const timer = setTimeout(() => {
         setPriceAnimation('');
       }, 1500);
+
       return () => clearTimeout(timer);
     }
   }, [latestPrice, currentPrice, previousPrice]);
+
   useEffect(() => {
     if (!isLoading && user) {
       fetchMyInfo()
@@ -70,12 +79,14 @@ const MainPage = () => {
     }
     setTimeout(() => setMounted(true), 100);
   }, [user, isLoading]);
+
   if (isLoading) return null;
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* 환영 메시지와 캐릭터 */}
       <div
-        className={`flex w-[300px] mt-4 items-start transition-all duration-700 ${
+        className={`flex w-[300px] mx-auto mt-4 items-start transition-all duration-700 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
@@ -94,9 +105,10 @@ const MainPage = () => {
           }}
         />
       </div>
+
       {/* 데이터/포인트 카드 */}
       <div
-        className={`flex justify-between w-[300px] mt-2 space-x-3 transition-all duration-700 delay-200 ${
+        className={`flex justify-between w-[300px] mx-auto mt-2 space-x-3 transition-all duration-700 delay-200 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
@@ -125,9 +137,10 @@ const MainPage = () => {
           </p>
         </div>
       </div>
+
       {/* 실시간가격카드 */}
       <div
-        className={`rounded-xl text-white p-4 mt-5 bg-gradient-market-price w-[300px] h-[80px] transition-all duration-700 delay-300 hover:shadow-xl hover:scale-[1.02] ${
+        className={`rounded-xl text-white p-4 mt-5 bg-gradient-market-price w-[300px] mx-auto h-[80px] transition-all duration-700 delay-300 hover:shadow-xl hover:scale-[1.02] ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
@@ -156,6 +169,7 @@ const MainPage = () => {
           </p>
         </div>
       </div>
+
       {/* 메뉴 카드 */}
       <div
         className="w-[290px] mx-auto mt-8 rounded-3xl overflow-hidden bg-white flex-shrink-0"
@@ -191,6 +205,7 @@ const MainPage = () => {
           </div>
         </Link>
       </div>
+
       {/* 애니메이션 스타일 */}
       <style jsx>{`
         @keyframes float {
@@ -215,4 +230,5 @@ const MainPage = () => {
     </div>
   );
 };
+
 export default MainPage;
