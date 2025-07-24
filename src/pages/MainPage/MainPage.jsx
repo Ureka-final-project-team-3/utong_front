@@ -58,7 +58,6 @@ const MainPage = () => {
     }
   }, [location.search]);
 
-  // 가격 애니메이션: 5G
   useEffect(() => {
     if (latestPrice5G !== null && latestPrice5G !== previousPrice5G) {
       setPreviousPrice5G(currentPrice5G);
@@ -69,7 +68,6 @@ const MainPage = () => {
     }
   }, [latestPrice5G, currentPrice5G, previousPrice5G]);
 
-  // 가격 애니메이션: LTE
   useEffect(() => {
     if (latestPriceLTE !== null && latestPriceLTE !== previousPriceLTE) {
       setPreviousPriceLTE(currentPriceLTE);
@@ -109,12 +107,11 @@ const MainPage = () => {
           className={`w-[160px] h-[160px] transition-all duration-1000 ${
             mounted ? 'scale-100 rotate-0' : 'scale-75 -rotate-12'
           }`}
-          style={{
-            animation: mounted ? 'float 3s ease-in-out infinite' : 'none',
-          }}
+          style={{ animation: mounted ? 'float 3s ease-in-out infinite' : 'none' }}
         />
       </div>
 
+      {/* 데이터 / 포인트 카드 */}
       <div
         className={`flex justify-between w-[300px] mx-auto mt-2 space-x-3 transition-all duration-700 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
@@ -147,18 +144,17 @@ const MainPage = () => {
         </div>
       </div>
 
-      {/* 실시간 가격 카드 (5G / LTE) */}
+      {/* 실시간 가격 카드 */}
       <div className="space-y-3 mt-5 w-[300px] mx-auto">
-        {/* 5G */}
         <div className="rounded-xl text-white p-4 bg-gradient-market-price h-[110px] transition-all duration-700 overflow-hidden">
           <div className="hover:scale-[1.02] transition-transform duration-300 transform-origin-center">
             <div className="flex flex-col justify-between h-full">
-              <p className="text-[14px] font-bold text-left">실시간 데이터 거래가격</p>
-              <p className="text-right leading-5 self-end">
+              <div className="text-[14px] font-bold text-left">실시간 데이터 거래가격</div>
+              <div className="text-right leading-5 self-end mb-[5px]">
                 {isQueueLoading5G ? (
                   <span className="text-[20px] font-bold">불러오는 중...</span>
                 ) : (
-                  <div className="mb-[5px]">
+                  <>
                     <span className="text-[14px]">5G </span>
                     <span
                       className="text-[24px] font-bold"
@@ -171,14 +167,14 @@ const MainPage = () => {
                       {currentPrice5G !== null ? currentPrice5G.toLocaleString() : '-'}
                     </span>
                     <span className="text-[10px]"> 원 (1GB)</span>
-                  </div>
+                  </>
                 )}
-              </p>
-              <p className="text-right leading-5 self-end">
+              </div>
+              <div className="text-right leading-5 self-end">
                 {isQueueLoadingLTE ? (
                   <span className="text-[20px] font-bold">불러오는 중...</span>
                 ) : (
-                  <div>
+                  <>
                     <span className="text-[14px]">LTE </span>
                     <span
                       className="text-[24px] font-bold"
@@ -190,11 +186,10 @@ const MainPage = () => {
                     >
                       {currentPriceLTE !== null ? currentPriceLTE.toLocaleString() : '-'}
                     </span>
-
                     <span className="text-[10px]"> 원 (1GB)</span>
-                  </div>
+                  </>
                 )}
-              </p>
+              </div>
             </div>
           </div>
         </div>
