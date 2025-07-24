@@ -199,6 +199,10 @@ const SellDataPage = () => {
 
   const isButtonEnabled =
     isPriceValid && isDataValid && normalizedUserPlanNetwork === normalizedSelectedNetwork;
+useEffect(() => {
+  console.log('[DEBUG] buyOrderQuantity:', queueData.buyOrderQuantity);
+  console.log('[DEBUG] buyBids:', buyBids);
+}, [queueData.buyOrderQuantity, buyBids]);
 
   useEffect(() => {
     setPrice(
@@ -258,17 +262,18 @@ const SellDataPage = () => {
         <div className="w-px h-[35px] bg-[#D9D9D9]" />
         <div className="flex-1 space-y-2 text-[14px]">
           <div className="flex justify-between">
-            {avgPrice === (MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000) ? (
-              <span className="text-[#FF4343] font-semibold">현재 매물이 없습니다</span>
-            ) : (
-              <>
-                <span>구매 평균가</span>
-                <span className="text-[#2C2C2C]">
-                  {avgPrice.toLocaleString()}
-                  <span className="text-[#565656]"> 원</span>
-                </span>
-              </>
-            )}
+            {buyBids.reduce((sum, b) => sum + b.quantity, 0) === 0 ? (
+  <span className="text-[#FF4343] font-semibold">현재 매물이 없습니다</span>
+) : (
+  <>
+    <span>구매 평균가</span>
+    <span className="text-[#2C2C2C]">
+      {avgPrice.toLocaleString()}
+      <span className="text-[#565656]"> 원</span>
+    </span>
+  </>
+)}
+
           </div>
 
           <div className="flex justify-between">
