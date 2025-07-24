@@ -1,3 +1,4 @@
+// 생략 없이 전체 수정본입니다.
 import React, { useState, useEffect, useMemo } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,8 +15,7 @@ import useOrderQueue from '@/hooks/useOrderQueue';
 
 import questionIcon from '@/assets/icon/question.svg';
 
-// 가격 범위 상수 import
-import { MIN_PRICE_FLOOR_BY_NETWORK, MAX_PRICE_CEIL_BY_NETWORK } from '../constants/priceRange';
+import { MIN_PRICE_FLOOR_BY_NETWORK } from '../constants/priceRange';
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -70,7 +70,6 @@ const SellDataPage = () => {
     }));
   }, [queueData]);
 
-  // avgPrice 계산: 0 대신 최소 가격으로 대체
   const avgPrice = useMemo(() => {
     if (buyBids.length) {
       const totalAmount = buyBids.reduce((sum, b) => sum + b.quantity, 0);
@@ -81,7 +80,6 @@ const SellDataPage = () => {
     return MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
   }, [buyBids, selectedNetwork]);
 
-  // highestPrice도 0일 경우 최소 가격으로 초기화
   const highestPrice = useMemo(() => {
     if (buyBids.length) {
       const maxPrice = Math.max(...buyBids.map((b) => b.price));
@@ -90,19 +88,10 @@ const SellDataPage = () => {
     return MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
   }, [buyBids, selectedNetwork]);
 
-  // 📍 minPrice 계산 부분만 아래처럼 수정
   const minPrice = useMemo(() => {
-    const floor = MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
-    const computed = Math.floor(avgPrice * 0.7);
-    return Math.max(computed, floor);
-  }, [avgPrice, selectedNetwork]);
+    return MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000;
+  }, [selectedNetwork]);
 
-  const maxPriceAllowed = useMemo(() => {
-    if (avgPrice === 0) return MAX_PRICE_CEIL_BY_NETWORK[selectedNetwork] || 11000;
-    return Math.min(Math.ceil(avgPrice * 1.3), MAX_PRICE_CEIL_BY_NETWORK[selectedNetwork] || 11000);
-  }, [avgPrice, selectedNetwork]);
-
-  // 초기 price 상태 설정 (highestPrice가 0이면 최소가격으로)
   const [price, setPrice] = useState(() =>
     highestPrice === 0
       ? (MIN_PRICE_FLOOR_BY_NETWORK[selectedNetwork] || 4000).toString()
@@ -121,8 +110,8 @@ const SellDataPage = () => {
 
   const isPriceValid = useMemo(() => {
     if (price === '') return false;
-    return priceNum >= minPrice && priceNum <= maxPriceAllowed;
-  }, [priceNum, minPrice, maxPriceAllowed]);
+    return priceNum >= minPrice;
+  }, [priceNum, minPrice]);
 
   const isDataValid = useMemo(
     () => dataAmountNum > 0 && dataAmountNum <= canSale,
@@ -135,12 +124,12 @@ const SellDataPage = () => {
 
   useEffect(() => {
     if (!isPriceValid && price.length > 0) {
-      toast.error(
-        `가격은 ${minPrice.toLocaleString()}원 이상 ${maxPriceAllowed.toLocaleString()}원 이하만 가능합니다.`,
-        { autoClose: 3000, toastId: 'price-error-toast' }
-      );
+      toast.error(`가격은 ${minPrice.toLocaleString()}원 이상만 가능합니다.`, {
+        autoClose: 3000,
+        toastId: 'price-error-toast',
+      });
     }
-  }, [price, isPriceValid, minPrice, maxPriceAllowed]);
+  }, [price, isPriceValid, minPrice]);
 
   useEffect(() => {
     if (dataAmountNum > canSale && data !== 0) {
@@ -220,7 +209,6 @@ const SellDataPage = () => {
   const isButtonEnabled =
     isPriceValid && isDataValid && normalizedUserPlanNetwork === normalizedSelectedNetwork;
 
-  // highestPrice 또는 selectedNetwork 변경 시 price 값 재설정
   useEffect(() => {
     setPrice(
       highestPrice === 0
@@ -313,8 +301,8 @@ const SellDataPage = () => {
             value={price}
             onChange={(e) => {
               const val = e.target.value;
-              if (!/^\d*$/.test(val)) return; // 숫자만 허용
-              setPrice(val); // 그대로 입력
+              if (!/^\d*$/.test(val)) return;
+              setPrice(val);
             }}
             onBlur={() => {
               if (price === '') return;
@@ -323,15 +311,12 @@ const SellDataPage = () => {
             }}
             className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
           />
-
           <span className="ml-1 text-[20px] text-[#2C2C2C]">P</span>
         </div>
       </div>
-
-      <div className="mt-4 text-[10px] text-[#FF4343] text-center">
+      <div className="mt-4 text-[11px] text-[#FF4343] text-center">
         현재 평균 가격에서 ±30% 범위 안에서만 거래할 수 있어요.
       </div>
-
       <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
         <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between items-center">
           <div>데이터</div>

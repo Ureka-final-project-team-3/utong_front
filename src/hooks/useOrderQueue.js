@@ -1,45 +1,66 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+
+const useOrderQueueAll = () => {
+  const [allQueueData, setAllQueueData] = useState([]);
+  const [isConnected, setIsConnected] = useState(false);
+  const eventSourceRef = useRef(null);
+
+  useEffect(() => {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/data/order-queue/stream`;
+    eventSourceRef.current = new EventSource(url);
+
+    eventSourceRef.current.onopen = () => {
+      setIsConnected(true);
+      console.log('SSE 연결됨');
+    };
+
+    const handleData = (e) => {
+      try {
+        const allData = JSON.parse(e.data);
+        setAllQueueData(allData);
+      } catch (err) {
+        console.error('SSE 데이터 파싱 오류', err);
+      }
+    };
+
+    eventSourceRef.current.addEventListener('all-queue-initial-data', handleData);
+    eventSourceRef.current.addEventListener('all-queue-hourly-update', handleData);
+
+    eventSourceRef.current.onerror = (e) => {
+      console.error('SSE 오류', e);
+      setIsConnected(false);
+    };
+
+    return () => {
+      eventSourceRef.current.close();
+      setIsConnected(false);
+      console.log('SSE 연결 해제');
+    };
+  }, []);
+
+  return { allQueueData, isConnected };
+};
 
 const useOrderQueue = (dataCode) => {
+  const { allQueueData } = useOrderQueueAll();
   const [queueData, setQueueData] = useState({
     buyOrderQuantity: {},
     sellOrderQuantity: {},
     recentContracts: [],
   });
-
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!dataCode) return;
 
-    setIsLoading(true); // 데이터 새로 요청 시 로딩 시작
-
-    const url = `${import.meta.env.VITE_API_BASE_URL}/api/data/order-queue/stream/${dataCode}`;
-    const eventSource = new EventSource(url);
-    const eventName = `${dataCode}queue-hourly-update`;
-
-    eventSource.addEventListener(eventName, (e) => {
-      try {
-        const parsed = JSON.parse(e.data);
-        setQueueData(parsed);
-        setIsLoading(false); // 데이터 수신 완료
-        console.log(`[SSE][${dataCode}] 큐 수신:`, parsed);
-      } catch (err) {
-        console.error(`[SSE][${dataCode}] 파싱 오류`, err);
-      }
-    });
-
-    eventSource.onerror = (e) => {
-      console.error(`[SSE][${dataCode}] SSE 오류`, e);
-      // 에러시에도 로딩 해제하거나 필요에 따라 다시 시도 로직 가능
+    const target = allQueueData.find(d => d.dataCode === dataCode);
+    if (target) {
+      setQueueData(target);
       setIsLoading(false);
-    };
-
-    return () => {
-      eventSource.close();
-      console.log(`[SSE][${dataCode}] 연결 해제`);
-    };
-  }, [dataCode]);
+    } else {
+      setIsLoading(true);
+    }
+  }, [allQueueData, dataCode]);
 
   return { queueData, isLoading };
 };
