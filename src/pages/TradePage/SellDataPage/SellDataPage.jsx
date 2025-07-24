@@ -123,15 +123,6 @@ const SellDataPage = () => {
   const normalizedSelectedNetwork = selectedNetwork.toLowerCase();
 
   useEffect(() => {
-    if (!isPriceValid && price.length > 0) {
-      toast.error(`가격은 ${minPrice.toLocaleString()}원 이상만 가능합니다.`, {
-        autoClose: 3000,
-        toastId: 'price-error-toast',
-      });
-    }
-  }, [price, isPriceValid, minPrice]);
-
-  useEffect(() => {
     if (dataAmountNum > canSale && data !== 0) {
       toast.error(`보유 데이터(${canSale}GB)보다 많은 양을 판매할 수 없어요.`, {
         autoClose: 3000,
@@ -291,29 +282,40 @@ const SellDataPage = () => {
       </div>
 
       <div className="mt-6 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
-        <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between items-center">
-          <div>판매할 가격</div>
-        </div>
-        <div className="flex justify-end items-center">
-          <input
-            type="text"
-            inputMode="numeric"
-            value={price}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (!/^\d*$/.test(val)) return;
-              setPrice(val);
-            }}
-            onBlur={() => {
-              if (price === '') return;
-              const rounded = Math.round(Number(price) / 100) * 100;
-              setPrice(String(rounded));
-            }}
-            className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
-          />
-          <span className="ml-1 text-[20px] text-[#2C2C2C]">P</span>
-        </div>
-      </div>
+  <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between items-center">
+    <div>판매할 가격</div>
+  </div>
+  <div className="flex justify-end items-center">
+    <input
+      type="text"
+      inputMode="numeric"
+      value={price}
+      onChange={(e) => {
+        const val = e.target.value;
+        if (!/^\d*$/.test(val)) return;
+        setPrice(val);
+      }}
+      onBlur={() => {
+        if (price === '') return;
+        const numeric = Number(price);
+        const rounded = Math.round(numeric / 100) * 100;
+
+        if (rounded < minPrice) {
+          toast.error(`최소 거래 가격은 ${minPrice.toLocaleString()}원입니다.`, {
+            autoClose: 3000,
+            toastId: 'price-min-error',
+          });
+          setPrice(String(highestPrice));
+        } else {
+          setPrice(String(rounded));
+        }
+      }}
+      className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
+    />
+    <span className="ml-1 text-[20px] text-[#2C2C2C]">P</span>
+  </div>
+</div>
+
       <div className="mt-4 text-[11px] text-[#FF4343] text-center">
         현재 평균 가격에서 ±30% 범위 안에서만 거래할 수 있어요.
       </div>
