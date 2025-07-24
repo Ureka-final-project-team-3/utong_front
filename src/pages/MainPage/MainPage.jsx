@@ -207,7 +207,7 @@ const MainPage = () => {
       </div>
 
       {/* 애니메이션 스타일 */}
-      <style jsx>{`
+      <style>{`
         @keyframes float {
           0%,
           100% {
