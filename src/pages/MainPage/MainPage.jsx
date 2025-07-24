@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import tongtong2 from '@/assets/image/tongtong2.png';
 import trade from '@/assets/icon/trade.png';
 import shop from '@/assets/icon/shop.png';
 import event from '@/assets/icon/event.png';
 import wifi from '@/assets/icon/wifi.png';
 import coin from '@/assets/icon/coin.png';
-import { useLocation } from 'react-router-dom';
 import { fetchMyInfo } from '@/apis/mypageApi';
 import useAuth from '@/hooks/useAuth';
 import useOrderQueue from '@/hooks/useOrderQueue';
@@ -15,14 +14,20 @@ const MainPage = () => {
   const { user, isLoading } = useAuth();
   const [userInfo, setUserInfo] = useState(null);
   const [mounted, setMounted] = useState(false);
-  const [currentPrice, setCurrentPrice] = useState(null);
-  const [previousPrice, setPreviousPrice] = useState(null);
-  const [priceAnimation, setPriceAnimation] = useState('');
-  const dataCode = userInfo?.dataCode ?? '002';
-  const { queueData, isLoading: isQueueLoading } = useOrderQueue(dataCode);
-  const recentContracts = queueData?.recentContracts ?? [];
-  const latestContract = recentContracts.length > 0 ? recentContracts[0] : null;
-  const latestPrice = latestContract?.price ?? null;
+
+  const [currentPrice5G, setCurrentPrice5G] = useState(null);
+  const [previousPrice5G, setPreviousPrice5G] = useState(null);
+  const [priceAnimation5G, setPriceAnimation5G] = useState('');
+
+  const [currentPriceLTE, setCurrentPriceLTE] = useState(null);
+  const [previousPriceLTE, setPreviousPriceLTE] = useState(null);
+  const [priceAnimationLTE, setPriceAnimationLTE] = useState('');
+
+  const { queueData: queueData5G, isLoading: isQueueLoading5G } = useOrderQueue('002');
+  const { queueData: queueDataLTE, isLoading: isQueueLoadingLTE } = useOrderQueue('001');
+
+  const latestPrice5G = queueData5G?.recentContracts?.[0]?.price ?? null;
+  const latestPriceLTE = queueDataLTE?.recentContracts?.[0]?.price ?? null;
 
   const location = useLocation();
 
@@ -53,23 +58,27 @@ const MainPage = () => {
     }
   }, [location.search]);
 
-  // 가격이 변경될 때 애니메이션 트리거
+  // 가격 애니메이션: 5G
   useEffect(() => {
-    if (latestPrice !== null && latestPrice !== previousPrice) {
-      setPreviousPrice(currentPrice);
-      setCurrentPrice(latestPrice);
-
-      // 가격 변화 애니메이션 클래스 적용
-      setPriceAnimation('pulse-price');
-
-      // 애니메이션 완료 후 클래스 제거
-      const timer = setTimeout(() => {
-        setPriceAnimation('');
-      }, 1500);
-
+    if (latestPrice5G !== null && latestPrice5G !== previousPrice5G) {
+      setPreviousPrice5G(currentPrice5G);
+      setCurrentPrice5G(latestPrice5G);
+      setPriceAnimation5G('pulse-price');
+      const timer = setTimeout(() => setPriceAnimation5G(''), 1500);
       return () => clearTimeout(timer);
     }
-  }, [latestPrice, currentPrice, previousPrice]);
+  }, [latestPrice5G, currentPrice5G, previousPrice5G]);
+
+  // 가격 애니메이션: LTE
+  useEffect(() => {
+    if (latestPriceLTE !== null && latestPriceLTE !== previousPriceLTE) {
+      setPreviousPriceLTE(currentPriceLTE);
+      setCurrentPriceLTE(latestPriceLTE);
+      setPriceAnimationLTE('pulse-price');
+      const timer = setTimeout(() => setPriceAnimationLTE(''), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [latestPriceLTE, currentPriceLTE, previousPriceLTE]);
 
   useEffect(() => {
     if (!isLoading && user) {
@@ -84,7 +93,7 @@ const MainPage = () => {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {/* 환영 메시지와 캐릭터 */}
+      {/* 인사말 */}
       <div
         className={`flex w-[300px] mx-auto mt-4 items-start transition-all duration-700 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
@@ -118,10 +127,7 @@ const MainPage = () => {
             <p className="text-xs text-gray-500">데이터</p>
           </div>
           <p className="text-sm font-bold self-end">
-            <span className="text-blue-600 transition-all duration-500">
-              {userInfo?.remainingData ?? 0}
-            </span>
-            GB
+            <span className="text-blue-600">{userInfo?.remainingData ?? 0}</span>GB
           </p>
         </div>
         <div className="flex flex-col justify-between bg-blue-100 rounded-xl shadow p-2 flex-1 h-[60px] hover:shadow-lg hover:scale-105 transition-all duration-300">
@@ -130,51 +136,60 @@ const MainPage = () => {
             <p className="text-xs text-gray-500">포인트</p>
           </div>
           <p className="text-sm font-bold self-end">
-            <span className="text-blue-600 transition-all duration-500">
-              {(userInfo?.mileage ?? 0).toLocaleString()}
-            </span>
-            P
+            <span className="text-blue-600">{(userInfo?.mileage ?? 0).toLocaleString()}</span>P
           </p>
         </div>
       </div>
 
-      {/* 실시간가격카드 */}
-      <div
-        className={`rounded-xl text-white p-4 mt-5 bg-gradient-market-price w-[300px] mx-auto h-[80px] transition-all duration-700 delay-300 hover:shadow-xl hover:scale-[1.02] ${
-          mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-        }`}
-      >
-        <div className="flex flex-col justify-between h-full">
-          <p className="text-[14px] font-bold text-left">실시간 데이터 거래가격</p>
-          <p className="text-right leading-5 self-end">
-            {isQueueLoading ? (
-              <span className="text-[20px] font-bold transition-all duration-500">
-                불러오는 중...
-              </span>
-            ) : (
-              <>
-                <span className="text-[10px]">현재 </span>
-                <span
-                  className="text-[24px] font-bold transition-all duration-500"
-                  style={{
-                    animation: priceAnimation ? `${priceAnimation} 1.5s ease-in-out` : 'none',
-                  }}
-                >
-                  {currentPrice !== null ? currentPrice.toLocaleString() : '-'}
-                </span>
-                <span className="text-[10px]"> 원</span>
-                <span className="text-[10px]"> (1GB)</span>
-              </>
-            )}
-          </p>
+      {/* 실시간 가격 카드 (5G / LTE) */}
+      <div className="space-y-3 mt-5 w-[300px] mx-auto">
+        {/* 5G */}
+        <div className="rounded-xl text-white p-4 bg-gradient-market-price h-[110px] hover:shadow-xl hover:scale-[1.02] transition-all duration-700 delay-300">
+          <div className="flex flex-col justify-between h-full">
+            <p className="text-[14px] font-bold text-left">실시간 데이터 거래가격</p>
+            <p className="text-right leading-5 self-end">
+              {isQueueLoading5G ? (
+                <span className="text-[20px] font-bold">불러오는 중...</span>
+              ) : (
+                <div className='mb-[5px]'>
+                  <span className="text-[14px]">5G </span>
+                  <span
+                    className="text-[24px] font-bold"
+                    style={{
+                      animation: priceAnimation5G ? `${priceAnimation5G} 1.5s ease-in-out` : 'none',
+                    }}
+                  >
+                    {currentPrice5G !== null ? currentPrice5G.toLocaleString() : '-'}
+                  </span>
+                  <span className="text-[10px]"> 원 (1GB)</span>
+                </div>
+              )}
+            </p>
+            <p className="text-right leading-5 self-end">
+              {isQueueLoadingLTE ? (
+                <span className="text-[20px] font-bold">불러오는 중...</span>
+              ) : (
+                <div>
+                  <span className="text-[14px]">LTE </span>
+                  <span
+                    className="text-[24px] font-bold"
+                    style={{
+                      animation: priceAnimationLTE ? `${priceAnimationLTE} 1.5s ease-in-out` : 'none',
+                    }}
+                  >
+                    {currentPriceLTE !== null ? currentPriceLTE.toLocaleString() : '-'}
+                  </span>
+                  
+                  <span className="text-[10px]"> 원 (1GB)</span>
+                </div>
+              )}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* 메뉴 카드 */}
-      <div
-        className="w-[290px] mx-auto mt-8 rounded-3xl overflow-hidden bg-white flex-shrink-0"
-        style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.25)' }}
-      >
+      <div className="w-[290px] mx-auto mt-8 rounded-3xl overflow-hidden bg-white" style={{ boxShadow: '0 0 10px rgba(0,0,0,0.25)' }}>
         <Link to="/chart" className="block transition-transform duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between pl-6 pr-4 py-4">
             <div className="flex items-center space-x-3">
@@ -209,8 +224,7 @@ const MainPage = () => {
       {/* 애니메이션 스타일 */}
       <style>{`
         @keyframes float {
-          0%,
-          100% {
+          0%, 100% {
             transform: translateY(0px) rotate(0deg);
           }
           50% {
@@ -218,8 +232,7 @@ const MainPage = () => {
           }
         }
         @keyframes pulse-price {
-          0%,
-          100% {
+          0%, 100% {
             transform: scale(1);
           }
           50% {
