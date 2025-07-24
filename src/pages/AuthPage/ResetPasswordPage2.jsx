@@ -54,23 +54,9 @@ const ResetPasswordPage2 = () => {
   };
 
   return (
-    <div
-      className="absolute inset-0 z-0"
-      style={{
-        backgroundImage: `url(${bgImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <div className="relative z-10 w-full h-full flex justify-end items-center">
-        <div
-          className="
-            w-full h-full
-            sm:w-[360px] sm:h-[780px]
-            bg-background shadow-xl relative flex flex-col overflow-y-auto
-            sm:mr-[500px] px-[30px] pt-[55px] pb-[30px] scrollbar-hidden
-          "
-        >
+    <div>
+      <div>
+        <div>
           {/* 헤더 */}
           <div className="relative flex items-center justify-between mb-6">
             <BackButton onClick={() => navigate(-1)} />
