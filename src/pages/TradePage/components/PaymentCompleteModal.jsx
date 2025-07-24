@@ -2,7 +2,7 @@ import React from 'react';
 
 const PaymentCompleteModal = ({ point = 1000 }) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
+    <div className="absolute inset-0 z-50 flex items-center justify-center">
       <div className="w-[284px] h-[117px] bg-[#F6F6F6] rounded-[8px] flex flex-col justify-between px-2 py-4 shadow-md">
         {/* 상단: 아이콘 + 텍스트 */}
         <div className="flex items-center justify-center gap-1">
