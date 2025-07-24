@@ -151,7 +151,7 @@ const MainPage = () => {
               {isQueueLoading5G ? (
                 <span className="text-[20px] font-bold">불러오는 중...</span>
               ) : (
-                <div className='mb-[5px]'>
+                <div className="mb-[5px]">
                   <span className="text-[14px]">5G </span>
                   <span
                     className="text-[24px] font-bold"
