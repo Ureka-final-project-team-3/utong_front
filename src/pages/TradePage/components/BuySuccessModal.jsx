@@ -4,7 +4,7 @@ const BuySuccessModal = ({ show }) => {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
+    <div className="absolute inset-0 z-50 flex items-center justify-center">
       <div className="w-[284px] h-[96px] bg-[#F6F6F6] rounded-[10.1188px] flex items-center justify-center">
         <p className="text-[20px] font-bold text-[#2C2C2C] opacity-60">데이터 구매 완료!</p>
       </div>

@@ -5,7 +5,7 @@ const ReservationModal = ({ onConfirm }) => {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
+    <div className="absolute inset-0 z-50 flex items-center justify-center">
       <div className="w-[284px] bg-[#F6F6F6] rounded-[10.1px] flex flex-col items-center p-5 ">
         {/* 상단 안내 텍스트 */}
         <p className="text-[#2C2C2C] opacity-60 font-medium text-[14px] leading-[17px] text-center mb-3">
