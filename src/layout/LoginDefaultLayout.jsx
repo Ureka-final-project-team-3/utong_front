@@ -12,7 +12,6 @@ const DefaultLayout = () => {
 
   return (
     <div className="absolute inset-0 z-0 bg-[#FFF9F1] flex items-center justify-center sm:gap-30">
-      {/* 전체 2분할 구조 */}
       <div className="hidden md:flex flex-1 justify-end h-full">
         <div className="flex flex-col justify-center w-full max-w-[360px]  text-sm leading-relaxed  text-center items-center">
           <img src={utongLogo} alt="유통 로고" className="w-30 mb-4" />
@@ -29,8 +28,6 @@ const DefaultLayout = () => {
               '매일 제공되는 이벤트',
             ].map((text, index) => (
               <li key={index} className="flex items-center gap-x-6">
-                {' '}
-                {/* gap 조정 */}
                 <div className="w-12 h-12 flex-shrink-0">
                   <img src={bgcheck} alt="체크 아이콘" className="w-full h-full object-contain" />
                 </div>
@@ -69,10 +66,6 @@ const DefaultLayout = () => {
                 <Outlet />
               </motion.div>
             </AnimatePresence>
-          </div>
-
-          <div className="h-[49px] w-full fixed bottom-0 left-1/2 -translate-x-1/2 sm:static sm:left-auto sm:translate-x-0 z-10">
-            <NavigationBar />
           </div>
         </div>
       </div>

@@ -73,23 +73,9 @@ const FindIdPage = () => {
   };
 
   return (
-    <div
-      className="absolute inset-0 z-0"
-      style={{
-        backgroundImage: `url(${bgImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <div className="relative z-10 w-full h-full flex justify-end items-center">
-        <div
-          className="
-            w-full h-full
-            sm:w-[360px] sm:h-[780px]
-            bg-background shadow-xl relative flex flex-col px-[30px] pt-[55px] pb-[30px] overflow-y-auto
-            sm:mr-[500px]
-          "
-        >
+    <div>
+      <div>
+        <div>
           <BackButton />
 
           {/* 로고 */}

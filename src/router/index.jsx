@@ -27,35 +27,38 @@ import BuyDataPage from '../pages/TradePage/BuyDataPage/BuyDataPage.jsx';
 import SellDataPage from '../pages/TradePage/SellDataPage/SellDataPage.jsx';
 import MyGifticonDetail from '@/pages/StoragePage/MyGifticonDetail';
 import TradeGuidePage from '../pages/TradePage/TradeGuidePage/TradeGuidePage.jsx';
+import LoginDefaultLayout from '../layout/LoginDefaultLayout.jsx';
 
 const router = createBrowserRouter([
   {
     path: '/start',
     element: <StartPage />,
   },
+
   {
-    path: '/login',
-    element: <LoginPage />,
-  },
-  {
-    path: '/signup',
-    element: <SignUpPage />,
-  },
-  {
-    path: '/find-id',
-    element: <FindIdPage />,
-  },
-  {
-    path: '/find-password',
-    element: <FindPasswordPage />,
-  },
-  {
-    path: '/reset-password',
-    element: <ResetPasswordPage />,
-  },
-  {
-    path: '/tradehistory',
-    element: <TradeHistoryPage />,
+    element: <LoginDefaultLayout />,
+    children: [
+      {
+        path: '/login',
+        element: <LoginPage />,
+      },
+      {
+        path: '/signup',
+        element: <SignUpPage />,
+      },
+      {
+        path: '/find-id',
+        element: <FindIdPage />,
+      },
+      {
+        path: '/find-password',
+        element: <FindPasswordPage />,
+      },
+      {
+        path: '/reset-password',
+        element: <ResetPasswordPage />,
+      },
+    ],
   },
   {
     element: <DefaultLayout />,
@@ -138,6 +141,10 @@ const router = createBrowserRouter([
       {
         path: '/gifticons/:gifticonId',
         element: <MyGifticonDetail />,
+      },
+      {
+        path: '/tradehistory',
+        element: <TradeHistoryPage />,
       },
     ],
   },

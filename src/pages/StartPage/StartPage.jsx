@@ -221,7 +221,7 @@ const StartPage = () => {
       )}
 
       {/* 애니메이션 스타일 */}
-      <style jsx>{`
+      <style>{`
         @keyframes fade-up {
           0% {
             opacity: 0;

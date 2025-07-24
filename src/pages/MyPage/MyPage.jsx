@@ -349,7 +349,7 @@ export default function MyPage() {
       <ToastContainer position="top-center" autoClose={2000} />
 
       {/* 애니메이션 스타일 */}
-      <style jsx>{`
+      <style>{`
         @keyframes bounce-gentle {
           0%,
           100% {

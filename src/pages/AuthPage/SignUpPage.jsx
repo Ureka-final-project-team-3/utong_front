@@ -106,30 +106,16 @@ const SignupPage = () => {
   };
 
   return (
-    <div
-      className="absolute inset-0 z-0"
-      style={{
-        backgroundImage: `url(${bgImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <div className="relative z-10 w-full h-full flex justify-end items-center">
-        <div
-          className="
-            w-full h-full
-            sm:w-[360px] sm:h-[780px]
-            bg-background shadow-xl flex flex-col overflow-y-auto
-            sm:mr-[500px] px-[30px] pt-[55px] pb-[30px]
-          "
-        >
+    <div>
+      <div className="relative z-10 w-full h-full flex justify-end items-center pb-[30px]">
+        <div>
           <BackButton />
 
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center mb-6">
             <img src={utong2} alt="로고" className="w-[100px] h-auto" />
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-0">
             {/* 이메일 */}
             <div>
               <label className="block text-gray-500 text-sm font-bold mb-1">아이디</label>
