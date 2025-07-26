@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import useTradeStore from '@/stores/tradeStore';
-import useLivePrice from '@/hooks/useLivePrice';
+import useLivePriceMap from '@/hooks/useLivePrice';
 import { getWeeklyPrices } from '@/apis/weekprice';
 
 const PriceChartContainer = () => {
@@ -18,34 +18,31 @@ const PriceChartContainer = () => {
 
   const dataCode = selectedNetwork === '5G' ? '002' : '001';
 
-  // 오늘 실시간 데이터
-  const liveData = useLivePrice(dataCode);
+  // 모든 요금제 실시간 데이터 맵 & 필터링 함수
+  const { getPriceListByCode } = useLivePriceMap();
+
+  // 현재 선택된 요금제에 맞는 실시간 데이터
+  const liveData = getPriceListByCode(dataCode);
 
   // 주간 시세 API 결과 상태
   const [weeklyData, setWeeklyData] = useState([]);
 
-  // selectedRange가 'today'가 아닌 경우에 주간 시세 API 호출
   useEffect(() => {
     if (selectedRange !== 'today') {
       getWeeklyPrices(dataCode)
         .then((res) => {
-          console.log('주간 시세 API 응답:', res);
           if (res?.data?.dailyChartDtoList) {
             const chartData = res.data.dailyChartDtoList.map((item) => ({
               timestamp: item.date,
               price: item.avgPrice,
               volume: 0,
             }));
-            console.log('주간 시세 데이터:', chartData);
             setWeeklyData(chartData);
           } else {
             setWeeklyData([]);
           }
         })
-        .catch((e) => {
-          console.error('주간 시세 API 호출 오류:', e);
-          setWeeklyData([]);
-        });
+        .catch(() => setWeeklyData([]));
     }
   }, [selectedRange, dataCode]);
 
@@ -74,7 +71,6 @@ const PriceChartContainer = () => {
         volume: item.volume || 0,
       }));
     } else {
-      // 주간 데이터는 API에서 받은 데이터 사용
       return weeklyData;
     }
   }, [liveData, selectedRange, weeklyData]);
@@ -90,14 +86,8 @@ const PriceChartContainer = () => {
               tickFormatter={(value) => {
                 const date = new Date(value);
                 return selectedRange === 'today'
-                  ? date.toLocaleTimeString('ko-KR', {
-                      hour: '2-digit',
-                      hour12: false,
-                    })
-                  : date.toLocaleDateString('ko-KR', {
-                      month: '2-digit',
-                      day: '2-digit',
-                    });
+                  ? date.toLocaleTimeString('ko-KR', { hour: '2-digit', hour12: false })
+                  : date.toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
               }}
               tick={{ fontSize: 8, fill: '#FFFFFF', opacity: 0.6 }}
               axisLine={false}
@@ -105,7 +95,6 @@ const PriceChartContainer = () => {
               interval="preserveStartEnd"
               textAnchor="end"
             />
-
             <YAxis
               domain={['dataMin - 100', 'dataMax + 100']}
               tickFormatter={(value) => Math.round(value / 100) * 100}
@@ -114,11 +103,9 @@ const PriceChartContainer = () => {
               tickLine={false}
               width={30}
             />
-
             <Tooltip
               content={({ label, payload }) => {
                 if (!payload || payload.length === 0) return null;
-
                 const date = new Date(label);
                 const formattedDate = date.toLocaleString('ko-KR', {
                   year: 'numeric',
@@ -127,10 +114,8 @@ const PriceChartContainer = () => {
                   hour: selectedRange === 'today' ? 'numeric' : undefined,
                   hour12: true,
                 });
-
                 const rawPrice = payload[0].value;
                 const roundedPrice = Math.round(rawPrice / 100) * 100;
-
                 return (
                   <div className="bg-white text-black text-[10px] rounded px-2 py-1 shadow-md">
                     <div>{formattedDate}</div>
@@ -139,7 +124,6 @@ const PriceChartContainer = () => {
                 );
               }}
             />
-
             <Line type="monotone" dataKey="price" stroke="#FFFFFF" strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
@@ -155,10 +139,7 @@ const PriceChartContainer = () => {
           <span>등락률</span>
           <span>
             {filteredData.length > 1
-              ? `${(
-                  ((filteredData.at(-1).price - filteredData[0].price) / filteredData[0].price) *
-                  100
-                ).toFixed(1)}%`
+              ? `${(((filteredData.at(-1).price - filteredData[0].price) / filteredData[0].price) * 100).toFixed(1)}%`
               : '-'}
           </span>
         </div>
