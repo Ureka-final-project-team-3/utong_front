@@ -1,19 +1,37 @@
-// src/pages/EventPage/components/EventHeader.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import BackButton from '../../../components/BackButton/BackButton';
 
-// EventHeader.jsx
+// import help from '@/assets/icon/help.svg';
+// import EventInfoModal from './EventInfoModal';
+
 const EventHeader = () => {
+  const [showModal, setShowModal] = useState(false);
+
   return (
-    <div className="relative">
-      <h1 className="text-[40px] font-semibold text-gradient-pink">Rollin 이벤트</h1>
-      <div className="mt-[20px] text-[14px] font-bold text-white border border-white rounded-[16px] w-[106px] py-1 text-center">
-        이벤트 기간
+    <>
+      <div className="w-full relative flex items-center justify-between h-[50px]">
+        <div className="absolute left-0">
+          <BackButton />
+        </div>
+
+        <h1 className="absolute left-1/2 transform -translate-x-1/2 text-[length:var(--text-lg)] text-[color:var(--gray-800)] font-bold">
+          룰렛 이벤트
+        </h1>
+
+        <div className="absolute right-0 flex items-center">
+          {/* <img
+            src={help}
+            alt="도움말"
+            draggable={false}
+            className="cursor-pointer"
+            onClick={() => setShowModal(true)}
+          /> */}
+          <div className="w-[20px]"></div>
+        </div>
       </div>
-      <div className="mt-[8px] text-[14px] font-bold text-[#2C2C2C] text-center">
-        2025.07.02 ~ 2025.07.15
-      </div>
-    </div>
+
+      {/* {showModal && <EventInfoModal onClose={() => setShowModal(false)} color="blue" />} */}
+    </>
   );
 };
 

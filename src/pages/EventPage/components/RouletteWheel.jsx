@@ -1,29 +1,33 @@
-// src/pages/EventPage/components/RouletteWheel.jsx
-import React from 'react';
-import rouletteImg from '../../../assets/roulette.svg'; // 경로에 맞게 수정
-// 필요 시 여러 텍스트 위치를 배열로 관리할 수도 있어요
+import React, { forwardRef } from 'react';
+import rouletteWheel from '@/assets/image/roulette.png';
+import arrowImage from '@/assets/image/roulette_arrow.png';
 
-const RouletteWheel = () => {
+const RouletteWheel = forwardRef(({ rotation }, ref) => {
   return (
-    <div className="relative w-full h-full">
-      {/* 룰렛 이미지 */}
+    <div className="relative mt-20 select-none pointer-events-none z-30 flex justify-center items-center w-full max-w-[300px] aspect-square mx-auto">
+      {/* 화살표 */}
       <img
-        src={rouletteImg}
-        alt="룰렛"
-        className="absolute top-[302px] left-[18px] w-[325px] h-[325px]"
+        src={arrowImage}
+        alt="룰렛 화살표"
+        className="absolute left-1/2 -translate-x-1/2"
+        style={{ top: '-12px', width: 40, height: 40, zIndex: 50 }}
       />
 
-      {/* 텍스트들 */}
-      <span className="absolute top-[378px] left-[192px] text-white font-medium text-[20px] leading-[24px]">당첨!</span>
-      <span className="absolute top-[432px] left-[242px] text-white font-medium text-[20px] leading-[24px]">꽝!</span>
-      <span className="absolute top-[494px] left-[248px] text-white font-medium text-[20px] leading-[24px]">꽝!</span>
-      <span className="absolute top-[543px] left-[203px] text-white font-medium text-[20px] leading-[24px]">꽝!</span>
-      <span className="absolute top-[543px] left-[136px] text-white font-medium text-[20px] leading-[24px]">꽝!</span>
-      <span className="absolute top-[494px] left-[90px] text-white font-medium text-[20px] leading-[24px]">꽝!</span>
-      <span className="absolute top-[427px] left-[90px] text-white font-medium text-[20px] leading-[24px]">꽝!</span>
-      <span className="absolute top-[378px] left-[137px] text-white font-medium text-[20px] leading-[24px]">꽝!</span>
+      {/* 룰렛 */}
+      <div
+        ref={ref}
+        className="w-full h-full flex justify-center items-center"
+        style={{
+          transform: `rotate(${rotation}deg)`,
+          touchAction: 'none',
+          overflow: 'hidden',
+          zIndex: 10,
+        }}
+      >
+        <img src={rouletteWheel} alt="룰렛 이미지" className="w-full h-full object-contain" />
+      </div>
     </div>
   );
-};
+});
 
 export default RouletteWheel;

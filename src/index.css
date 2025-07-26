@@ -1,62 +1,169 @@
 @import 'tailwindcss';
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --gray-10:  #FDFDFD;
-  --gray-20:  #FBFBFB;
-  --gray-30:  #F8F8F8;
-  --gray-40:  #F5F5F5;
-  --gray-50:  #F2F2F2;
-  --gray-60:  #EEEEEE;
-  --gray-70:  #EAEAEA;
-  --gray-80:  #E6E6E6;
-  --gray-90:  #EAEAEA;
-  --gray-100: #DEDEDE;
-  --gray-200: #CFCFCF;
-  --gray-300: #B1B1B1;
+  --gray-10: #fdfdfd;
+  --gray-20: #fbfbfb;
+  --gray-30: #f8f8f8;
+  --gray-40: #f5f5f5;
+  --gray-50: #f2f2f2;
+  --gray-60: #eeeeee;
+  --gray-70: #eaeaea;
+  --gray-80: #e6e6e6;
+  --gray-90: #eaeaea;
+  --gray-100: #dedede;
+  --gray-200: #cfcfcf;
+  --gray-300: #b1b1b1;
   --gray-400: #949494;
   --gray-500: #777777;
-  --gray-600: #5E5E5E;
+  --gray-600: #5e5e5e;
   --gray-700: #444444;
-  --gray-800: #2C2C2C;
+  --gray-800: #2c2c2c;
   --gray-900: #121212;
 
-  --red: #FF4343;
-  --blue: #2769F6;
+  --red: #ff4343;
+  --blue: #2769f6;
 
-  --text-xs: 12px;     /* 작은 글씨 */
-  --text-base: 14px;   /* 기본 글씨 */
-  --text-lg: 20px;     /* 강조 글씨 */
+  --color-background: #f6f7fc;
+
+  --text-xs: 12px; /* 작은 글씨 */
+  --text-base: 14px; /* 기본 글씨 */
+  --text-lg: 20px; /* 강조 글씨 */
 }
 
-
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
-
 @layer utilities {
   .bg-gradient-blue {
-    background: linear-gradient(180deg, #2769F6 0%, #FFFFFF 60%);
+    background: linear-gradient(180deg, #2769f6 0%, #ffffff 60%);
   }
+
   .bg-gradation-pink {
-    background: linear-gradient(270deg, #EB008B 0%, #5B038C 100%);
+    background: linear-gradient(270deg, #eb008b 0%, #5b038c 100%);
   }
 
   .text-gradient-pink {
-    background-image: linear-gradient(270deg, #EB008B 0%, #5B038C 100%);
+    background-image: linear-gradient(270deg, #eb008b 0%, #5b038c 100%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
   }
 
-  
+  .bg-background {
+    background-color: var(--color-background);
+  }
+  .bg-gradient-market-price {
+    background: linear-gradient(135deg, #2769f6 0%, #757ad0 100%);
+  }
+
+  /* ✅ iOS Safe Area 대응 유틸리티 */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-inset {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+      env(safe-area-inset-left);
+  }
+
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+@tailwind utilities;
+
+@layer utilities {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-fade-in-out {
+  animation: fadeInOut 2s ease-in-out forwards;
+}
+
+@import 'simplebar-react/dist/simplebar.min.css';
+
+.simplebar-scrollbar:before {
+  border-radius: 9999px;
+  width: 3px;
+}
+
+/* 판매입찰 - 빨강 */
+.simplebar-sell .simplebar-scrollbar:before {
+  background-color: #ff4343;
+}
+
+/* 구매입찰 - 파랑 */
+.simplebar-buy .simplebar-scrollbar:before {
+  background-color: #2769f6;
+}
+
+/* 기본(체결거래) - 회색 */
+.simplebar-default .simplebar-scrollbar:before {
+  background-color: #888888;
+}
+
+/* index.css 또는 App.css */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
