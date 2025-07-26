@@ -1,69 +1,60 @@
 import { useEffect, useState } from 'react';
 
-const useLivePrice = (targetDataCode) => {
-  const [priceList, setPriceList] = useState([]);
+const useLivePriceMap = () => {
+  const [allPriceMap, setAllPriceMap] = useState({}); // { dataCode: avgPerHourList[] }
 
   useEffect(() => {
-    if (!targetDataCode) return;
-
     const url = `${import.meta.env.VITE_API_BASE_URL}/api/data/current-prices/stream`;
     const eventSource = new EventSource(url);
-    console.log(`[SSE] 통합 스트림 연결 시도 → ${url}`);
+    console.log(`[SSE] 스트림 연결됨 → ${url}`);
 
-   eventSource.addEventListener('all-chart-initial-data', (event) => {
-  try {
-    console.log(`[SSE][${targetDataCode}] 전체 초기 데이터 수신 (event.data):`, event.data); 
-
-    const allData = JSON.parse(event.data); 
-    console.log(`[SSE][${targetDataCode}] allData:`, allData); 
-
-    const chart = allData.find(c => c.dataCode === targetDataCode);
-    console.log(`[SSE][${targetDataCode}] 필터링된 chart:`, chart); 
-
-   if (chart) {
-  setPriceList(chart.avgPerHourList); 
-  console.log(`[SSE][${targetDataCode}] 초기 데이터 수신 완료:`, chart.avgPerHourList); 
-}
-
-  } catch (e) {
-    console.error(`[SSE][${targetDataCode}] 초기 데이터 파싱 오류`, e);
-  }
-});
-
+    eventSource.addEventListener('all-chart-initial-data', (event) => {
+      try {
+        const allData = JSON.parse(event.data);
+        // allData = [{ dataCode, avgPerHourList }, ...]
+        const newMap = {};
+        allData.forEach(({ dataCode, avgPerHourList }) => {
+          newMap[dataCode] = avgPerHourList;
+        });
+        setAllPriceMap(newMap);
+      } catch (e) {
+        console.error('[SSE] 초기 데이터 파싱 오류', e);
+      }
+    });
 
     eventSource.addEventListener('all-chart-hourly-update', (event) => {
-  try {
-    console.log(`[SSE][${targetDataCode}] 실시간 데이터 수신 (event.data):`, event.data); 
-
-    const allData = JSON.parse(event.data);
-    console.log(`[SSE][${targetDataCode}] allData (hourly):`, allData); 
-
-    const chart = allData.find(c => c.dataCode === targetDataCode);
-    console.log(`[SSE][${targetDataCode}] 실시간 chart:`, chart); 
-
-    if (chart) {
-      const updates = chart.avgPerHourList; 
-
-      setPriceList(prev => [...prev.slice(-9), ...updates]);
-      console.log(`[SSE][${targetDataCode}] 실시간 업데이트 완료:`, updates);
-    }
-  } catch (e) {
-    console.error(`[SSE][${targetDataCode}] 업데이트 파싱 오류`, e);
-  }
-});
-
+      try {
+        const allData = JSON.parse(event.data);
+        setAllPriceMap(prevMap => {
+          const updatedMap = { ...prevMap };
+          allData.forEach(({ dataCode, avgPerHourList }) => {
+            const prevList = prevMap[dataCode] || [];
+            // 최대 9개 유지 + 신규 업데이트 추가
+            updatedMap[dataCode] = [...prevList.slice(-9), ...avgPerHourList];
+          });
+          return updatedMap;
+        });
+      } catch (e) {
+        console.error('[SSE] 실시간 데이터 파싱 오류', e);
+      }
+    });
 
     eventSource.onerror = (err) => {
-      console.error(`[SSE][${targetDataCode}] SSE 오류 발생`, err);
+      console.error('[SSE] 에러 발생', err);
     };
 
     return () => {
-      console.log(`[SSE][${targetDataCode}] 연결 해제`);
+      console.log('[SSE] 연결 종료');
       eventSource.close();
     };
-  }, [targetDataCode]);
+  }, []);
 
-  return priceList;
+  // 현재 dataCode에 맞는 리스트를 꺼내는 함수 반환
+  const getPriceListByCode = (dataCode) => {
+    return allPriceMap[dataCode] || [];
+  };
+
+  return { getPriceListByCode };
 };
 
-export default useLivePrice;
+export default useLivePriceMap;
