@@ -13,6 +13,7 @@ const PointDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isInsufficientModalOpen, setIsInsufficientModalOpen] = useState(false); // ✅ 추가
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,9 +41,14 @@ const PointDetailPage = () => {
   const remainingPoint = userPoint - gifticon.price;
 
   const handleExchange = async () => {
+    // ✅ 포인트 부족 시 교환 진행 막기
+    if (userPoint < gifticon.price) {
+      setIsInsufficientModalOpen(true);
+      return;
+    }
     try {
       await exchangeGifticon(id);
-      setIsSuccessModalOpen(true); // alert → 모달
+      setIsSuccessModalOpen(true);
     } catch (err) {
       console.error('교환 실패:', err);
       alert('교환 중 오류가 발생했습니다.');
@@ -136,6 +142,25 @@ const PointDetailPage = () => {
                 navigate('/shop');
               }}
               className="mt-2 px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ 포인트 부족 모달 */}
+      {isInsufficientModalOpen && (
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white w-72 p-6 rounded-xl shadow-md text-center animate-fadeIn">
+            <p className="text-sm text-gray-800 mb-4">
+              보유 포인트가 부족합니다.
+              <br />
+              충전 후 다시 시도해주세요.
+            </p>
+            <button
+              onClick={() => setIsInsufficientModalOpen(false)}
+              className="mt-2 px-4 py-2 bg-gray-300 text-gray-700 text-sm rounded-lg"
             >
               확인
             </button>
