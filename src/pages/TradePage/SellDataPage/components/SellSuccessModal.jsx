@@ -9,15 +9,18 @@ const SellSuccessModal = ({ show, onClose }) => {
     onClose();
     navigate('/chart');
   };
+
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center">
-      <div className="w-[284px] h-[96px] bg-[#F6F6F6] rounded-[10.1188px] flex items-center justify-center">
-        <p className="text-[20px] font-bold text-[#2C2C2C] opacity-60">데이터 판매 완료!</p>
-        <p className="text-[16px] text-gray-600 opacity-80 mt-1">
-          판매 요청한 데이터가 모두 거래되었습니다.
+      <div className="w-[284px] bg-[#F6F6F6] rounded-[10px] p-6 shadow-lg flex flex-col items-center text-center gap-2">
+        <p className="text-[18px] font-bold text-[#2C2C2C]">데이터 판매 완료!</p>
+        <p className="text-[14px] text-[#555]">
+          판매 요청한 데이터가
+          <br />
+          모두 거래되었습니다.
         </p>
         <button
-          className="mt-6 w-full text-white font-semibold py-2 rounded-[6px] text-sm bg-[#FF4343]"
+          className="mt-4 w-full text-white font-semibold py-2 rounded-[6px] text-sm bg-[#FF4343] hover:bg-[#e63a3a]"
           onClick={handleClose}
         >
           닫기
