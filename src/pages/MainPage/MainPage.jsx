@@ -125,7 +125,14 @@ const MainPage = () => {
               <p className="text-xs text-gray-500">데이터</p>
             </div>
             <p className="text-sm font-bold self-end">
-              <span className="text-blue-600">{userInfo?.remainingData ?? 0}</span>GB
+              {userInfo?.remainingData === -1 ? (
+                <span className="text-blue-600">무제한</span>
+              ) : (
+                <>
+                  <span className="text-blue-600">{userInfo?.remainingData ?? 0}</span>
+                  <span>GB</span>
+                </>
+              )}
             </p>
           </div>
         </div>

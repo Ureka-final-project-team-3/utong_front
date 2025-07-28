@@ -2,7 +2,7 @@
 import React from 'react';
 import BackButton from '../../../components/BackButton/BackButton';
 
-import tradeGuide from '@/assets/icon/tradeguide.svg';
+import help from '@/assets/icon/help.svg';
 
 const ChartHeader = () => {
   return (
@@ -13,7 +13,7 @@ const ChartHeader = () => {
         데이터 거래하기
       </h1>
 
-      <img src={tradeGuide} alt="TradeGuide" draggable={false} />
+      <img src={help} alt="TradeGuide" draggable={false} />
     </div>
   );
 };

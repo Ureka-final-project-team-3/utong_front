@@ -20,6 +20,7 @@ import useOrderQueue from '@/hooks/useOrderQueue';
 import SyncLoading from '@/components/Loading/SyncLoading';
 
 import { MIN_PRICE_FLOOR_BY_NETWORK } from '../constants/priceRange';
+import BuyFailModal from './components/BuyFailModal';
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -39,6 +40,7 @@ const BuyDataPage = () => {
     mileage: point,
     fetchUserData,
     dataCode,
+    canSale,
   } = useUserStore();
 
   const {
@@ -85,6 +87,8 @@ const BuyDataPage = () => {
 
   const [selectedDataGB, setSelectedDataGB] = useState(1);
   const [buyPrice, setBuyPrice] = useState(minPrice.toString());
+  const [failMessage, setFailMessage] = useState('');
+  const [showFailModal, setShowFailModal] = useState(false);
 
   // minPrice 변경 시 buyPrice도 갱신하도록 추가
   useEffect(() => {
@@ -175,19 +179,28 @@ const BuyDataPage = () => {
               openModal('showRechargeModal');
               break;
             case 'NEED_DEFAULT_LINE':
-              alert('기본 회선을 설정해 주세요.');
+              setFailMessage('기본 회선을 설정해 주세요.');
+              setShowFailModal(true);
               break;
             case 'EXIST_SALE_REQUEST':
-              alert('이미 판매 요청이 존재합니다.');
+              setFailMessage('이미 판매 요청이 존재합니다.');
+              setShowFailModal(true);
+              break;
+            case 'UNIT_ERROR':
+              setFailMessage('100원 단위로 판매해 주세요.');
+              setShowFailModal(true);
               break;
             default:
-              alert(data.message || '알 수 없는 오류가 발생했습니다.');
+              setFailMessage(data.message || '알 수 없는 오류가 발생했습니다.');
+              setShowFailModal(true);
           }
         } else {
-          alert('서버 오류가 발생했습니다.');
+          setFailMessage('서버 오류가 발생했습니다.');
+          setShowFailModal(true);
         }
       } else {
-        alert('구매 요청 중 오류가 발생했습니다.');
+        setFailMessage('구매 요청 중 오류가 발생했습니다.');
+        setShowFailModal(true);
       }
     } finally {
       fetchUserData();
@@ -232,6 +245,11 @@ const BuyDataPage = () => {
           onClose={() => closeModal('showPaymentCompleteModal')}
         />
       )}
+      <BuyFailModal
+        show={showFailModal}
+        message={failMessage}
+        onClose={() => setShowFailModal(false)}
+      />
 
       <div className="mt-6 text-[20px] font-bold text-[#2C2C2C]">{userName}님</div>
       <div className="text-[#565656] text-[12px] text-right">(1GB)</div>
@@ -247,7 +265,8 @@ const BuyDataPage = () => {
           <div className="flex justify-between">
             <span>보유 데이터</span>
             <span className="text-[#2C2C2C]">
-              {data} <span className="text-[#565656]">GB</span>
+              {canSale === -1 ? '무제한' : `${data} `}
+              {canSale !== -1 && <span className="text-[#565656]">GB</span>}
             </span>
           </div>
         </div>
