@@ -388,7 +388,7 @@ const BuyDataPage = () => {
           }`}
           disabled={!isButtonEnabled}
         >
-          {isUserPlanMatches ? '구매하기' : '사용 요금제가 다릅니다'}
+          {isUserPlanMatches ? '구매하기' : '사용 회선이 다릅니다'}
         </Button>
       </div>
     </div>

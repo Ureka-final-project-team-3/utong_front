@@ -448,7 +448,7 @@ const SellDataPage = () => {
         >
           {normalizedUserPlanNetwork === normalizedSelectedNetwork
             ? '판매하기'
-            : '사용 요금제가 다릅니다'}
+            : '사용 회선이 다릅니다'}
         </Button>
       </div>
     </div>

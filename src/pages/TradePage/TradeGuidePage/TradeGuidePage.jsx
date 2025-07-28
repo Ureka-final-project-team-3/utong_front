@@ -2,11 +2,9 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '@/assets/icon/logo.svg';
 
-const totalSlides = 7;
+const totalSlides = 4;
 
 const slideContents = [
-  { type: 'image', logo, text: '모든 기능을\n한눈에 알아봐요!' },
-  { type: 'text', title: '마이페이지', text: '포인트 충전 및 거래 내역을\n확인해보세요!' },
   {
     type: 'text',
     title: '시세 그래프',
@@ -22,11 +20,6 @@ const slideContents = [
     type: 'text',
     title: '구매 입찰',
     text: '구매 대기중인 사용자의 희망가격과\n데이터 양을 한눈에 알아봐요!',
-  },
-  {
-    type: 'text',
-    title: '이벤트',
-    text: '하루에 한번 룰렛을 돌려 유통에서\n사용가능한 쿠폰을 얻어봐요!',
   },
 ];
 
@@ -214,7 +207,7 @@ const TradeGuidePage = () => {
           {slideContents.map((_, index) => (
             <div key={index} className="w-full flex-shrink-0 flex justify-center">
               <img
-                src={`/image/guide${index + 1}.png`}
+                src={`/image/tradeguide${index + 1}.png`}
                 alt={`서비스 가이드 ${index + 1}`}
                 className="w-[70%] h-auto object-contain rounded-lg"
                 onError={(e) => {

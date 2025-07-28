@@ -3,7 +3,9 @@ import BackButton from '@/components/BackButton/BackButton';
 import bottomToggleIcon from '@/assets/icon/bottomtoggle.svg';
 import { fetchPurchaseData, fetchSaleData } from '@/apis/purchaseApi';
 import { AnimatePresence, motion } from 'framer-motion';
+
 import DateRangeModal from './DateRangeModal';
+import NetworkFilterModal from './NewWorkFilterModal';
 import TradeItemList from './TradeItemList';
 import dayjs from 'dayjs';
 
@@ -39,10 +41,12 @@ const TradeHistoryPage = () => {
   const [subTab, setSubTab] = useState('전체');
   const [range, setRange] = useState('ALL');
   const [showRangeModal, setShowRangeModal] = useState(false);
+  const [showNetworkModal, setShowNetworkModal] = useState(false);
+  const [networkFilter, setNetworkFilter] = useState('ALL');
   const [data, setData] = useState({ complete: [], waiting: [] });
   const [totalData, setTotalData] = useState(0);
   const [totalMileage, setTotalMileage] = useState(0);
-  const [mounted, setMounted] = useState(false); // <- 추가됨
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,8 +54,18 @@ const TradeHistoryPage = () => {
         const res =
           tab === '구매 내역' ? await fetchPurchaseData(range) : await fetchSaleData(range);
 
-        const complete = tab === '구매 내역' ? res.completePurchases : res.completeSales;
-        const waiting = tab === '구매 내역' ? res.waitingPurchases : res.waitingSales;
+        let complete = tab === '구매 내역' ? res.completePurchases : res.completeSales;
+        let waiting = tab === '구매 내역' ? res.waitingPurchases : res.waitingSales;
+
+        // 회선 필터링 적용
+        if (networkFilter === 'LTE') {
+          complete = complete.filter((item) => item.dataCode === '001');
+          waiting = waiting.filter((item) => item.dataCode === '001');
+        } else if (networkFilter === '5G') {
+          complete = complete.filter((item) => item.dataCode === '002');
+          waiting = waiting.filter((item) => item.dataCode === '002');
+        }
+
         setData({ complete, waiting });
 
         const sumData = complete.reduce((acc, item) => acc + item.quantity, 0);
@@ -62,9 +76,8 @@ const TradeHistoryPage = () => {
         console.error('거래 내역 불러오기 실패:', err);
       }
     };
-
     fetchData();
-  }, [tab, range]);
+  }, [tab, range, networkFilter]);
 
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 0);
@@ -78,7 +91,6 @@ const TradeHistoryPage = () => {
 
   return (
     <div className="h-full overflow-y-auto scrollbar-hide text-sm text-black">
-      {/* 헤더 */}
       <div className="relative mb-2">
         <div className="absolute left-0 top-0">
           <BackButton />
@@ -94,7 +106,6 @@ const TradeHistoryPage = () => {
         <img src={bottomToggleIcon} alt="열기" className="w-3 h-3" />
       </button>
 
-      {/* 개요 */}
       <div className="mb-3 text-base">
         <span className="mb-3 font-bold text-gray-600 text-[16px]">
           {getDateLabelByRange(range)}
@@ -122,7 +133,6 @@ const TradeHistoryPage = () => {
         </div>
       </div>
 
-      {/* 탭 */}
       <div className="relative border-b border-gray-300 mb-2 text-[16px] font-bold flex gap-6 pt-[10px]">
         {tabs.map((label) => (
           <button
@@ -151,34 +161,38 @@ const TradeHistoryPage = () => {
               backgroundColor: tab === '판매 내역' ? '#FF4343' : '#2563EB',
             }}
             transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            style={{
-              width: '70px',
-            }}
+            style={{ width: '70px' }}
           />
         )}
       </div>
 
-      {/* 서브 탭 */}
-      <div className="mb-2 text-[14px] text-gray-400">
-        {subTabs.map((label) => (
-          <button
-            key={label}
-            onClick={() => setSubTab(label)}
-            className={`flex-1 mr-2 pb-2 ${subTab === label ? 'text-gray-600 font-semibold' : ''}`}
-          >
-            {label}
-          </button>
-        ))}
+      <div className="flex justify-between items-center mb-2 px-1 text-[14px] text-gray-400">
+        <div className="flex gap-2">
+          {subTabs.map((label) => (
+            <button
+              key={label}
+              onClick={() => setSubTab(label)}
+              className={`pb-1 ${subTab === label ? 'text-gray-600 font-semibold' : ''}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => setShowNetworkModal(true)}
+          className="text-sm border border-gray-300 px-3 py-1 rounded-full text-gray-600"
+        >
+          {networkFilter === 'ALL' ? '전체' : networkFilter}
+        </button>
       </div>
 
-      {/* 거래 내역 리스트 */}
       <TradeItemList
         tab={tab}
         completeList={filteredData.complete}
         waitingList={filteredData.waiting}
+        networkFilter={networkFilter}
       />
 
-      {/* 날짜 필터 모달 */}
       <AnimatePresence>
         {showRangeModal && (
           <DateRangeModal
@@ -190,6 +204,20 @@ const TradeHistoryPage = () => {
               setShowRangeModal(false);
             }}
             onClose={() => setShowRangeModal(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showNetworkModal && (
+          <NetworkFilterModal
+            show={showNetworkModal}
+            selected={networkFilter}
+            onSelect={(value) => {
+              setNetworkFilter(value);
+              setShowNetworkModal(false);
+            }}
+            onClose={() => setShowNetworkModal(false)}
           />
         )}
       </AnimatePresence>
