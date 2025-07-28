@@ -11,6 +11,8 @@ import dataIcon from '@/assets/image/data.svg';
 import pointIcon from '@/assets/image/point.svg';
 import utong from '@/assets/image/MyPageutong.svg';
 
+import { fetchline } from '../../apis/lineApi';
+import { patchDefaultLine } from '../../apis/lineApi';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -19,13 +21,14 @@ import SyncLoading from '@/components/Loading/SyncLoading';
 import useAuth from '@/hooks/useAuth';
 
 export default function MyPage() {
+  const [lineMap, setLineMap] = useState([]);
+
   const { user: authUser, isLoading: authLoading } = useAuth();
   const [user, setUser] = useState();
   const [showModal, setShowModal] = useState(false);
   const [mounted, setMounted] = useState(false);
   const modalRef = useRef(null);
   const [isMail, setIsMail] = useState(false);
-  const phoneNumbers = user?.phoneNumbers ?? ['010-1234-5678', '010-9876-5432'];
   const [selectedLine, setSelectedLine] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -34,11 +37,30 @@ export default function MyPage() {
       setSelectedLine(user.dataCode === '002' ? '5G' : 'LTE');
     }
   }, [user]);
+  useEffect(() => {
+    const loadLines = async () => {
+      try {
+        const lines = await fetchline();
+        setLineMap(lines);
+
+        const defaultLine = lines.find((line) => line.default);
+        if (defaultLine) {
+          setSelectedLine(defaultLine.phoneNumber);
+        }
+      } catch (err) {
+        console.error('회선 정보 불러오기 실패:', err);
+      }
+    };
+
+    loadLines();
+  }, []);
 
   useEffect(() => {
     if (!authLoading && authUser) {
       fetchMyInfo()
-        .then((data) => setUser(data))
+        .then((data) => {
+          setUser(data);
+        })
         .catch((error) => {
           console.error('유저 정보 불러오기 실패:', error);
           console.log('상세 응답:', error.response?.data);
@@ -166,18 +188,28 @@ export default function MyPage() {
 
             {dropdownOpen && (
               <ul className="absolute top-full left-0 mt-1 bg-white rounded shadow-lg w-30 text-black text-[12px] z-[9999] border border-gray-200">
-                {phoneNumbers.map((line) => (
+                {lineMap.map(({ phoneNumber, lineId }) => (
                   <li
-                    key={line}
+                    key={lineId}
                     className={`px-3 py-1 cursor-pointer hover:bg-blue-100 ${
-                      selectedLine === line ? 'font-bold text-blue-600' : ''
+                      selectedLine === phoneNumber ? 'font-bold text-blue-600' : ''
                     }`}
-                    onClick={() => {
-                      setSelectedLine(line);
+                    onClick={async () => {
+                      setSelectedLine(phoneNumber);
                       setDropdownOpen(false);
+
+                      try {
+                        console.log('[📦 전송할 lineId]', lineId);
+                        await patchDefaultLine(lineId);
+                        const updatedUser = await fetchMyInfo();
+                        setUser(updatedUser);
+                      } catch (error) {
+                        console.error(error);
+                        toast.error('기본 회선 변경 실패');
+                      }
                     }}
                   >
-                    {line}
+                    {phoneNumber}
                   </li>
                 ))}
               </ul>
@@ -201,7 +233,9 @@ export default function MyPage() {
             </div>
             <div className="text-base flex justify-between pl-6.5">
               <div>{user.dataCode === '002' ? '5G' : 'LTE'}</div>
-              <div className="transition-all duration-500"> {user.canSale ?? 0}GB</div>
+              <div className="transition-all duration-500">
+                {user.canSale === -1 ? '무제한' : `${user.canSale ?? 0}GB`}
+              </div>
             </div>
           </div>
 
@@ -234,7 +268,7 @@ export default function MyPage() {
           <img src={dataIcon} alt="데이터 아이콘" className="w-5 h-5" />
           <div className="w-full text-base pl-1">전체 데이터</div>
           <div className="w-full text-base text-right transition-all duration-500">
-            {user.remainingData ?? 0}GB
+            {user.remainingData === -1 ? '무제한' : `${user.remainingData ?? 0}GB`}
           </div>
         </div>
       </div>

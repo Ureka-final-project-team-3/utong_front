@@ -174,12 +174,14 @@ const MainPage = () => {
                   <span
                     className="text-[24px] font-bold"
                     style={{
-                      animation: priceAnimationLTE ? `${priceAnimationLTE} 1.5s ease-in-out` : 'none',
+                      animation: priceAnimationLTE
+                        ? `${priceAnimationLTE} 1.5s ease-in-out`
+                        : 'none',
                     }}
                   >
                     {currentPriceLTE !== null ? currentPriceLTE.toLocaleString() : '-'}
                   </span>
-                  
+
                   <span className="text-[10px]"> 원 (1GB)</span>
                 </div>
               )}
@@ -189,7 +191,10 @@ const MainPage = () => {
       </div>
 
       {/* 메뉴 카드 */}
-      <div className="w-[290px] mx-auto mt-8 rounded-3xl overflow-hidden bg-white" style={{ boxShadow: '0 0 10px rgba(0,0,0,0.25)' }}>
+      <div
+        className="w-[290px] mx-auto mt-8 rounded-3xl overflow-hidden bg-white"
+        style={{ boxShadow: '0 0 10px rgba(0,0,0,0.25)' }}
+      >
         <Link to="/chart" className="block transition-transform duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between pl-6 pr-4 py-4">
             <div className="flex items-center space-x-3">
