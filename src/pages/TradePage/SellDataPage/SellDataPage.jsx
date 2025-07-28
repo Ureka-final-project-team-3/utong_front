@@ -1,4 +1,3 @@
-// 생략 없이 전체 수정본입니다.
 import React, { useState, useEffect, useMemo } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,6 +19,7 @@ import questionIcon from '@/assets/icon/question.svg';
 import { MIN_PRICE_FLOOR_BY_NETWORK } from '../constants/priceRange';
 import SellPaymentCompleteModal from './components/SellPaymentCompleteModal';
 import SellReservationModal from './components/SellReservationModal';
+import SellFailModal from './components/SellFailModal';
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -53,6 +53,9 @@ const SellDataPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalStatus, setModalStatus] = useState(null);
+  const [failMessage, setFailMessage] = useState('');
+  const [showFailModal, setShowFailModal] = useState(false);
+
   const [isBlockingInput, setIsBlockingInput] = useState(false);
 
   const localDataCode = networkToDataCodeMap[selectedNetwork] || '002';
@@ -181,29 +184,38 @@ const SellDataPage = () => {
         if (status === 400) {
           switch (data.resultCode) {
             case 'BORDERLESS':
-              alert('회선 등록을 해주세요.');
+              setFailMessage('회선 등록을 해주세요.');
+              setShowFailModal(true);
               break;
             case 'NEED_DEFAULT_LINE':
-              alert('기본 회선을 설정해 주세요.');
+              setFailMessage('기본 회선을 설정해 주세요.');
+              setShowFailModal(true);
               break;
             case 'EXCEED_SALE_LIMIT':
-              alert('판매 상한이 초과 되었습니다.');
+              setFailMessage('판매 상한이 초과 되었습니다.');
+              setShowFailModal(true);
               break;
             case 'EXIST_BUY_REQUEST':
-              alert('이미 구매 요청이 존재합니다.');
+              setFailMessage('이미 구매 요청이 존재합니다.');
+              setShowFailModal(true);
               break;
             case 'UNIT_ERROR':
-              alert('100원 단위로 판매해 주세요.');
+              setFailMessage('100원 단위로 판매해 주세요.');
+              setShowFailModal(true);
               break;
             default:
-              alert(data.message || '알 수 없는 오류가 발생했습니다.');
+              setFailMessage(data.message || '알 수 없는 오류가 발생했습니다.');
+              setShowFailModal(true);
           }
         } else {
-          alert('서버 오류가 발생했습니다.');
+          setFailMessage('서버 오류가 발생했습니다.');
+          setShowFailModal(true);
         }
       } else {
-        alert('구매 요청 중 오류가 발생했습니다.');
+        setFailMessage('구매 요청 중 오류가 발생했습니다.');
+        setShowFailModal(true);
       }
+      setShowFailModal(true);
     } finally {
       fetchUserData();
     }
@@ -273,6 +285,11 @@ const SellDataPage = () => {
           onClose={() => closeModal('showSellPaymentCompleteModal')}
         />
       )}
+      <SellFailModal
+        show={showFailModal}
+        message={failMessage}
+        onClose={() => setShowFailModal(false)}
+      />
 
       <div className="mt-6 text-[20px] font-bold text-[#2C2C2C]">{userName}님</div>
       <div className="text-[#565656] text-[12px] text-right">(1GB)</div>
@@ -287,7 +304,8 @@ const SellDataPage = () => {
           <div className="flex justify-between">
             <span>보유 데이터</span>
             <span className="text-[#2C2C2C]">
-              {data} <span className="text-[#565656]">GB</span>
+              {canSale === -1 ? '무제한' : `${data} `}
+              {canSale !== -1 && <span className="text-[#565656]">GB</span>}
             </span>
           </div>
         </div>
@@ -356,7 +374,7 @@ const SellDataPage = () => {
       <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
         <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between items-center">
           <div>데이터</div>
-          <div>판매가능 데이터 : {canSale}GB</div>
+          <div>판매가능 데이터 : {canSale === -1 ? '무제한' : `${canSale}GB`}</div>
         </div>
         <div className="flex justify-between items-center mb-2">
           <span className="text-[12px] text-[#B1B1B1] w-full">얼마나 판매할까요?</span>
@@ -393,6 +411,9 @@ const SellDataPage = () => {
             </button>
           ))}
         </div>
+      </div>
+      <div className="mt-4 text-[11px] text-[#FF4343] text-center">
+        최고가 보다 양이나 가격이 높으면 구매대기가 됩니다.
       </div>
       <div className="mt-6 border-t border-gray-300 pt-4 space-y-2">
         <div className="flex justify-between text-[16px] text-[#777]">
