@@ -28,6 +28,7 @@ import SellDataPage from '../pages/TradePage/SellDataPage/SellDataPage.jsx';
 import MyGifticonDetail from '@/pages/StoragePage/MyGifticonDetail';
 import TradeGuidePage from '../pages/TradePage/TradeGuidePage/TradeGuidePage.jsx';
 import LoginDefaultLayout from '../layout/LoginDefaultLayout.jsx';
+import SellSuccessModalTestPage from '../pages/TradePage/components/SellStatusModalTestPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -145,6 +146,10 @@ const router = createBrowserRouter([
       {
         path: '/tradehistory',
         element: <TradeHistoryPage />,
+      },
+      {
+        path: '/modal-test',
+        element: <SellSuccessModalTestPage />,
       },
     ],
   },

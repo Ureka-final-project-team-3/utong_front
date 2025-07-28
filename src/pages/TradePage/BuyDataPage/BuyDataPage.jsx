@@ -9,10 +9,10 @@ import useUserStore from '@/stores/useUserStore';
 import useTradeStore from '@/stores/tradeStore';
 import useModalStore from '@/stores/modalStore';
 
-import PointRechargeModal from '../components/PointRechargeModal';
-import BuySuccessModal from '../components/BuySuccessModal';
-import ReservationModal from '../components/ReservationModal';
-import PaymentCompleteModal from '../components/PaymentCompleteModal';
+import PointRechargeModal from './components/PointRechargeModal';
+import BuySuccessModal from './components/BuySuccessModal';
+import ReservationModal from './components/ReservationModal';
+import PaymentCompleteModal from './components/PaymentCompleteModal';
 
 import { postBuyOrder } from '@/apis/dataTradeApi';
 import useOrderQueue from '@/hooks/useOrderQueue';
@@ -155,11 +155,9 @@ const BuyDataPage = () => {
       switch (response.result) {
         case 'ALL_COMPLETE':
           openModal('showSuccessModal');
-          setTimeout(() => closeModal('showSuccessModal'), 2000);
           break;
         case 'PART_COMPLETE':
           openModal('showPaymentCompleteModal');
-          setTimeout(() => closeModal('showPaymentCompleteModal'), 2000);
           break;
         case 'WAITING':
           openModal('showReservationModal');
@@ -226,9 +224,14 @@ const BuyDataPage = () => {
       />
       <BuySuccessModal show={showSuccessModal} onClose={() => closeModal('showSuccessModal')} />
       {showReservationModal && (
-        <ReservationModal onConfirm={() => closeModal('showReservationModal')} />
+        <ReservationModal onClose={() => closeModal('showReservationModal')} />
       )}
-      {showPaymentCompleteModal && <PaymentCompleteModal point={point} />}
+      {showPaymentCompleteModal && (
+        <PaymentCompleteModal
+          point={point}
+          onClose={() => closeModal('showPaymentCompleteModal')}
+        />
+      )}
 
       <div className="mt-6 text-[20px] font-bold text-[#2C2C2C]">{userName}님</div>
       <div className="text-[#565656] text-[12px] text-right">(1GB)</div>
