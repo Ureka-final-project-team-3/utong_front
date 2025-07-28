@@ -5,17 +5,21 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import SellDataHeader from './components/SellDataHeader';
 import Button from '../../../components/common/Button';
-import SellSuccessModal from '../components/SellSuccessModal';
+import SellSuccessModal from './components/SellSuccessModal';
+
 import SyncLoading from '@/components/Loading/SyncLoading';
 
 import useTradeStore from '@/stores/tradeStore';
 import useUserStore from '@/stores/useUserStore';
+import useSellModalStore from '@/stores/sellModalStore';
 import { postSellOrder } from '@/apis/dataTradeApi';
 import useOrderQueue from '@/hooks/useOrderQueue';
 
 import questionIcon from '@/assets/icon/question.svg';
 
 import { MIN_PRICE_FLOOR_BY_NETWORK } from '../constants/priceRange';
+import SellPaymentCompleteModal from './components/SellPaymentCompleteModal';
+import SellReservationModal from './components/SellReservationModal';
 
 const networkToDataCodeMap = {
   LTE: '001',
@@ -37,6 +41,14 @@ const SellDataPage = () => {
     dataCode,
     canSale,
   } = useUserStore();
+
+  const {
+    showSellSuccessModal,
+    showSellReservationModal,
+    showSellPaymentCompleteModal,
+    openModal,
+    closeModal,
+  } = useSellModalStore();
 
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -140,47 +152,60 @@ const SellDataPage = () => {
     if (!isPriceValid || !isDataValid || normalizedUserPlanNetwork !== normalizedSelectedNetwork)
       return;
 
-    const payload = {
-      price: priceNum,
-      dataAmount: dataAmountNum,
-      dataCode: localDataCode,
-    };
-
     try {
-      const res = await postSellOrder(payload);
+      const payload = {
+        price: priceNum,
+        dataAmount: dataAmountNum,
+        dataCode: localDataCode,
+      };
 
-      if (res && res.result) {
-        setModalStatus(res.result);
-        setShowModal(true);
-        setTimeout(() => {
-          setShowModal(false);
-          setModalStatus(null);
-        }, 5000);
-      } else {
-        setModalStatus(null);
-        setShowModal(true);
-        setTimeout(() => setShowModal(false), 3000);
+      const response = await postSellOrder(payload);
+
+      switch (response.result) {
+        case 'ALL_COMPLETE':
+          openModal('showSellSuccessModal');
+          break;
+        case 'PART_COMPLETE':
+          openModal('showSellPaymentCompleteModal');
+          break;
+        case 'WAITING':
+          openModal('showSellReservationModal');
+          break;
+        default:
+          alert('알 수 없는 성공 응답입니다.');
       }
-
-      await fetchUserData();
     } catch (error) {
-      console.error('판매 등록 실패:', error);
-
       if (error.response) {
-        if (error.response.status === 400 && error.response.data?.codeName) {
-          setModalStatus(error.response.data.codeName);
+        const { data, status } = error.response;
+
+        if (status === 400) {
+          switch (data.resultCode) {
+            case 'BORDERLESS':
+              alert('회선 등록을 해주세요.');
+              break;
+            case 'NEED_DEFAULT_LINE':
+              alert('기본 회선을 설정해 주세요.');
+              break;
+            case 'EXCEED_SALE_LIMIT':
+              alert('판매 상한이 초과 되었습니다.');
+              break;
+            case 'EXIST_BUY_REQUEST':
+              alert('이미 구매 요청이 존재합니다.');
+              break;
+            case 'UNIT_ERROR':
+              alert('100원 단위로 판매해 주세요.');
+              break;
+            default:
+              alert(data.message || '알 수 없는 오류가 발생했습니다.');
+          }
         } else {
-          setModalStatus('UNKNOWN_ERROR');
+          alert('서버 오류가 발생했습니다.');
         }
       } else {
-        setModalStatus('NETWORK_ERROR');
+        alert('구매 요청 중 오류가 발생했습니다.');
       }
-
-      setShowModal(true);
-      setTimeout(() => {
-        setShowModal(false);
-        setModalStatus(null);
-      }, 5000);
+    } finally {
+      fetchUserData();
     }
   };
 
@@ -199,10 +224,10 @@ const SellDataPage = () => {
 
   const isButtonEnabled =
     isPriceValid && isDataValid && normalizedUserPlanNetwork === normalizedSelectedNetwork;
-useEffect(() => {
-  console.log('[DEBUG] buyOrderQuantity:', queueData.buyOrderQuantity);
-  console.log('[DEBUG] buyBids:', buyBids);
-}, [queueData.buyOrderQuantity, buyBids]);
+  useEffect(() => {
+    console.log('[DEBUG] buyOrderQuantity:', queueData.buyOrderQuantity);
+    console.log('[DEBUG] buyBids:', buyBids);
+  }, [queueData.buyOrderQuantity, buyBids]);
 
   useEffect(() => {
     setPrice(
@@ -219,7 +244,6 @@ useEffect(() => {
   return (
     <div style={{ position: 'relative' }}>
       <SellDataHeader />
-
       <ToastContainer
         position="top-center"
         autoClose={3000}
@@ -234,16 +258,24 @@ useEffect(() => {
           pointerEvents: 'auto',
         }}
       />
-
       <SellSuccessModal
-        show={showModal}
-        statusKey={modalStatus}
-        onClose={() => setShowModal(false)}
+        show={showSellSuccessModal}
+        onClose={() => closeModal('showSellSuccessModal')}
       />
+
+      {showSellReservationModal && (
+        <SellReservationModal onClose={() => closeModal('showSellReservationModal')} />
+      )}
+
+      {showSellPaymentCompleteModal && (
+        <SellPaymentCompleteModal
+          show={showSellPaymentCompleteModal}
+          onClose={() => closeModal('showSellPaymentCompleteModal')}
+        />
+      )}
 
       <div className="mt-6 text-[20px] font-bold text-[#2C2C2C]">{userName}님</div>
       <div className="text-[#565656] text-[12px] text-right">(1GB)</div>
-
       <div className="flex items-center justify-between gap-2">
         <div className="flex-1 space-y-2 text-[14px] text-[#5D5D5D]">
           <div className="flex justify-between">
@@ -263,17 +295,16 @@ useEffect(() => {
         <div className="flex-1 space-y-2 text-[14px]">
           <div className="flex justify-between">
             {buyBids.reduce((sum, b) => sum + b.quantity, 0) === 0 ? (
-  <span className="text-[#FF4343] font-semibold">현재 매물이 없습니다</span>
-) : (
-  <>
-    <span>구매 평균가</span>
-    <span className="text-[#2C2C2C]">
-      {avgPrice.toLocaleString()}
-      <span className="text-[#565656]"> 원</span>
-    </span>
-  </>
-)}
-
+              <span className="text-[#FF4343] font-semibold">현재 매물이 없습니다</span>
+            ) : (
+              <>
+                <span>구매 평균가</span>
+                <span className="text-[#2C2C2C]">
+                  {avgPrice.toLocaleString()}
+                  <span className="text-[#565656]"> 원</span>
+                </span>
+              </>
+            )}
           </div>
 
           <div className="flex justify-between">
@@ -285,42 +316,40 @@ useEffect(() => {
           </div>
         </div>
       </div>
-
       <div className="mt-6 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
-  <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between items-center">
-    <div>판매할 가격</div>
-  </div>
-  <div className="flex justify-end items-center">
-    <input
-      type="text"
-      inputMode="numeric"
-      value={price}
-      onChange={(e) => {
-        const val = e.target.value;
-        if (!/^\d*$/.test(val)) return;
-        setPrice(val);
-      }}
-      onBlur={() => {
-        if (price === '') return;
-        const numeric = Number(price);
-        const rounded = Math.round(numeric / 100) * 100;
+        <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between items-center">
+          <div>판매할 가격</div>
+        </div>
+        <div className="flex justify-end items-center">
+          <input
+            type="text"
+            inputMode="numeric"
+            value={price}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (!/^\d*$/.test(val)) return;
+              setPrice(val);
+            }}
+            onBlur={() => {
+              if (price === '') return;
+              const numeric = Number(price);
+              const rounded = Math.round(numeric / 100) * 100;
 
-        if (rounded < minPrice) {
-          toast.error(`최소 거래 가격은 ${minPrice.toLocaleString()}원입니다.`, {
-            autoClose: 3000,
-            toastId: 'price-min-error',
-          });
-          setPrice(String(highestPrice));
-        } else {
-          setPrice(String(rounded));
-        }
-      }}
-      className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
-    />
-    <span className="ml-1 text-[20px] text-[#2C2C2C]">P</span>
-  </div>
-</div>
-
+              if (rounded < minPrice) {
+                toast.error(`최소 거래 가격은 ${minPrice.toLocaleString()}원입니다.`, {
+                  autoClose: 3000,
+                  toastId: 'price-min-error',
+                });
+                setPrice(String(highestPrice));
+              } else {
+                setPrice(String(rounded));
+              }
+            }}
+            className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
+          />
+          <span className="ml-1 text-[20px] text-[#2C2C2C]">P</span>
+        </div>
+      </div>
       <div className="mt-4 text-[11px] text-[#FF4343] text-center">
         현재 평균 가격에서 ±30% 범위 안에서만 거래할 수 있어요.
       </div>
@@ -365,7 +394,6 @@ useEffect(() => {
           ))}
         </div>
       </div>
-
       <div className="mt-6 border-t border-gray-300 pt-4 space-y-2">
         <div className="flex justify-between text-[16px] text-[#777]">
           <div className="flex items-center gap-1">
@@ -389,7 +417,6 @@ useEffect(() => {
           </span>
         </div>
       </div>
-
       <div className="mt-auto pt-6">
         <Button
           disabled={!isButtonEnabled}
