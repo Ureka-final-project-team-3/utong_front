@@ -16,7 +16,7 @@ API.interceptors.request.use((config) => {
 
 export const fetchMyInfo = async () => {
   const res = await API.get('/info');
-
+  console.log(res);
   return res.data.data;
 };
 

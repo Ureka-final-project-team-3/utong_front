@@ -134,7 +134,7 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
 
       {/* 취소 확인 모달 */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="absolute top-0 left-0 right-0 bottom-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white w-72 p-6 rounded-xl shadow-md text-center animate-fadeIn">
             <p className="text-sm text-gray-800 mb-4">
               <span className="font-semibold">거래 취소</span>
