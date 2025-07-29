@@ -4,14 +4,14 @@ import { Link } from 'react-router-dom';
 import logo from '@/assets/icon/logo.svg';
 import graph from '@/assets/icon/graph.svg';
 import user from '@/assets/icon/user.svg';
-import alarm from '@/assets/icon/alarm.svg';
+import Tradehistory from '@/assets/icon/Tradehistory.svg';
 import shop from '@/assets/icon/shop.svg';
 
 const icons = [
   { to: '/chart', src: graph, alt: '차트' },
-  { to: '/shop', src: shop, alt: '포인트 상점' },
+  { to: '/Tradehistory', src: Tradehistory, alt: '거래내역' },
   { to: '/', src: logo, alt: '홈' },
-  { to: '/alarm', src: alarm, alt: '알람' },
+  { to: '/shop', src: shop, alt: '포인트 상점' },
   { to: '/mypage', src: user, alt: '마이페이지' },
 ];
 
