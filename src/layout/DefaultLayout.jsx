@@ -2,19 +2,24 @@ import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import NavigationBar from '@/components/NavigationBar/NavigationBar';
 import bgcheck from '@/assets/icon/bgcheck.svg';
+import utongLogo from '@/assets/icon/bglogo.svg';
 import { AnimatePresence, motion } from 'framer-motion';
-import utongLogo from '@/assets/icon/bglogo.svg'; // 설명 옆 로고 (예시)
+import useAlertStream from '@/hooks/useAlertStream';
+import useOrderQueueSSE from '../hooks/useOrderQueueSSE';
 
 const DefaultLayout = () => {
   const location = useLocation();
   const bgPages = ['/', '/event', '/mypage'];
   const isColoredOutlet = bgPages.includes(location.pathname);
 
+  const token = localStorage.getItem('accessToken'); // 로컬스토리지에서 accessToken 가져오기
+  useAlertStream(token); // SSE 연결 시작 (최상위에서 단 한 번)
+  useOrderQueueSSE(token);
   return (
     <div className="absolute inset-0 z-0 bg-[#FFF9F1] flex items-center justify-center sm:gap-30">
       {/* 전체 2분할 구조 */}
       <div className="hidden md:flex flex-1 justify-end h-full">
-        <div className="flex flex-col justify-center w-full max-w-[360px]  text-sm leading-relaxed  text-center items-center">
+        <div className="flex flex-col justify-center w-full max-w-[360px] text-sm leading-relaxed text-center items-center">
           <img src={utongLogo} alt="유통 로고" className="w-30 mb-4" />
           <h2 className="text-[22px] font-bold text-gray-500 mb-10">너로 통하다</h2>
           <p className="mb-5 text-[18px] font-bold text-gray-500">
@@ -29,8 +34,6 @@ const DefaultLayout = () => {
               '매일 제공되는 이벤트',
             ].map((text, index) => (
               <li key={index} className="flex items-center gap-x-6">
-                {' '}
-                {/* gap 조정 */}
                 <div className="w-8 h-8 flex-shrink-0">
                   <img src={bgcheck} alt="체크 아이콘" className="w-full h-full object-contain" />
                 </div>
@@ -45,18 +48,12 @@ const DefaultLayout = () => {
 
       {/* 앱 콘텐츠 영역 */}
       <div className="relative z-10 flex-1 flex justify-center md:justify-start items-center h-full">
-        <div
-          className={`
-      w-full h-full
-      sm:w-[360px] sm:h-[780px]
-      bg-white shadow-xl relative flex flex-col overflow-hidden
-    `}
-        >
+        <div className="w-full h-full sm:w-[360px] sm:h-[780px] bg-white shadow-xl relative flex flex-col overflow-hidden">
           <div
             className={`
-    flex-1 overflow-y-auto scrollbar-hide px-[30px] pt-[55px] pb-[0px]
-    ${isColoredOutlet ? 'bg-gradient-blue' : 'bg-background'}
-  `}
+              flex-1 overflow-y-auto scrollbar-hide px-[30px] pt-[55px] pb-[0px]
+              ${isColoredOutlet ? 'bg-gradient-blue' : 'bg-background'}
+            `}
           >
             <AnimatePresence mode="sync" initial={false}>
               <motion.div
