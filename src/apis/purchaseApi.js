@@ -32,8 +32,8 @@ export const fetchSaleData = async (range = 'WEEK') => {
 export const deletePendingTrade = async (id, type = 'purchase') => {
   try {
     const endpoint = type === 'purchase' ? `/data/purchase` : `/data/sale`;
-    const body = { orderId: id }; // ✅ 서버가 요구하는 구조
-    const res = await API.delete(endpoint, { data: body }); // ✅ 두 번째 인자로 data 전달
+    const body = { orderId: id };
+    const res = await API.delete(endpoint, { data: body });
     return res.data;
   } catch (err) {
     console.error('거래 대기 삭제 실패:', err);

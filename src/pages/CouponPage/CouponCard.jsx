@@ -7,7 +7,7 @@ const CouponCard = ({ coupon }) => {
   return (
     <div
       className={`relative flex justify-between items-center p-3 rounded-xl border border-gray-300 bg-white ${
-        coupon.statusName === '사용불가' ? 'opacity-60' : ''
+        coupon.statusName === '사용 완료' ? 'opacity-50' : ''
       }`}
     >
       {/* 오른쪽 컬러 바 */}

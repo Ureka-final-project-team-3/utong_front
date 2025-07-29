@@ -5,7 +5,6 @@ const API = axios.create({
   withCredentials: true,
 });
 
-// 요청 인터셉터 추가
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
   if (token) {
@@ -17,4 +16,16 @@ API.interceptors.request.use((config) => {
 export const fetchline = async () => {
   const res = await API.get('/lines');
   return res.data.data;
+};
+
+export const patchDefaultLine = async (lineId) => {
+  try {
+    const response = await API.patch('/lines', {
+      lineId,
+    });
+    return response.data.data;
+  } catch (error) {
+    console.error('기본 회선 설정 실패:', error);
+    throw error;
+  }
 };

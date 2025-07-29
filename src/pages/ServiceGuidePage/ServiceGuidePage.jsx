@@ -2,26 +2,25 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '@/assets/icon/logo.svg';
 
-const totalSlides = 7;
+const totalSlides = 6;
 
 const slideContents = [
   { type: 'image', logo, text: '모든 기능을\n한눈에 알아봐요!' },
   { type: 'text', title: '마이페이지', text: '포인트 충전 및 거래 내역을\n확인해보세요!' },
   {
     type: 'text',
-    title: '시세 그래프',
-    text: '언제 어떤 거래가 이루어졌는지\n그래프로 한눈에 알아봐요!',
+    title: '데이터 거래',
+    text: '데이터 거래 현황을\n실시간으로 확인할 수 있어요!',
   },
   {
     type: 'text',
-    title: '체결 거래',
-    text: '언제 어떤 거래가 이루어졌는지\n실시간으로 확인할 수 있어요!',
+    title: '기프티콘 상점',
+    text: '데이터 거래로 얻은 포인트를\n기프티콘으로 교환해요!',
   },
-  { type: 'text', title: '판매 입찰', text: '판매 대기중인 가격과 데이터 양을\n한눈에 알아봐요!' },
   {
     type: 'text',
-    title: '구매 입찰',
-    text: '구매 대기중인 사용자의 희망가격과\n데이터 양을 한눈에 알아봐요!',
+    title: '거래 내역',
+    text: '나의 데이터 거래를 확인하고\n아직 거래 전이라면 취소할 수 있어요!',
   },
   {
     type: 'text',

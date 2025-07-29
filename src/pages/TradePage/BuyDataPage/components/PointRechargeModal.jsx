@@ -30,7 +30,7 @@ const PointRechargeModal = ({ show, onClose }) => {
         <div className="flex gap-5">
           <button
             onClick={onClose}
-            className="w-[90px] h-[35px] bg-[#2769F6] rounded-[8px] text-white font-semibold text-[12px] leading-[15px] font-inter"
+            className="w-[90px] h-[35px] bg-[#386DEE] rounded-[6px] text-white font-semibold text-[12px] leading-[15px] font-inter"
           >
             닫기
           </button>

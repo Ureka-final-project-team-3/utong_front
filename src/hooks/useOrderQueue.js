@@ -18,6 +18,8 @@ const useOrderQueueAll = () => {
       try {
         const allData = JSON.parse(e.data);
         setAllQueueData(allData);
+        console.log('allData from SSE:', allData);
+
       } catch (err) {
         console.error('SSE 데이터 파싱 오류', err);
       }
