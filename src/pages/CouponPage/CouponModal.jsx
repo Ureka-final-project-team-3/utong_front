@@ -42,13 +42,20 @@ const CouponModal = ({ coupon, onClose }) => {
               {coupon.expiredAt ? new Date(coupon.expiredAt).toLocaleDateString('ko-KR') : '없음'}
             </div>
 
-            <button
-              onClick={handleUseCoupon}
-              disabled={loading}
-              className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 disabled:opacity-50"
-            >
-              {loading ? '처리 중...' : '쿠폰 사용하기'}
-            </button>
+            {/* ✅ couponCode가 '001'이 아닐 때만 버튼 표시 */}
+            {coupon.couponCode !== '001' ? (
+              <button
+                onClick={handleUseCoupon}
+                disabled={loading}
+                className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 disabled:opacity-50"
+              >
+                {loading ? '처리 중...' : '쿠폰 사용하기'}
+              </button>
+            ) : (
+              <p className="text-sm text-gray-500 text-center">
+                이 쿠폰은 포인트 충전할 때 사용됩니다.
+              </p>
+            )}
 
             {message && <p className="mt-3 text-sm text-center text-red-500">{message}</p>}
           </>
