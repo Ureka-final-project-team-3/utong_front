@@ -26,7 +26,7 @@ const EditProfilePage = () => {
       <div className="relative flex items-center justify-between mb-6">
         <BackButton onClick={() => navigate(-1)} />
         <h2 className="absolute left-1/2 transform -translate-x-1/2 text-lg font-semibold">
-          정보수정
+          내 정보
         </h2>
         <div className="w-6" />
       </div>

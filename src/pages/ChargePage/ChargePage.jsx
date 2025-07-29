@@ -233,21 +233,6 @@ const PointChargePage = () => {
         </div>
       )}
 
-      <div className="mt-4">
-        <button
-          onClick={() =>
-            setModal({
-              open: true,
-              success: true,
-              message: '테스트용 충전 성공 메시지입니다!',
-            })
-          }
-          className="w-full border border-gray-400 text-gray-700 py-2 rounded-lg hover:bg-gray-100 text-sm"
-        >
-          테스트용 성공 모달 열기
-        </button>
-      </div>
-
       {/* 알림 토스트 모달 */}
       <InfoToastModal message={infoModalMessage} type={infoModalType} />
     </div>

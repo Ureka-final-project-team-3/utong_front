@@ -200,7 +200,7 @@ const EventPage = () => {
   }
 
   return (
-    <div className="relative overflow-hidden">
+    <div>
       <EventHeader />
 
       <RouletteEventExtras />
@@ -250,9 +250,15 @@ const EventPage = () => {
           </AnimatePresence>
 
           {showCouponModal && (
-            <CouponRewardModal coupon={wonCoupon} onClose={() => setShowCouponModal(false)} />
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
+              <CouponRewardModal coupon={wonCoupon} onClose={() => setShowCouponModal(false)} />
+            </div>
           )}
-          {showFailModal && <FailRewardModal onClose={() => setShowFailModal(false)} />}
+          {showFailModal && (
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
+              <FailRewardModal onClose={() => setShowFailModal(false)} />
+            </div>
+          )}
         </>
       )}
     </div>

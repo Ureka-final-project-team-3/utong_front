@@ -150,7 +150,7 @@ export default function MyPage() {
   ];
 
   return (
-    <div className="h-auto max-h-[650px] overflow-visible text-black relative">
+    <div>
       {/* Header */}
       <div
         className={`flex items-center gap-4 pt-5 transition-all duration-700 ${
@@ -257,7 +257,7 @@ export default function MyPage() {
 
       {/* 모달 */}
       {showModal && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-opacity-40">
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm animate-fade-in">
           <div
             ref={modalRef}
             className="bg-white rounded-xl p-6 w-64 shadow-xl animate-modal-slide-up"
