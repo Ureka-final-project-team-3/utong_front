@@ -11,7 +11,7 @@ const SellReservationModal = ({ onClose }) => {
     <div className="absolute inset-0 z-50 flex items-center justify-center">
       <div className="w-[284px] bg-[#F6F6F6] rounded-[10.1px] flex flex-col items-center p-5 ">
         {/* 상단 안내 텍스트 */}
-        <p className="text-[#386DEE] text-[20px] font-bold leading-[17px] text-center mb-5">
+        <p className="text-[#FF4343] text-[20px] font-bold leading-[17px] text-center mb-5">
           예약 판매
         </p>
         <p className="text-[#2C2C2C] font-medium text-[14px] leading-[17px] text-center mb-5">
