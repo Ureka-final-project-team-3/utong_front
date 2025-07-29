@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import NavigationBar from '@/components/NavigationBar/NavigationBar';
 import bgcheck from '@/assets/icon/bgcheck.svg';
@@ -12,9 +12,33 @@ const DefaultLayout = () => {
   const bgPages = ['/', '/event', '/mypage'];
   const isColoredOutlet = bgPages.includes(location.pathname);
 
-  const token = localStorage.getItem('accessToken'); // 로컬스토리지에서 accessToken 가져오기
-  useAlertStream(token); // SSE 연결 시작 (최상위에서 단 한 번)
+  const token = localStorage.getItem('accessToken');
+
+  useEffect(() => {
+    if (!token) return;
+
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/data/order-queue/stream`;
+    const es = new EventSource(url);
+
+    es.onopen = () => console.log('SSE 연결됨1');
+    es.onerror = (e) => console.error('SSE 오류', e);
+
+    es.addEventListener('all-queue-initial-data', (e) => {
+      console.log('all-queue-initial-data 이벤트:', e.data);
+    });
+    es.addEventListener('all-queue-hourly-update', (e) => {
+      console.log('all-queue-hourly-update 이벤트:', e.data);
+    });
+
+    // onmessage는 기본 이벤트가 있을 경우만 동작하니, 필요하면 남겨도 됨
+    es.onmessage = (e) => console.log('기본 메시지 이벤트:', e.data);
+
+    return () => es.close();
+  }, [token]);
+
+  useAlertStream(token);
   useOrderQueueSSE(token);
+
   return (
     <div className="absolute inset-0 z-0 bg-[#FFF9F1] flex items-center justify-center sm:gap-30">
       {/* 전체 2분할 구조 */}

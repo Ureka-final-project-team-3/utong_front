@@ -20,6 +20,7 @@ const useOrderQueueSSE = (token) => {
     const handleData = (e) => {
       try {
         const allData = JSON.parse(e.data);
+        console.log('SSE 수신 데이터:', allData);
         setAllQueueData(allData);
         console.log('allData from SSE:', allData);
       } catch (err) {
