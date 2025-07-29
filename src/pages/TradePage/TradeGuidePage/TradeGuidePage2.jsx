@@ -7,39 +7,49 @@ const totalSlides = 9;
 const slideContents = [
   {
     type: 'text',
-    text: '', // 첫 번째 슬라이드는 텍스트 없음
+    mainText: '',
+    detailText: '',
   },
   {
     type: 'text',
-    text: '무제한 데이터와 내가 산 데이터는 팔 수 없어요.\n한 번 산 건 끝! 다시 팔기 금지예요.',
+    mainText: '무제한 데이터와 내가 산 데이터는 팔 수 없어요.',
+    detailText: '한 번 산 건 끝! 다시 팔기 금지예요.',
   },
   {
     type: 'text',
-    text: '거래는 최소 1GB 단위로만 가능해요.\n0.5GB 같은 건 안 되고, 무조건 1GB 단위예요.',
+    mainText: '거래는 최소 1GB 단위로만 가능해요.',
+    detailText: '0.5GB 같은 건 안 되고, 무조건 1GB 단위예요.',
   },
   {
     type: 'text',
-    text: 'LTE는 최소 4,000원,\n5G는 5,000원 부터 거래 가능해요.\n그보다 저렴하면 거래가 안 돼요.',
+    mainText: 'LTE는 최소 4,000원,\n5G는 5,000원 부터 거래 가능해요.',
+    detailText: '그보다 저렴하면 거래가 안 돼요.',
   },
   {
     type: 'text',
-    text: '가격은 100원 단위로만 거래 가능해요.\n5,100원은 OK! 5,125원은 안 돼요.',
+    mainText: '가격은 100원 단위로만 거래 가능해요.',
+    detailText: '5,100원은 OK! 5,125원은 안 돼요.',
   },
   {
     type: 'text',
-    text: '현재 평균 가격에서 ±30% 범위 안에서만\n거래할 수 있어요.\n너무 싸게 또는 너무 비싸게는 못 팔아요.',
+    mainText: '현재 평균 가격에서 ±30% 범위 안에서만\n거래할 수 있어요.',
+    detailText: '너무 싸게 또는 너무 비싸게는 못 팔아요.',
   },
   {
     type: 'text',
-    text: '매물 상황에 따라 자동으로 \n최적의 거래가 이루어져요.\n판매 시: 등록된 구매 매물 중 가장 높은 가격에 판매돼요.\n구매 시: 등록된 판매 매물 중 가장 낮은 가격에 구매돼요.',
+    mainText: '매물 상황에 따라 자동으로\n최적의 거래가 이루어져요.',
+    detailText:
+      '판매 시: 등록된 구매 매물 중 가장 높은 가격에 판매돼요.\n구매 시: 등록된 판매 매물 중 가장 낮은 가격에 구매돼요.',
   },
   {
     type: 'text',
-    text: '사용자 요금제가 제공하는 데이터의\n10%만 판매 가능해요.\n정책상 일부만 판매할 수 있도록 제한되어 있어요.',
+    mainText: '사용자 요금제가 제공하는 데이터의\n10%만 판매 가능해요.',
+    detailText: '정책상 일부만 판매할 수 있도록 제한되어 있어요.',
   },
   {
     type: 'text',
-    text: '사용 중인 요금제만 거래할 수 있어요.\n5G 요금제는 5G끼리,\nLTE 요금제는 LTE끼리만 거래 가능해요',
+    mainText: '사용 중인 요금제만 거래할 수 있어요.',
+    detailText: '5G 요금제는 5G끼리,\nLTE 요금제는 LTE끼리만 거래 가능해요',
   },
 ];
 
@@ -220,24 +230,25 @@ const TradeGuidePage2 = () => {
         </div>
       </div>
 
-      {/* 텍스트 영역 - 이미지 아래로 이동, 첫 번째 슬라이드는 텍스트가 없음 */}
-      {currentContent.text && (
-        <div className="flex flex-col items-center mt-6 mb-4 text-center">
-          {currentContent.text.split('\n').map((line, index) => {
-            // 줄마다 다른 색상 적용
-            const colors = ['text-gray-800', 'text-gray-500'];
-            const colorClass = colors[index % colors.length];
+      {/* 텍스트 영역 - 고정 높이 컨테이너 */}
+      <div className="flex flex-col items-center mt-6 text-center" style={{ minHeight: '80px' }}>
+        {/* 메인 텍스트 */}
+        {currentContent.mainText && (
+          <div className="text-base text-[16px] font-semibold text-gray-800 leading-snug mb-2 whitespace-pre-line">
+            {currentContent.mainText}
+          </div>
+        )}
 
-            return (
-              <div key={index} className={`text-base font-semibold leading-snug ${colorClass}`}>
-                {line}
-              </div>
-            );
-          })}
-        </div>
-      )}
+        {/* 상세 텍스트 */}
+        {currentContent.detailText && (
+          <div className="text-sm text-[11px] font-medium text-gray-500 leading-snug whitespace-pre-line">
+            {currentContent.detailText}
+          </div>
+        )}
+      </div>
 
-      <div className="flex gap-2 mt-6">
+      {/* 네비게이터 - 고정 위치 */}
+      <div className="flex gap-2 mt-4">
         {[...Array(totalSlides)].map((_, i) => (
           <button
             key={i}
