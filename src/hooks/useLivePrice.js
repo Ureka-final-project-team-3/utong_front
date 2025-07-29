@@ -6,7 +6,7 @@ const useLivePriceMap = () => {
   useEffect(() => {
     const url = `${import.meta.env.VITE_API_BASE_URL}/api/data/current-prices/stream`;
     const eventSource = new EventSource(url);
-    console.log(`[SSE] 스트림 연결됨 → ${url}`);
+    console.log(`[SSE] useLivePrice 스트림 연결됨 → ${url}`);
 
     eventSource.addEventListener('all-chart-initial-data', (event) => {
       try {
@@ -44,7 +44,7 @@ const useLivePriceMap = () => {
     };
 
     return () => {
-      console.log('[SSE] 연결 종료');
+      console.log('[SSE] useLivePrice 연결 종료');
       eventSource.close();
     };
   }, []);
