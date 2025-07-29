@@ -82,22 +82,28 @@ export default function MyPage() {
     }
   };
 
+  // 모달 외부 클릭 감지를 위한 useEffect (모든 모달 타입에 적용)
   useEffect(() => {
-    if (!showModal || modalType !== 'mail') return;
+    if (!showModal) return;
 
-    const fetchSetting = async () => {
-      const result = await apiRequest('/api/auth/mail-settings');
-      if (result.success) {
-        setIsMail(result.data.data.isMail);
-      }
-    };
-    fetchSetting();
+    // 메일 설정을 위한 API 호출 (메일 모달일 때만)
+    if (modalType === 'mail') {
+      const fetchSetting = async () => {
+        const result = await apiRequest('/api/auth/mail-settings');
+        if (result.success) {
+          setIsMail(result.data.data.isMail);
+        }
+      };
+      fetchSetting();
+    }
 
+    // 모든 모달에 대한 외부 클릭 감지
     const handleClickOutside = (e) => {
       if (modalRef.current && !modalRef.current.contains(e.target)) {
         setShowModal(false);
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -252,7 +258,10 @@ export default function MyPage() {
       {/* 모달 */}
       {showModal && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-opacity-40">
-          <div ref={modalRef} className="bg-white rounded-xl p-6 w-64 shadow-xl">
+          <div
+            ref={modalRef}
+            className="bg-white rounded-xl p-6 w-64 shadow-xl animate-modal-slide-up"
+          >
             {modalType === 'mail' ? (
               <>
                 <h2 className="text-lg font-bold mb-4">백그라운드 알림</h2>
@@ -291,9 +300,9 @@ export default function MyPage() {
                           await patchDefaultLine(lineId);
                           const updatedUser = await fetchMyInfo();
                           setUser(updatedUser);
-                          toast.success('기본 회선이 변경되었습니다.');
+                          // toast.success('전화번호가 변경되었습니다.');
                         } catch {
-                          toast.error('기본 회선 변경 실패');
+                          // toast.error('전화번호 변경 실패');
                         }
                       }}
                     >
