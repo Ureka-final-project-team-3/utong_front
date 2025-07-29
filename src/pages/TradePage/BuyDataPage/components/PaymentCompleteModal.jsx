@@ -18,7 +18,7 @@ const PaymentCompleteModal = ({ point = 1000, onClose }) => {
         <p className="text-[#2C2C2C] opacity-80 text-[13px] leading-[18px]">
           일부 항목만 결제되었으며
           <br />
-          수량이 부족하여 일부 항목은 구매대기로 처리되었습니다.
+          판매중인 데이터의 수량이 부족하여 일부 항목은 구매대기로 처리되었습니다.
         </p>
 
         {/* 포인트 및 버튼 */}
