@@ -31,8 +31,8 @@ export default function MyPage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      setSelectedLine(user.dataCode === '002' ? '5G' : 'LTE');
+    if (user && user.phoneNumber) {
+      setSelectedLine(user.phoneNumber);
     }
   }, [user]);
 
@@ -114,9 +114,9 @@ export default function MyPage() {
     const result = await apiRequest('/api/auth/mail-settings/toggle', { method: 'POST' });
     if (result.success) {
       setIsMail(result.data.data.isMail);
-      toast.success(result.data.data.message);
+      // toast.success(result.data.data.message);
     } else {
-      toast.error('알림 설정 변경 실패');
+      // toast.error('알림 설정 변경 실패');
     }
   };
 
