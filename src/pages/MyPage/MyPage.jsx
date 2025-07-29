@@ -170,7 +170,7 @@ export default function MyPage() {
 
       {/* Info Card */}
       <div
-        className={`mt-10 bg-[#386DEE] text-white rounded-xl p-3 transition-all duration-700 hover:shadow-2xl hover:scale-[1.02] overflow-visible relative z-10 ${
+        className={`mt-5 bg-[#386DEE] text-white rounded-xl p-3 transition-all duration-700 hover:shadow-2xl hover:scale-[1.02] overflow-visible relative z-10 ${
           mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
