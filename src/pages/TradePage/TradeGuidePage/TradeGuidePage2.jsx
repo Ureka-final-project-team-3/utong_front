@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '@/assets/icon/logo.svg';
 
 const totalSlides = 9;
 
@@ -220,6 +219,7 @@ const TradeGuidePage2 = () => {
                 src={`/image/trade${index + 1}.png`}
                 alt={`서비스 가이드 ${index + 1}`}
                 className="w-[70%] h-auto object-contain rounded-lg"
+                style={index === 0 ? { marginTop: '80px' } : {}}
                 onError={(e) => {
                   e.target.src = '/image/default-guide.png';
                 }}
