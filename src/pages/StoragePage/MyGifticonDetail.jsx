@@ -43,7 +43,7 @@ const MyGifticonDetail = () => {
           <img
             src={detail.imageUrl}
             alt={detail.name}
-            className="w-32 h-auto object-contain mx-auto mb-4"
+            className="w-auto h-auto object-contain mx-auto mb-4"
           />
         )}
 
