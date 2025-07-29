@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import Transcation from '@/assets/icon/Transcation.svg';
+import Transcation from '@/assets/icon/recipt.png';
 import Couponbox from '@/assets/icon/Couponbox.svg';
 import storagebox from '@/assets/icon/storagebox.svg';
 import Editinformation from '@/assets/icon/Editinformation.svg';
-import Notificationbox from '@/assets/icon/Notificationbox.svg';
+import Notificationbox from '@/assets/icon/call.png';
 import ServiceGuide from '@/assets/icon/ServiceGuide.svg';
 import Notificationsettings from '@/assets/icon/Notificationsettings.svg';
 import dataIcon from '@/assets/image/data.svg';
@@ -132,11 +132,11 @@ export default function MyPage() {
     { icon: Transcation, label: '거래 내역', path: '/tradehistory' },
     { icon: Couponbox, label: '쿠폰함', path: '/coupon' },
     { icon: storagebox, label: '보관함', path: '/storage' },
-    { icon: Editinformation, label: '정보 수정', path: '/edit-profile' },
+    { icon: Editinformation, label: '내 정보', path: '/edit-profile' },
   ];
 
   const subMenuItems = [
-    { icon: Notificationbox, label: '알림함', path: '/alarm' },
+    { icon: Notificationbox, label: '번호 선택', path: '/alarm' },
     { icon: ServiceGuide, label: '서비스 가이드', path: '/guide' },
     { icon: Notificationsettings, label: '알림 설정', onClick: () => setShowModal(true) },
   ];
