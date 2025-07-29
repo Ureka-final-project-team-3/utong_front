@@ -14,28 +14,6 @@ const DefaultLayout = () => {
 
   const token = localStorage.getItem('accessToken');
 
-  useEffect(() => {
-    if (!token) return;
-
-    const url = `${import.meta.env.VITE_API_BASE_URL}/api/data/order-queue/stream`;
-    const es = new EventSource(url);
-
-    es.onopen = () => console.log('SSE 연결됨1');
-    es.onerror = (e) => console.error('SSE 오류', e);
-
-    es.addEventListener('all-queue-initial-data', (e) => {
-      console.log('all-queue-initial-data 이벤트:', e.data);
-    });
-    es.addEventListener('all-queue-hourly-update', (e) => {
-      console.log('all-queue-hourly-update 이벤트:', e.data);
-    });
-
-    // onmessage는 기본 이벤트가 있을 경우만 동작하니, 필요하면 남겨도 됨
-    es.onmessage = (e) => console.log('기본 메시지 이벤트:', e.data);
-
-    return () => es.close();
-  }, [token]);
-
   useAlertStream(token);
   useOrderQueueSSE(token);
 

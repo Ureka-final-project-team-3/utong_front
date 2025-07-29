@@ -14,17 +14,16 @@ const useOrderQueueSSE = (token) => {
 
     eventSourceRef.current.onopen = () => {
       setIsConnected(true);
-      console.log('useOrderQueueSSE 연결됨');
+      console.log('✅ SSE 연결됨');
     };
 
     const handleData = (e) => {
       try {
         const allData = JSON.parse(e.data);
-        console.log('SSE 수신 데이터:', allData);
-        setAllQueueData(allData);
-        console.log('allData from SSE:', allData);
+        console.log('📩 SSE 데이터 도착:', allData);
+        setAllQueueData(allData);  // 내부에서 복사해서 상태 변경 유도
       } catch (err) {
-        console.error('SSE 데이터 파싱 오류', err);
+        console.error('SSE 파싱 오류:', err);
       }
     };
 
@@ -32,16 +31,16 @@ const useOrderQueueSSE = (token) => {
     eventSourceRef.current.addEventListener('all-queue-hourly-update', handleData);
 
     eventSourceRef.current.onerror = (e) => {
-      console.error('SSE 오류', e);
+      console.error('❌ SSE 오류', e);
       setIsConnected(false);
     };
 
     return () => {
-      eventSourceRef.current.close();
+      eventSourceRef.current?.close();
       setIsConnected(false);
-      console.log('SuseOrderQueueSSE 연결 해제');
+      console.log('🔌 SSE 연결 해제됨');
     };
-  }, [setAllQueueData, setIsConnected]);
+  }, [token, setAllQueueData, setIsConnected]);
 };
 
 export default useOrderQueueSSE;
