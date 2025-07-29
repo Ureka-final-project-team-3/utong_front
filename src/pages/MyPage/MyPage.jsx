@@ -11,32 +11,31 @@ import dataIcon from '@/assets/image/data.svg';
 import pointIcon from '@/assets/image/point.svg';
 import utong from '@/assets/image/MyPageutong.svg';
 
-import { fetchline } from '../../apis/lineApi';
-import { patchDefaultLine } from '../../apis/lineApi';
+import { fetchline, patchDefaultLine } from '@/apis/lineApi';
+import { fetchMyInfo } from '@/apis/mypageApi';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { fetchMyInfo } from '@/apis/mypageApi';
 import SyncLoading from '@/components/Loading/SyncLoading';
 import useAuth from '@/hooks/useAuth';
 
 export default function MyPage() {
   const [lineMap, setLineMap] = useState([]);
-
   const { user: authUser, isLoading: authLoading } = useAuth();
   const [user, setUser] = useState();
   const [showModal, setShowModal] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [modalType, setModalType] = useState(null); // 'line' or 'mail'
   const modalRef = useRef(null);
   const [isMail, setIsMail] = useState(false);
   const [selectedLine, setSelectedLine] = useState('');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     if (user) {
       setSelectedLine(user.dataCode === '002' ? '5G' : 'LTE');
     }
   }, [user]);
+
   useEffect(() => {
     const loadLines = async () => {
       try {
@@ -58,15 +57,9 @@ export default function MyPage() {
   useEffect(() => {
     if (!authLoading && authUser) {
       fetchMyInfo()
-        .then((data) => {
-          setUser(data);
-        })
-        .catch((error) => {
-          console.error('유저 정보 불러오기 실패:', error);
-          console.log('상세 응답:', error.response?.data);
-        });
+        .then(setUser)
+        .catch((error) => console.error('유저 정보 불러오기 실패:', error));
     }
-
     setTimeout(() => setMounted(true), 100);
   }, [authUser, authLoading]);
 
@@ -82,7 +75,6 @@ export default function MyPage() {
         ...options,
       });
       const data = await response.json();
-      console.log('API Response:', data);
       return { success: data.resultCode === 200, data };
     } catch (error) {
       console.error('API Error', error);
@@ -90,43 +82,45 @@ export default function MyPage() {
     }
   };
 
+  // 모달 외부 클릭 감지를 위한 useEffect (모든 모달 타입에 적용)
   useEffect(() => {
     if (!showModal) return;
 
-    const fetchSetting = async () => {
-      const result = await apiRequest('/api/auth/mail-settings');
-      if (result.success) {
-        const mailStatus = result.data.data.isMail;
-        setIsMail(mailStatus);
-      }
-    };
-    fetchSetting();
+    // 메일 설정을 위한 API 호출 (메일 모달일 때만)
+    if (modalType === 'mail') {
+      const fetchSetting = async () => {
+        const result = await apiRequest('/api/auth/mail-settings');
+        if (result.success) {
+          setIsMail(result.data.data.isMail);
+        }
+      };
+      fetchSetting();
+    }
 
+    // 모든 모달에 대한 외부 클릭 감지
     const handleClickOutside = (e) => {
       if (modalRef.current && !modalRef.current.contains(e.target)) {
         setShowModal(false);
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showModal]);
+  }, [showModal, modalType]);
 
   const handleToggle = async () => {
     const result = await apiRequest('/api/auth/mail-settings/toggle', { method: 'POST' });
     if (result.success) {
-      const mailStatus = result.data.data.isMail;
-      setIsMail(mailStatus);
+      setIsMail(result.data.data.isMail);
       toast.success(result.data.data.message);
     } else {
       toast.error('알림 설정 변경 실패');
     }
   };
 
-  if (authLoading || !user) {
-    return <SyncLoading />;
-  }
+  if (authLoading || !user) return <SyncLoading />;
 
   const menuItems = [
     { icon: Transcation, label: '거래 내역', path: '/tradehistory' },
@@ -136,9 +130,23 @@ export default function MyPage() {
   ];
 
   const subMenuItems = [
-    { icon: Notificationbox, label: '번호 선택', path: '/alarm' },
+    {
+      icon: Notificationbox,
+      label: '번호 선택',
+      onClick: () => {
+        setModalType('line');
+        setShowModal(true);
+      },
+    },
     { icon: ServiceGuide, label: '서비스 가이드', path: '/guide' },
-    { icon: Notificationsettings, label: '알림 설정', onClick: () => setShowModal(true) },
+    {
+      icon: Notificationsettings,
+      label: '알림 설정',
+      onClick: () => {
+        setModalType('mail');
+        setShowModal(true);
+      },
+    },
   ];
 
   return (
@@ -157,65 +165,7 @@ export default function MyPage() {
             animation: mounted ? 'bounce-gentle 2s ease-in-out infinite' : 'none',
           }}
         />
-
-        {user && (
-          <div className="flex items-center gap-2 relative z-100">
-            <h1
-              className="text-white text-2xl font-bold cursor-pointer"
-              onClick={() => {
-                setDropdownOpen(!dropdownOpen);
-              }}
-            >
-              {user.name}
-            </h1>
-
-            <svg
-              className={`w-4 h-4 text-white transition-transform duration-300 ${
-                dropdownOpen ? 'rotate-180' : ''
-              }`}
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-
-            {dropdownOpen && (
-              <ul className="absolute top-full left-0 mt-1 bg-white rounded shadow-lg w-30 text-black text-[12px] z-[9999] border border-gray-200">
-                {lineMap.map(({ phoneNumber, lineId }) => (
-                  <li
-                    key={lineId}
-                    className={`px-3 py-1 cursor-pointer hover:bg-blue-100 ${
-                      selectedLine === phoneNumber ? 'font-bold text-blue-600' : ''
-                    }`}
-                    onClick={async () => {
-                      setSelectedLine(phoneNumber);
-                      setDropdownOpen(false);
-
-                      try {
-                        console.log('[📦 전송할 lineId]', lineId);
-                        await patchDefaultLine(lineId);
-                        const updatedUser = await fetchMyInfo();
-                        setUser(updatedUser);
-                      } catch (error) {
-                        console.error(error);
-                        toast.error('기본 회선 변경 실패');
-                      }
-                    }}
-                  >
-                    {phoneNumber}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
+        <h1 className="text-white text-2xl font-bold">{user.name}</h1>
       </div>
 
       {/* Info Card */}
@@ -273,62 +223,32 @@ export default function MyPage() {
         </div>
       </div>
 
-      {/* 메뉴 버튼들 */}
-      <div
-        className={`grid grid-cols-4 gap-y-6 mt-10 text-center font-Medium text-xs text-[#5F5F5F] transition-all duration-700 delay-400 relative z-10 ${
-          mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-        }`}
-      >
-        {menuItems.map(({ icon, label, path }, index) => (
+      {/* 메인 메뉴 */}
+      <div className="grid grid-cols-4 gap-y-6 mt-10 text-center text-xs text-[#5F5F5F]">
+        {menuItems.map(({ icon, label, path }) => (
           <Link to={path} key={label}>
-            <div
-              className="flex flex-col items-center cursor-pointer hover:opacity-80 transition-all duration-300 group"
-              style={{
-                animation: mounted ? `slide-up 0.6s ease-out ${index * 0.1}s both` : 'none',
-              }}
-            >
-              <div className="w-14 h-14 rounded-full bg-[#386DEE] flex items-center justify-center mb-1 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 group-hover:shadow-lg">
-                <img
-                  src={icon}
-                  alt={label}
-                  className="w-[22px] h-[22px] transition-transform duration-300"
-                />
+            <div className="flex flex-col items-center cursor-pointer hover:opacity-80">
+              <div className="w-14 h-14 rounded-full bg-[#386DEE] flex items-center justify-center mb-1">
+                <img src={icon} alt={label} className="w-[22px] h-[22px]" />
               </div>
-              <span className="group-hover:text-[#386DEE] transition-colors duration-300">
-                {label}
-              </span>
+              <span>{label}</span>
             </div>
           </Link>
         ))}
       </div>
 
-      <div
-        className={`grid grid-cols-3 gap-y-6 mt-8 px-5 text-center font-Medium text-xs text-[#5F5F5F] transition-all duration-700 delay-600 relative z-10 ${
-          mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-        }`}
-      >
-        {subMenuItems.map(({ icon, label, path, onClick }, index) => {
+      {/* 서브 메뉴 */}
+      <div className="grid grid-cols-3 gap-y-6 mt-8 px-5 text-center text-xs text-[#5F5F5F]">
+        {subMenuItems.map(({ icon, label, path, onClick }) => {
           const Component = path ? Link : 'div';
           const props = path ? { to: path } : { onClick };
-
           return (
             <Component {...props} key={label}>
-              <div
-                className="flex flex-col items-center cursor-pointer hover:opacity-80 transition-all duration-300 group"
-                style={{
-                  animation: mounted ? `slide-up 0.6s ease-out ${(index + 4) * 0.1}s both` : 'none',
-                }}
-              >
-                <div className="w-14 h-14 rounded-full bg-[#386DEE] flex items-center justify-center mb-1 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 group-hover:shadow-lg">
-                  <img
-                    src={icon}
-                    alt={label}
-                    className="w-[22px] h-[22px] transition-transform duration-300"
-                  />
+              <div className="flex flex-col items-center cursor-pointer hover:opacity-80">
+                <div className="w-14 h-14 rounded-full bg-[#386DEE] flex items-center justify-center mb-1">
+                  <img src={icon} alt={label} className="w-[22px] h-[22px]" />
                 </div>
-                <span className="group-hover:text-[#386DEE] transition-colors duration-300">
-                  {label}
-                </span>
+                <span>{label}</span>
               </div>
             </Component>
           );
@@ -337,39 +257,69 @@ export default function MyPage() {
 
       {/* 모달 */}
       {showModal && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center animate-fade-in">
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-opacity-40">
           <div
             ref={modalRef}
-            className="bg-white rounded-xl p-6 w-60 shadow-lg animate-modal-slide-up"
+            className="bg-white rounded-xl p-6 w-64 shadow-xl animate-modal-slide-up"
           >
-            <h2 className="text-lg font-bold mb-4">백그라운드 알림</h2>
-            <div className="flex justify-between items-center">
-              <span>수신여부</span>
-              <button
-                onClick={handleToggle}
-                className={`w-14 h-7 rounded-full p-1 focus:outline-none transition-all duration-300 ${
-                  isMail ? 'bg-blue-500' : 'bg-gray-300'
-                }`}
-              >
-                <div
-                  className={`bg-white w-5 h-5 rounded-full shadow transform transition-all duration-300 ${
-                    isMail ? 'translate-x-7' : ''
-                  }`}
-                />
-              </button>
-            </div>
+            {modalType === 'mail' ? (
+              <>
+                <h2 className="text-lg font-bold mb-4">백그라운드 알림</h2>
+                <div className="flex justify-between items-center">
+                  <span>수신여부</span>
+                  <button
+                    onClick={handleToggle}
+                    className={`w-14 h-7 rounded-full p-1 transition-all duration-300 ${
+                      isMail ? 'bg-blue-500' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div
+                      className={`bg-white w-5 h-5 rounded-full shadow transform transition-all duration-300 ${
+                        isMail ? 'translate-x-7' : ''
+                      }`}
+                    />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="text-lg font-bold mb-4">번호 선택</h2>
+                <ul className="space-y-2 text-sm">
+                  {lineMap.map(({ phoneNumber, lineId }) => (
+                    <li
+                      key={lineId}
+                      className={`cursor-pointer px-3 py-2 rounded-md border ${
+                        selectedLine === phoneNumber
+                          ? 'bg-blue-100 text-blue-600 font-bold'
+                          : 'hover:bg-gray-100'
+                      }`}
+                      onClick={async () => {
+                        setSelectedLine(phoneNumber);
+                        setShowModal(false);
+                        try {
+                          await patchDefaultLine(lineId);
+                          const updatedUser = await fetchMyInfo();
+                          setUser(updatedUser);
+                          // toast.success('전화번호가 변경되었습니다.');
+                        } catch {
+                          // toast.error('전화번호 변경 실패');
+                        }
+                      }}
+                    >
+                      {phoneNumber}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
         </div>
       )}
 
       {/* 로그아웃 */}
-      <div
-        className={`mt-20 text-center transition-all duration-700 delay-800 ${
-          mounted ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-        }`}
-      >
+      <div className="mt-20 text-center">
         <button
-          className="text-blue-600 cursor-pointer hover:underline hover:scale-105 transition-all duration-300"
+          className="text-blue-600 hover:underline"
           onClick={() => {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('account');

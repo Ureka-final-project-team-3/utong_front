@@ -16,7 +16,7 @@ import HistoryPage from '../pages/HistoryPage/HistoryPage';
 import DefaultLayout from '../layout/DefaultLayout';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
 import TestPage from '../pages/TestPage/TestPage';
-import AlarmPage from '../pages/AlarmPage/AlarmPage';
+// import AlarmPage from '../pages/AlarmPage/AlarmPage';
 import TradeHistoryPage from '../pages/TradeHistoryPage/TradeHistoryPage';
 import CouponPage from '../pages/CouponPage/CouponPage';
 import StoragePage from '../pages/StoragePage/StoragePage';
@@ -110,10 +110,10 @@ const router = createBrowserRouter([
         path: '/history',
         element: <HistoryPage />,
       },
-      {
-        path: '/alarm',
-        element: <AlarmPage />,
-      },
+      // {
+      //   path: '/alarm',
+      //   element: <AlarmPage />,
+      // },
       {
         path: '/test',
         element: <TestPage />,
