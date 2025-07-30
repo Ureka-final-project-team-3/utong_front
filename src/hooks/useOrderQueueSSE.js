@@ -9,7 +9,7 @@ const useOrderQueueSSE = (token) => {
   useEffect(() => {
     if (!token) return;
 
-    const url = `${import.meta.env.VITE_API_BASE_URL}/api/data/order-queue/stream`;
+    const url = `${import.meta.env.VITE_API_BASE_URL}/sse/data/order-queue/stream`;
     eventSourceRef.current = new EventSource(url);
 
     eventSourceRef.current.onopen = () => {
