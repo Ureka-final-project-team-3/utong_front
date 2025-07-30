@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchGifticonDetail } from '@/apis/gifticonsApi';
 import BackButton from '@/components/BackButton/BackButton';
+import BarCode from '@/assets/image/barcode.png';
 
 const MyGifticonDetail = () => {
   const { gifticonId } = useParams();
@@ -40,11 +41,13 @@ const MyGifticonDetail = () => {
       <div className="bg-white rounded-xl p-5 shadow-md mb-6">
         {/* 이미지 */}
         {detail.imageUrl && (
-          <img
-            src={detail.imageUrl}
-            alt={detail.name}
-            className="w-auto h-auto object-contain mx-auto mb-4"
-          />
+          <>
+            <img
+              src={detail.imageUrl}
+              alt={detail.name}
+              className="w-auto max-w-[150px] h-auto object-contain mx-auto mb-4"
+            />
+          </>
         )}
 
         {/* 텍스트 정보 */}
@@ -54,6 +57,8 @@ const MyGifticonDetail = () => {
             {detail.point?.toLocaleString() || detail.price?.toLocaleString()}P
           </p>
         </div>
+        {/* ✅ 바코드 이미지 추가 */}
+        <img src={BarCode} alt="바코드" className="w-auto h-auto object-contain mx-auto mt-2" />
       </div>
 
       {/* 유의사항 박스 */}

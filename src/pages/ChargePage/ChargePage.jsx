@@ -152,22 +152,27 @@ const PointChargePage = () => {
             <label className="text-base font-medium text-gray-700 whitespace-nowrap w-[90px]">
               쿠폰 선택
             </label>
-            {coupons.length > 0 ? (
-              <select
-                value={selectedCouponId || ''}
-                onChange={(e) => setSelectedCouponId(e.target.value)}
-                className="w-2/3 max-w-xs text-sm px-3 py-2 rounded-lg"
-              >
-                <option value="">쿠폰을 선택하세요</option>
-                {coupons.map((coupon) => (
-                  <option key={coupon.userCouponId} value={coupon.userCouponId}>
-                    {(coupon.name || '수수료 면제 쿠폰').slice(0, 10)}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <span className="text-xs text-gray-400">사용 가능한 쿠폰이 없습니다</span>
-            )}
+
+            <div className="flex justify-end w-full">
+              {coupons.length > 0 ? (
+                <select
+                  value={selectedCouponId || ''}
+                  onChange={(e) => setSelectedCouponId(e.target.value)}
+                  className="text-sm px-3 py-2 rounded-lg w-full max-w-[220px]"
+                >
+                  <option value="">쿠폰을 선택하세요</option>
+                  {coupons.map((coupon) => (
+                    <option key={coupon.userCouponId} value={coupon.userCouponId}>
+                      {(coupon.name || '수수료 면제 쿠폰').slice(0, 10)}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span className="text-xs text-gray-400 text-right w-full max-w-[220px]">
+                  사용 가능한 쿠폰이 없습니다
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
