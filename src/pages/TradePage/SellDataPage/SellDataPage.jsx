@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import SellDataHeader from './components/SellDataHeader';
@@ -256,20 +256,7 @@ const SellDataPage = () => {
   return (
     <div style={{ position: 'relative' }}>
       <SellDataHeader />
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '100%',
-          maxWidth: 400,
-          zIndex: 9999,
-          pointerEvents: 'auto',
-        }}
-      />
+
       <SellSuccessModal
         show={showSellSuccessModal}
         onClose={() => closeModal('showSellSuccessModal')}
@@ -438,7 +425,7 @@ const SellDataPage = () => {
           </span>
         </div>
       </div>
-      <div className="mt-auto pt-6">
+      <div className="mt-auto pt-2">
         <Button
           disabled={!isButtonEnabled}
           onClick={handleSellClick}

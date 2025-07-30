@@ -75,7 +75,7 @@ const TradeGuidePage2 = () => {
   };
 
   const handleClose = () => {
-    navigate('/mypage');
+    navigate(-1);
   };
 
   const handleDragStart = (clientX) => {

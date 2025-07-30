@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import BuyDataHeader from './components/BuyDataHeader';
@@ -215,20 +215,6 @@ const BuyDataPage = () => {
     <div className="relative h-full">
       <div style={{ position: 'relative' }}>
         <BuyDataHeader />
-        <ToastContainer
-          position="top-center"
-          autoClose={3000}
-          style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '100%',
-            maxWidth: 400,
-            zIndex: 9999,
-            pointerEvents: 'auto',
-          }}
-        />
       </div>
 
       <PointRechargeModal
