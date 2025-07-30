@@ -23,7 +23,7 @@ const StartPage = () => {
       if (currentIndex >= fullText.length) {
         clearInterval(interval);
         setShowRealLogo(true);
-        setTimeout(() => navigate('/login'), 100000);
+        setTimeout(() => navigate('/login'), 5000);
         return;
       }
       setText((prev) => prev + fullText[currentIndex]);
@@ -37,7 +37,7 @@ const StartPage = () => {
     const chartTimer = setTimeout(() => setShowChart(true), 100);
     const logoTimer = setTimeout(() => {
       setShowLogo(true);
-    }, 2000);
+    }, 1000);
 
     return () => {
       clearTimeout(chartTimer);
@@ -56,6 +56,7 @@ const StartPage = () => {
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
+
   const candleData = [
     [100, 180, 90, 130],
     [130, 160, 100, 120],
@@ -238,10 +239,10 @@ const StartPage = () => {
             <img
               src={logo}
               alt="유통 로고"
-              className="w-32 h-32 absolute top-[40%] left-1/2 -translate-x-1/2 animate-logo-fade-up z-[10]"
+              className="w-32 h-32 absolute top-[35%] sm:top-[40%] left-1/2 -translate-x-1/2 animate-logo-fade-up z-[10]"
             />
           )}
-          <p className="text-[25px] text-gray-500 font-bold absolute top-[55%] left-1/2 -translate-x-1/2 animate-fade-up  z-[10]">
+          <p className="text-[25px] text-gray-500 font-bold absolute top-[55%] sm:top-[55%] left-1/2 -translate-x-1/2 animate-fade-up z-[10]">
             {text}
           </p>
         </>
@@ -274,7 +275,7 @@ const StartPage = () => {
   @keyframes logo-fade-up {
     0% {
       opacity: 0;
-      transform: translateY(40px);
+      transform: translateY(20px);
     }
     100% {
       opacity: 1;
