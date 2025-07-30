@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import SellDataHeader from './components/SellDataHeader';
@@ -200,7 +200,7 @@ const SellDataPage = () => {
               setShowFailModal(true);
               break;
             case 'UNIT_ERROR':
-              setFailMessage('100원 단위로 판매해 주세요.');
+              setFailMessage('100P 단위로 판매해 주세요.');
               setShowFailModal(true);
               break;
             default:
@@ -256,20 +256,7 @@ const SellDataPage = () => {
   return (
     <div style={{ position: 'relative' }}>
       <SellDataHeader />
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '100%',
-          maxWidth: 400,
-          zIndex: 9999,
-          pointerEvents: 'auto',
-        }}
-      />
+
       <SellSuccessModal
         show={showSellSuccessModal}
         onClose={() => closeModal('showSellSuccessModal')}
@@ -319,7 +306,7 @@ const SellDataPage = () => {
                 <span>구매 평균가</span>
                 <span className="text-[#2C2C2C]">
                   {avgPrice.toLocaleString()}
-                  <span className="text-[#565656]"> 원</span>
+                  <span className="text-[#565656]"> P</span>
                 </span>
               </>
             )}
@@ -329,7 +316,7 @@ const SellDataPage = () => {
             <span className="text-[#5D5D5D]">구매 최고가</span>
             <span className="text-[#2C2C2C]">
               {highestPrice.toLocaleString()}
-              <span className="text-[#565656]"> 원</span>
+              <span className="text-[#565656]"> P</span>
             </span>
           </div>
         </div>
@@ -354,7 +341,7 @@ const SellDataPage = () => {
               const rounded = Math.round(numeric / 100) * 100;
 
               if (rounded < minPrice) {
-                toast.error(`최소 거래 가격은 ${minPrice.toLocaleString()}원입니다.`, {
+                toast.error(`최소 거래 가격은 ${minPrice.toLocaleString()}P입니다.`, {
                   autoClose: 3000,
                   toastId: 'price-min-error',
                 });
@@ -438,7 +425,7 @@ const SellDataPage = () => {
           </span>
         </div>
       </div>
-      <div className="mt-auto pt-6">
+      <div className="mt-auto pt-2">
         <Button
           disabled={!isButtonEnabled}
           onClick={handleSellClick}

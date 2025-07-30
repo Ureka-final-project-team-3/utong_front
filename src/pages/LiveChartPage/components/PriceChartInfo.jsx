@@ -31,7 +31,7 @@ const PriceChartInfo = () => {
             <span className="text-[26px] sm:text-[30px] leading-[32px] sm:leading-[36px] font-bold text-[#EB008B]">
               {latestPrice !== null ? latestPrice.toLocaleString() : '-'}
             </span>
-            <span className="text-[12px] leading-[15px] text-[#2C2C2C]">원 (1GB)</span>
+            <span className="text-[12px] leading-[15px] text-[#2C2C2C]">P (1GB)</span>
           </>
         )}
       </div>

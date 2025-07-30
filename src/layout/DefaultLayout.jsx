@@ -4,6 +4,7 @@ import NavigationBar from '@/components/NavigationBar/NavigationBar';
 import bgcheck from '@/assets/icon/bgcheck.svg';
 import { AnimatePresence, motion } from 'framer-motion';
 import utongLogo from '@/assets/icon/bglogo.svg';
+import { ToastContainer } from 'react-toastify';
 
 const DefaultLayout = () => {
   const location = useLocation();
@@ -17,12 +18,10 @@ const DefaultLayout = () => {
       const width = window.innerWidth;
 
       if (width < 640) {
-        // 모바일일 경우 vh 계산
         const vh = window.innerHeight * 0.01;
         document.documentElement.style.setProperty('--vh', `${vh}px`);
         setContainerHeight('calc(var(--vh, 1vh) * 100)');
       } else {
-        // 데스크탑일 경우 고정 높이
         setContainerHeight('780px');
       }
     };
@@ -68,11 +67,27 @@ const DefaultLayout = () => {
           className="w-full sm:w-[360px] bg-white shadow-xl relative flex flex-col overflow-hidden"
           style={{ height: containerHeight }}
         >
+          {/* Toast */}
+          <ToastContainer
+            position="top-center"
+            autoClose={3000}
+            style={{
+              position: 'absolute',
+              top: 20,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              maxWidth: 400,
+              zIndex: 9999,
+              pointerEvents: 'auto',
+            }}
+          />
+
+          {/* 페이지 내용 */}
           <div
             className={`flex-1 overflow-y-auto scrollbar-hide px-[30px] pb-[0px]
-    ${isColoredOutlet ? 'bg-gradient-blue' : 'bg-background'}
-    pt-[10px] sm:pt-[55px]
-  `}
+              ${isColoredOutlet ? 'bg-gradient-blue' : 'bg-background'}
+              pt-[5px] sm:pt-[55px]
+            `}
           >
             <AnimatePresence mode="sync" initial={false}>
               <motion.div
@@ -87,6 +102,7 @@ const DefaultLayout = () => {
             </AnimatePresence>
           </div>
 
+          {/* 하단 네비게이션 */}
           <div className="h-[49px] w-full sm:static sm:left-auto sm:translate-x-0 z-10">
             <NavigationBar />
           </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import BuyDataHeader from './components/BuyDataHeader';
@@ -187,7 +187,7 @@ const BuyDataPage = () => {
               setShowFailModal(true);
               break;
             case 'UNIT_ERROR':
-              setFailMessage('100원 단위로 판매해 주세요.');
+              setFailMessage('100P 단위로 판매해 주세요.');
               setShowFailModal(true);
               break;
             default:
@@ -215,20 +215,6 @@ const BuyDataPage = () => {
     <div className="relative h-full">
       <div style={{ position: 'relative' }}>
         <BuyDataHeader />
-        <ToastContainer
-          position="top-center"
-          autoClose={3000}
-          style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '100%',
-            maxWidth: 400,
-            zIndex: 9999,
-            pointerEvents: 'auto',
-          }}
-        />
       </div>
 
       <PointRechargeModal
@@ -282,7 +268,7 @@ const BuyDataPage = () => {
                 <span>판매 평균가</span>
                 <span className="text-[#2C2C2C]">
                   {avgPrice.toLocaleString()}
-                  <span className="text-[#565656]"> 원</span>
+                  <span className="text-[#565656]"> P</span>
                 </span>
               </>
             )}
@@ -290,7 +276,7 @@ const BuyDataPage = () => {
           <div className="flex justify-between">
             <span className="text-[#5D5D5D]">판매 최저가</span>
             <span className="text-[#2C2C2C]">
-              {minPrice.toLocaleString()} <span className="text-[#565656]">원</span>
+              {minPrice.toLocaleString()} <span className="text-[#565656]">P</span>
             </span>
           </div>
         </div>
@@ -311,7 +297,7 @@ const BuyDataPage = () => {
               const rounded = Math.round(Number(buyPrice) / 100) * 100;
 
               if (rounded < priceFloor) {
-                toast.error(`가격은 ${priceFloor.toLocaleString()}원 이상이어야 합니다.`, {
+                toast.error(`가격은 ${priceFloor.toLocaleString()}P 이상이어야 합니다.`, {
                   autoClose: 3000,
                   toastId: 'buy-price-error',
                 });

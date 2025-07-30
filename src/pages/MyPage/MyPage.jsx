@@ -13,8 +13,6 @@ import utong from '@/assets/image/MyPageutong.svg';
 
 import { fetchline, patchDefaultLine } from '@/apis/lineApi';
 import { fetchMyInfo } from '@/apis/mypageApi';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 import SyncLoading from '@/components/Loading/SyncLoading';
 import useAuth from '@/hooks/useAuth';
@@ -329,8 +327,6 @@ export default function MyPage() {
           로그아웃
         </button>
       </div>
-
-      <ToastContainer position="top-center" autoClose={2000} />
 
       {/* 애니메이션 스타일 */}
       <style>{`
