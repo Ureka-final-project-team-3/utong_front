@@ -2,7 +2,7 @@ import SyncLoading from '@/components/Loading/SyncLoading';
 import ChartHeader from './components/ChartHeader';
 import PriceChartInfo from './components/PriceChartInfo';
 import PriceChart from './components/PriceChart';
-import RealtimeChart from './components/RealTimeChart'; // 추가
+import RealtimeChart from './components/RealTimeChart';
 import TradeInfoSection from './components/TradeInfoSection';
 import TradeActionButtons from './components/TradeActionButtons';
 import useAuth from '@/hooks/useAuth';
@@ -29,7 +29,6 @@ const LiveChartPage = () => {
       <ChartHeader />
       <PriceChartInfo />
 
-      {/* selectedRange가 realtime이면 RealtimeChart, 아니면 기존 PriceChart */}
       {selectedRange === 'realtime' ? <RealtimeChart dataCode={dataCode} /> : <PriceChart />}
 
       <TradeInfoSection />
