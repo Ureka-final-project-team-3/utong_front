@@ -21,13 +21,13 @@ const slideContents = [
   },
   {
     type: 'text',
-    mainText: 'LTE는 최소 4,000원,\n5G는 5,000원 부터 거래 가능해요.',
+    mainText: 'LTE는 최소 4,000P,\n5G는 5,000P 부터 거래 가능해요.',
     detailText: '그보다 저렴하면 거래가 안 돼요.',
   },
   {
     type: 'text',
-    mainText: '가격은 100원 단위로만 거래 가능해요.',
-    detailText: '5,100원은 OK! 5,125원은 안 돼요.',
+    mainText: '가격은 100P 단위로만 거래 가능해요.',
+    detailText: '5,100P은 OK! 5,125P은 안 돼요.',
   },
   {
     type: 'text',

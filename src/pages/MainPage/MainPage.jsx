@@ -173,7 +173,7 @@ const MainPage = () => {
                     >
                       {currentPrice5G !== null ? currentPrice5G.toLocaleString() : '-'}
                     </span>
-                    <span className="text-[10px]"> 원 (1GB)</span>
+                    <span className="text-[10px]"> P (1GB)</span>
                   </>
                 )}
               </div>
@@ -193,7 +193,7 @@ const MainPage = () => {
                     >
                       {currentPriceLTE !== null ? currentPriceLTE.toLocaleString() : '-'}
                     </span>
-                    <span className="text-[10px]"> 원 (1GB)</span>
+                    <span className="text-[10px]"> P (1GB)</span>
                   </>
                 )}
               </div>
