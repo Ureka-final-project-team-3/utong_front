@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import useTradeStore from '@/stores/tradeStore';
-import useLivePriceMap from '@/hooks/useLivePrice';
+import useLivePriceStore from '@/stores/useLivePriceStore'; // Zustand store import
 import { getWeeklyPrices } from '@/apis/weekprice';
 
 const PriceChartContainer = () => {
@@ -18,11 +18,11 @@ const PriceChartContainer = () => {
 
   const dataCode = selectedNetwork === '5G' ? '002' : '001';
 
-  // 모든 요금제 실시간 데이터 맵 & 필터링 함수
-  const { getPriceListByCode } = useLivePriceMap();
+  // Zustand에서 전역 실시간 가격 데이터 맵 상태 구독
+  const allPriceMap = useLivePriceStore((state) => state.allPriceMap);
 
-  // 현재 선택된 요금제에 맞는 실시간 데이터
-  const liveData = getPriceListByCode(dataCode);
+  // 선택한 dataCode에 해당하는 실시간 데이터 배열
+  const liveData = allPriceMap[dataCode] || [];
 
   // 주간 시세 API 결과 상태
   const [weeklyData, setWeeklyData] = useState([]);

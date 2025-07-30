@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import useAlertStream from '@/hooks/useAlertStream';
 import useOrderQueueSSE from '../hooks/useOrderQueueSSE';
 import { ToastContainer } from 'react-toastify';
+import useLivePriceSSE from '../hooks/useLivePriceSSE';
 
 const DefaultLayout = () => {
   const location = useLocation();
@@ -16,7 +17,7 @@ const DefaultLayout = () => {
 
   useAlertStream(token);
   useOrderQueueSSE(token);
-
+  useLivePriceSSE(token);
   const [containerHeight, setContainerHeight] = useState('100vh');
 
   useEffect(() => {
