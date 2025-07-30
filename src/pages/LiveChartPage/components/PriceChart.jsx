@@ -130,12 +130,7 @@ const PriceChartContainer = () => {
       </div>
 
       <div className="w-full flex justify-center items-center gap-[12px] text-white text-[10px] font-bold opacity-80 py-[6px]">
-        <div className="flex items-center gap-[4px]">
-          <span>{selectedRange === 'today' ? '최근 거래량' : '주간 거래량'}</span>
-          <span>{filteredData.reduce((sum, d) => sum + (d.volume || 0), 0).toLocaleString()}</span>
-        </div>
-        <div className="w-[1px] h-[10px] bg-white opacity-80" />
-        <div className="flex items-center gap-[4px]">
+        <div className="flex items-center gap-[6px]">
           <span>등락률</span>
           <span>
             {filteredData.length > 1
