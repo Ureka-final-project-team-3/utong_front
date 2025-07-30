@@ -119,7 +119,7 @@ const PriceChartContainer = () => {
                 return (
                   <div className="bg-white text-black text-[10px] rounded px-2 py-1 shadow-md">
                     <div>{formattedDate}</div>
-                    <div>{`${roundedPrice.toLocaleString()}원`}</div>
+                    <div>{`${roundedPrice.toLocaleString()}P`}</div>
                   </div>
                 );
               }}
