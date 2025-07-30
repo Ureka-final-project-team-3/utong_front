@@ -47,90 +47,94 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
 
   return (
     <>
-      {sortedGroups.map(([date, list]) => (
-        <div key={date}>
-          <p className="text-[16px] font-bold text-gray-600 mt-6 mb-3">{date}</p>
-          <div className="flex flex-col gap-4">
-            {list
-              .sort((a, b) => (a.isWaiting === b.isWaiting ? 0 : a.isWaiting ? -1 : 1))
-              .map((item, idx) => {
-                const icon = item.isWaiting
-                  ? loadingIcon
-                  : tab === '판매 내역'
-                    ? redcheckIcon
-                    : checkIcon;
-                const status = item.isWaiting
-                  ? '거래 대기중'
-                  : tab === '구매 내역'
-                    ? '구매 완료'
-                    : '판매 완료';
+      {allItems.length === 0 ? (
+        <div className="text-center text-gray-500 mt-10">거래 내역이 없습니다.</div>
+      ) : (
+        sortedGroups.map(([date, list]) => (
+          <div key={date}>
+            <p className="text-[16px] font-bold text-gray-600 mt-6 mb-3">{date}</p>
+            <div className="flex flex-col gap-4">
+              {list
+                .sort((a, b) => (a.isWaiting === b.isWaiting ? 0 : a.isWaiting ? -1 : 1))
+                .map((item, idx) => {
+                  const icon = item.isWaiting
+                    ? loadingIcon
+                    : tab === '판매 내역'
+                      ? redcheckIcon
+                      : checkIcon;
+                  const status = item.isWaiting
+                    ? '거래 대기중'
+                    : tab === '구매 내역'
+                      ? '구매 완료'
+                      : '판매 완료';
 
-                const statusColor = item.isWaiting
-                  ? 'text-gray-400'
-                  : tab === '판매 내역'
-                    ? 'text-[#FF4343]'
-                    : 'text-blue-600';
-                const key = `${item.purchaseId || item.saleId}-${idx}`;
-                const isExpanded = expandedIndex === key;
+                  const statusColor = item.isWaiting
+                    ? 'text-gray-400'
+                    : tab === '판매 내역'
+                      ? 'text-[#FF4343]'
+                      : 'text-blue-600';
+                  const key = `${item.purchaseId || item.saleId}-${idx}`;
+                  const isExpanded = expandedIndex === key;
 
-                return (
-                  <div
-                    key={key}
-                    className="py-2 px-2 rounded-md cursor-pointer"
-                    onClick={() => setExpandedIndex(isExpanded ? null : key)}
-                  >
-                    <div className="flex justify-between items-start text-sm">
-                      <div className="flex items-center gap-2 w-[40%]">
-                        <img src={icon} alt="status" className="w-6 h-6" />
-                        <span className={`${statusColor} font-bold`}>{status}</span>
+                  return (
+                    <div
+                      key={key}
+                      className="py-2 px-2 rounded-md cursor-pointer"
+                      onClick={() => setExpandedIndex(isExpanded ? null : key)}
+                    >
+                      <div className="flex justify-between items-start text-sm">
+                        <div className="flex items-center gap-2 w-[40%]">
+                          <img src={icon} alt="status" className="w-6 h-6" />
+                          <span className={`${statusColor} font-bold`}>{status}</span>
+                        </div>
+                        <span className="text-gray-700 font-semibold">
+                          {item.dataCode === '001' ? 'LTE 데이터' : '5G 데이터'}
+                        </span>
+                        <div className="flex flex-col text-right text-base text-gray-600 w-[20%]">
+                          <span>{(item.pricePerGb * item.quantity).toLocaleString()}P</span>
+                        </div>
                       </div>
-                      <span className="text-gray-700 font-semibold">
-                        {item.dataCode === '001' ? 'LTE 데이터' : '5G 데이터'}
-                      </span>
-                      <div className="flex flex-col text-right text-base text-gray-600 w-[20%]">
-                        <span>{(item.pricePerGb * item.quantity).toLocaleString()}P</span>
-                      </div>
-                    </div>
 
-                    <AnimatePresence initial={false}>
-                      {isExpanded && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3, ease: 'easeInOut' }}
-                          className="mt-2 pl-8 text-sm text-gray-700 overflow-hidden border-b border-gray-300"
-                        >
-                          <div className="flex justify-between items-center mb-3 text-[13px]">
-                            <span className="font-medium">{item.phoneNumber}</span>
-                            <span className="text-gray-600 font-normal">
-                              {item.quantity}GB / {item.pricePerGb.toLocaleString()}P
-                            </span>
-                          </div>
-
-                          {item.isWaiting && (
-                            <div className="flex justify-center">
-                              <button
-                                className="text-base px-4 py-1 border border-gray-400 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200 mb-3"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedId(item.purchaseId || item.saleId);
-                                  setIsModalOpen(true);
-                                }}
-                              >
-                                거래 취소하기
-                              </button>
+                      <AnimatePresence initial={false}>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3, ease: 'easeInOut' }}
+                            className="mt-2 pl-8 text-sm text-gray-700 overflow-hidden border-b border-gray-300"
+                          >
+                            <div className="flex justify-between items-center mb-3 text-[13px]">
+                              <span className="font-medium">{item.phoneNumber}</span>
+                              <span className="text-gray-600 font-normal">
+                                {item.quantity}GB / {item.pricePerGb.toLocaleString()}P
+                              </span>
                             </div>
-                          )}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                );
-              })}
+
+                            {item.isWaiting && (
+                              <div className="flex justify-center">
+                                <button
+                                  className="text-base px-4 py-1 border border-gray-400 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200 mb-3"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedId(item.purchaseId || item.saleId);
+                                    setIsModalOpen(true);
+                                  }}
+                                >
+                                  거래 취소하기
+                                </button>
+                              </div>
+                            )}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      )}
 
       {/* 취소 확인 모달 */}
       {isModalOpen && (

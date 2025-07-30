@@ -91,10 +91,13 @@ const TradeHistoryPage = () => {
 
   return (
     <div className="h-full overflow-y-auto scrollbar-hide text-sm text-black">
-      <div className="relative mb-2">
-        <div className="absolute left-0 top-0">
+      <div className="relative mb-2 flex items-center justify-center">
+        {/* 좌측 백버튼 */}
+        <div className="absolute left-0">
           <BackButton />
         </div>
+
+        {/* 가운데 타이틀 */}
         <h2 className="text-center text-lg font-bold">거래 내역</h2>
       </div>
 
