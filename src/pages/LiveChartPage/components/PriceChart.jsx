@@ -80,7 +80,7 @@ const PriceChartContainer = () => {
       <div className="h-[165px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={filteredData} margin={{ top: 20, right: 20, left: 5, bottom: 10 }}>
-            <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} />
+            <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.4} />
             <XAxis
               dataKey="timestamp"
               tickFormatter={(value) => {
