@@ -68,7 +68,7 @@ const PriceChartInfo = () => {
       {/* 시세 범위 선택 */}
       <div className="mt-5 flex justify-center items-center gap-4 sm:gap-4">
         {[
-          { label: '실시간 거래', value: 'realtime' },
+          { label: '실시간 시세', value: 'realtime' },
           { label: '최근 시세', value: 'today' },
           { label: '주간 시세', value: 'all' },
         ].map(({ label, value }, index, arr) => (
