@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import SellDataHeader from './components/SellDataHeader';
@@ -67,7 +67,7 @@ const SellDataPage = () => {
       setIsLoading(false);
 
       toast.info('거래중개 등 제반 서비스 이용료가 포함됩니다.', {
-        autoClose: 3000,
+        autoClose: 2000,
         position: 'top-center',
         toastId: 'welcome-toast',
       });
@@ -139,8 +139,8 @@ const SellDataPage = () => {
 
   useEffect(() => {
     if (dataAmountNum > canSale && data !== 0) {
-      toast.error(`보유 데이터(${canSale}GB)보다 많은 양을 판매할 수 없어요.`, {
-        autoClose: 3000,
+      toast.error(`보유 데이터보다 많은 양 혹은 무제한 데이터를 판매할 수 없어요.`, {
+        autoClose: 2000,
         toastId: 'data-amount-error-toast',
         onOpen: () => setIsBlockingInput(true),
         onClose: () => {
@@ -200,7 +200,7 @@ const SellDataPage = () => {
               setShowFailModal(true);
               break;
             case 'UNIT_ERROR':
-              setFailMessage('100원 단위로 판매해 주세요.');
+              setFailMessage('100P 단위로 판매해 주세요.');
               setShowFailModal(true);
               break;
             default:
@@ -228,7 +228,7 @@ const SellDataPage = () => {
 
   const handleFeeInfoClick = () => {
     toast.info('거래중개 등 제반 서비스 이용료가 포함됩니다.', {
-      autoClose: 3000,
+      autoClose: 2000,
       position: 'top-center',
       toastId: 'fee-info-toast',
     });
@@ -256,20 +256,7 @@ const SellDataPage = () => {
   return (
     <div style={{ position: 'relative' }}>
       <SellDataHeader />
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '100%',
-          maxWidth: 400,
-          zIndex: 9999,
-          pointerEvents: 'auto',
-        }}
-      />
+
       <SellSuccessModal
         show={showSellSuccessModal}
         onClose={() => closeModal('showSellSuccessModal')}
@@ -319,7 +306,7 @@ const SellDataPage = () => {
                 <span>구매 평균가</span>
                 <span className="text-[#2C2C2C]">
                   {avgPrice.toLocaleString()}
-                  <span className="text-[#565656]"> 원</span>
+                  <span className="text-[#565656]"> P</span>
                 </span>
               </>
             )}
@@ -329,7 +316,7 @@ const SellDataPage = () => {
             <span className="text-[#5D5D5D]">구매 최고가</span>
             <span className="text-[#2C2C2C]">
               {highestPrice.toLocaleString()}
-              <span className="text-[#565656]"> 원</span>
+              <span className="text-[#565656]"> P</span>
             </span>
           </div>
         </div>
@@ -354,8 +341,8 @@ const SellDataPage = () => {
               const rounded = Math.round(numeric / 100) * 100;
 
               if (rounded < minPrice) {
-                toast.error(`최소 거래 가격은 ${minPrice.toLocaleString()}원입니다.`, {
-                  autoClose: 3000,
+                toast.error(`최소 거래 가격은 ${minPrice.toLocaleString()}P입니다.`, {
+                  autoClose: 2000,
                   toastId: 'price-min-error',
                 });
                 setPrice(String(highestPrice));
@@ -413,7 +400,7 @@ const SellDataPage = () => {
         </div>
       </div>
       <div className="mt-4 text-[11px] text-[#FF4343] text-center">
-        최고가 보다 양이나 가격이 높으면 구매대기가 됩니다.
+        최고가 보다 양이나 가격이 높으면 판매대기가 됩니다.
       </div>
       <div className="mt-6 border-t border-gray-300 pt-4 space-y-2">
         <div className="flex justify-between text-[16px] text-[#777]">
@@ -438,7 +425,7 @@ const SellDataPage = () => {
           </span>
         </div>
       </div>
-      <div className="mt-auto pt-6">
+      <div className="mt-auto pt-2">
         <Button
           disabled={!isButtonEnabled}
           onClick={handleSellClick}

@@ -16,7 +16,7 @@ import HistoryPage from '../pages/HistoryPage/HistoryPage';
 import DefaultLayout from '../layout/DefaultLayout';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
 import TestPage from '../pages/TestPage/TestPage';
-import AlarmPage from '../pages/AlarmPage/AlarmPage';
+// import AlarmPage from '../pages/AlarmPage/AlarmPage';
 import TradeHistoryPage from '../pages/TradeHistoryPage/TradeHistoryPage';
 import CouponPage from '../pages/CouponPage/CouponPage';
 import StoragePage from '../pages/StoragePage/StoragePage';
@@ -27,6 +27,7 @@ import BuyDataPage from '../pages/TradePage/BuyDataPage/BuyDataPage.jsx';
 import SellDataPage from '../pages/TradePage/SellDataPage/SellDataPage.jsx';
 import MyGifticonDetail from '@/pages/StoragePage/MyGifticonDetail';
 import TradeGuidePage from '../pages/TradePage/TradeGuidePage/TradeGuidePage.jsx';
+import TradeGuidePage2 from '../pages/TradePage/TradeGuidePage/TradeGuidePage2.jsx';
 import LoginDefaultLayout from '../layout/LoginDefaultLayout.jsx';
 import SellSuccessModalTestPage from '../pages/TradePage/components/SellStatusModalTestPage.jsx';
 
@@ -86,6 +87,10 @@ const router = createBrowserRouter([
         element: <TradeGuidePage />,
       },
       {
+        path: '/tradeguide2',
+        element: <TradeGuidePage2 />,
+      },
+      {
         path: '/mypage',
         element: <MyPage />,
       },
@@ -105,10 +110,10 @@ const router = createBrowserRouter([
         path: '/history',
         element: <HistoryPage />,
       },
-      {
-        path: '/alarm',
-        element: <AlarmPage />,
-      },
+      // {
+      //   path: '/alarm',
+      //   element: <AlarmPage />,
+      // },
       {
         path: '/test',
         element: <TestPage />,

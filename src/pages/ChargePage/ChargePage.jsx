@@ -3,7 +3,8 @@ import { fetchMyInfo, fetchCoupons } from '@/apis/mypageApi';
 import { confirmTossPayment } from '@/apis/paymentApi';
 import BackButton from '@/components/BackButton/BackButton';
 import questionIcon from '@/assets/icon/question.svg';
-
+import InfoToastModal from './InfoToastModal';
+import { useNavigate } from 'react-router-dom';
 const PointChargePage = () => {
   const [amount, setAmount] = useState('');
   const [currentMileage, setCurrentMileage] = useState(0);
@@ -11,19 +12,27 @@ const PointChargePage = () => {
   const [selectedCouponId, setSelectedCouponId] = useState(null);
   const [customerName, setCustomerName] = useState('홍길동');
   const [modal, setModal] = useState({ open: false, message: '', success: false });
-  const [infoModalMessage, setInfoModalMessage] = useState(''); // ✅ 메시지 상태
+  const navigate = useNavigate(); // 추가
+  // ✅ InfoToastModal 관련 상태
+  const [infoModalMessage, setInfoModalMessage] = useState('');
+  const [infoModalType, setInfoModalType] = useState('info');
+
+  // ✅ 체크 애니메이션 트리거 상태
+  const [isCheckVisible, setIsCheckVisible] = useState(false);
+
   const feeRate = 0.025;
   const numericAmount = Number(amount) || 0;
   const fee = selectedCouponId ? 0 : Math.floor(numericAmount * feeRate);
 
-  const showInfoModal = (message) => {
+  const showInfoModal = (message, type = 'info') => {
     setInfoModalMessage(message);
+    setInfoModalType(type);
     setTimeout(() => setInfoModalMessage(''), 2000);
   };
 
   useEffect(() => {
     if (selectedCouponId) {
-      showInfoModal('할인 쿠폰이 적용되었습니다!');
+      showInfoModal('할인 쿠폰이 적용되었습니다!', 'success');
     }
   }, [selectedCouponId]);
 
@@ -95,11 +104,7 @@ const PointChargePage = () => {
     confirmTossPayment({ paymentKey, orderId, amount, userCouponId })
       .then((data) => {
         if (data.codeName === 'SUCCESS') {
-          setModal({
-            open: true,
-            success: true,
-            message: ``,
-          });
+          setModal({ open: true, success: true, message: '' });
           setCurrentMileage(data.data.updatedMileage);
           localStorage.removeItem('userCouponId');
         } else {
@@ -111,15 +116,22 @@ const PointChargePage = () => {
       });
   }, []);
 
+  // ✅ 체크 애니메이션 트리거
+  useEffect(() => {
+    if (modal.open && modal.success) {
+      setIsCheckVisible(false);
+      const t = setTimeout(() => setIsCheckVisible(true), 100);
+      return () => clearTimeout(t);
+    }
+  }, [modal]);
+
   return (
     <div>
-      <div className="relative">
-        <div className="flex items-center justify-center relative">
-          <div className="absolute left-0">
-            <BackButton to="/mypage" />
-          </div>
-          <h1 className="text-lg font-bold text-center">포인트 충전하기</h1>
+      <div className="flex items-center justify-center relative">
+        <div className="absolute left-0">
+          <BackButton to="/mypage" />
         </div>
+        <h1 className="text-lg font-bold text-center">포인트 충전하기</h1>
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-6">
@@ -148,22 +160,27 @@ const PointChargePage = () => {
             <label className="text-base font-medium text-gray-700 whitespace-nowrap w-[90px]">
               쿠폰 선택
             </label>
-            {coupons.length > 0 ? (
-              <select
-                value={selectedCouponId || ''}
-                onChange={(e) => setSelectedCouponId(e.target.value)}
-                className="w-2/3 max-w-xs text-sm px-3 py-2 rounded-lg"
-              >
-                <option value="">쿠폰을 선택하세요</option>
-                {coupons.map((coupon) => (
-                  <option key={coupon.userCouponId} value={coupon.userCouponId}>
-                    {(coupon.name || '수수료 면제 쿠폰').slice(0, 10)}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <span className="text-xs text-gray-400">사용 가능한 쿠폰이 없습니다</span>
-            )}
+
+            <div className="flex justify-end w-full">
+              {coupons.length > 0 ? (
+                <select
+                  value={selectedCouponId || ''}
+                  onChange={(e) => setSelectedCouponId(e.target.value)}
+                  className="text-sm px-3 py-2 rounded-lg w-full max-w-[220px]"
+                >
+                  <option value="">쿠폰을 선택하세요</option>
+                  {coupons.map((coupon) => (
+                    <option key={coupon.userCouponId} value={coupon.userCouponId}>
+                      {(coupon.name || '수수료 면제 쿠폰').slice(0, 10)}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span className="text-xs text-gray-400 text-right w-full max-w-[220px]">
+                  사용 가능한 쿠폰이 없습니다
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -183,7 +200,9 @@ const PointChargePage = () => {
                 src={questionIcon}
                 alt="수수료 안내"
                 title="수수료 설명 보기"
-                onClick={() => showInfoModal('거래중개 등 제반 서비스 이용료가 포함됩니다.')}
+                onClick={() =>
+                  showInfoModal('거래중개 등 제반 서비스 이용료가 포함됩니다.', 'info')
+                }
                 className="w-4 h-4 cursor-pointer"
               />
             </div>
@@ -208,16 +227,23 @@ const PointChargePage = () => {
 
       {/* 충전 성공/실패 모달 */}
       {modal.open && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-80 text-center shadow-lg">
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white w-80 p-6 rounded-xl shadow-md text-center animate-fadeIn">
             <h2 className="text-lg font-bold mb-4">{modal.success ? '충전 성공' : '충전 실패'}</h2>
-            <pre className="whitespace-pre-wrap text-base text-center mb-4">{modal.message}</pre>
+
+            {/* 실패 시 에러 메시지 숨김 */}
+            {modal.success && <CheckmarkSVG isVisible={isCheckVisible} />}
+
             <button
               onClick={() => {
                 setModal({ open: false, message: '', success: false });
                 const url = new URL(window.location.href);
                 url.search = '';
                 window.history.replaceState({}, '', url.toString());
+
+                if (modal.success) {
+                  navigate('/mypage'); // 성공 시 마이페이지로 이동
+                }
               }}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
             >
@@ -227,24 +253,34 @@ const PointChargePage = () => {
         </div>
       )}
 
-      {/* 알림 모달 (2초 후 자동 사라짐) */}
-      {infoModalMessage && (
-        <div className="fixed top-40 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-white border border-gray-300 rounded-full shadow px-4 py-2 w-fit flex items-center gap-2 animate-fade-in-out">
-            <svg
-              className="w-4 h-4 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-sm font-medium text-gray-800">{infoModalMessage}</span>
-          </div>
-        </div>
-      )}
+      {/* 알림 토스트 모달 */}
+      <InfoToastModal message={infoModalMessage} type={infoModalType} />
     </div>
+  );
+};
+
+// ✅ 체크 SVG 애니메이션
+const CheckmarkSVG = ({ isVisible }) => {
+  return (
+    <svg
+      className="w-12 h-12 text-green-500 mx-auto mb-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M5 13l4 4L19 7"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{
+          strokeDasharray: 24,
+          strokeDashoffset: isVisible ? 0 : 24,
+          transition: 'stroke-dashoffset 0.5s ease-out',
+        }}
+      />
+    </svg>
   );
 };
 

@@ -71,7 +71,7 @@ const PointDetailPage = () => {
         <img
           src={gifticon.imageUrl || '/images/default-gifticon.png'}
           alt={gifticon.name}
-          className="w-24 h-auto mx-auto mb-3"
+          className="w-auto h-auto mx-auto mb-3"
         />
         <div className="text-base font-semibold">{gifticon.name}</div>
         <div className="text-sm font-bold text-gray-700">{gifticon.price.toLocaleString()}P</div>

@@ -26,7 +26,7 @@ const EditProfilePage = () => {
       <div className="relative flex items-center justify-between mb-6">
         <BackButton onClick={() => navigate(-1)} />
         <h2 className="absolute left-1/2 transform -translate-x-1/2 text-lg font-semibold">
-          정보수정
+          내 정보
         </h2>
         <div className="w-6" />
       </div>
@@ -37,11 +37,14 @@ const EditProfilePage = () => {
 
         <div className="flex justify-between items-center mb-3">
           <div className="text-lg font-bold">{user.name}</div>
-          <div className="text-base text-gray-700 space-x-3">
-            <span>포인트 {user.mileage?.toLocaleString() ?? 0}P</span>
-            <span>데이터 {user.remainingData ?? 0}GB</span>
-          </div>
         </div>
+        <div className="text-base text-gray-700 space-x-3">
+          <span>포인트 {user.mileage?.toLocaleString() ?? 0}P</span>
+          <span>
+            데이터 {user.remainingData === -1 ? '무제한' : `${user.remainingData ?? 0}GB`}
+          </span>
+        </div>
+
         <div className="w-full h-px bg-gray-200 my-3" />
         {/* 이메일 */}
         <div className="flex items-center gap-2 text-base text-gray-800 mb-3">

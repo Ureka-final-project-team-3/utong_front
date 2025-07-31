@@ -1,30 +1,49 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '@/assets/icon/logo.svg';
 
 const StartPage = () => {
   const [showChart, setShowChart] = useState(false);
-  const [showLogo, setShowLogo] = useState(false);
+  const [showLogo, setShowLogo] = useState(false); // 글자 타이핑용
+  const [showRealLogo, setShowRealLogo] = useState(false); // 로고 노출용
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
+  const [text, setText] = useState('');
+  const fullText = '너로 통하다';
+  const indexRef = useRef(0);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!showLogo) return;
+
+    setText('');
+    indexRef.current = 0;
+
+    const interval = setInterval(() => {
+      const currentIndex = indexRef.current;
+      if (currentIndex >= fullText.length) {
+        clearInterval(interval);
+        setShowRealLogo(true);
+        setTimeout(() => navigate('/login'), 4000);
+        return;
+      }
+      setText((prev) => prev + fullText[currentIndex]);
+      indexRef.current += 1;
+    }, 150);
+
+    return () => clearInterval(interval);
+  }, [showLogo]);
 
   useEffect(() => {
     const chartTimer = setTimeout(() => setShowChart(true), 100);
     const logoTimer = setTimeout(() => {
       setShowLogo(true);
-
-      // 로고 등장 후 2초 뒤 login 페이지로 이동
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
-    }, 1500);
+    }, 1000);
 
     return () => {
       clearTimeout(chartTimer);
       clearTimeout(logoTimer);
     };
-  }, [navigate]);
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -118,7 +137,10 @@ const StartPage = () => {
   ];
 
   return (
-    <div className="relative flex items-center justify-center h-screen bg-white overflow-hidden">
+    <div
+      className="relative flex items-center justify-center h-screen bg-white overflow-hidden"
+      onClick={() => navigate('/login')}
+    >
       {/* 배경 SVG */}
       <div
         className="absolute bottom-0 left-0 right-0"
@@ -146,7 +168,6 @@ const StartPage = () => {
               const color = close > open ? '#3B82F6' : '#EF4444';
               const top = Math.min(open, close);
               const bottom = Math.max(open, close);
-
               return (
                 <g
                   key={`main-${i}`}
@@ -173,7 +194,6 @@ const StartPage = () => {
               const color = close > open ? '#3B82F6' : '#EF4444';
               const top = Math.min(open, close);
               const bottom = Math.max(open, close);
-
               return (
                 <g
                   key={`lower-${i}`}
@@ -212,42 +232,65 @@ const StartPage = () => {
         }`}
       />
 
-      {/* 로고 영역 */}
+      {/* 로고 + 글자 */}
       {showLogo && (
-        <div className="flex flex-col items-center z-20 animate-fade-up">
-          <img src={logo} alt="유통 로고" className="w-32 h-32" />
-          <p className="text-[25px] text-gray-500 font-bold">너로 통하다</p>
-        </div>
+        <>
+          {showRealLogo && (
+            <img
+              src={logo}
+              alt="유통 로고"
+              className="w-32 h-32 absolute top-[35%] sm:top-[40%] left-1/2 -translate-x-1/2 animate-logo-fade-up z-[10]"
+            />
+          )}
+          <p className="text-[25px] text-gray-500 font-bold absolute top-[55%] sm:top-[55%] left-1/2 -translate-x-1/2 animate-fade-up z-[10]">
+            {text}
+          </p>
+        </>
       )}
 
-      {/* 애니메이션 스타일 */}
+      {/* 애니메이션 */}
       <style>{`
-        @keyframes fade-up {
-          0% {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
+  @keyframes fade-up {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-        @keyframes candle-grow {
-          0% {
-            opacity: 0;
-            transform: scaleY(0.3) translateY(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: scaleY(1) translateY(0);
-          }
-        }
+  @keyframes candle-grow {
+    0% {
+      opacity: 0;
+      transform: scaleY(0.3) translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: scaleY(1) translateY(0);
+    }
+  }
 
-        .animate-fade-up {
-          animation: fade-up 1s ease-out;
-        }
-      `}</style>
+  @keyframes logo-fade-up {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-up {
+    animation: fade-up 1s ease-out;
+  }
+
+  .animate-logo-fade-up {
+    animation: logo-fade-up 1.2s ease-out;
+  }
+`}</style>
     </div>
   );
 };

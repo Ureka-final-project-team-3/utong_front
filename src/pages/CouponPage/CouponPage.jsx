@@ -26,14 +26,26 @@ const CouponPage = () => {
       });
   }, []);
 
+  // ✅ 쿠폰 정렬: 사용 가능 → 유효기간 내림차순 → 그 외
+  const sortedCoupons = [...coupons].sort((a, b) => {
+    if (a.statusName === '사용 가능' && b.statusName !== '사용 가능') return -1;
+    if (a.statusName !== '사용 가능' && b.statusName === '사용 가능') return 1;
+
+    if (a.statusName === '사용 가능' && b.statusName === '사용 가능') {
+      const aDate = new Date(a.expirationDate);
+      const bDate = new Date(b.expirationDate);
+      return bDate - aDate; // ✅ 내림차순
+    }
+
+    return 0;
+  });
+
   return (
     <div className="h-full flex flex-col">
       {/* 헤더 */}
-      <div className="flex items-center justify-between relative  shrink-0">
+      <div className="relative flex items-center justify-between py-4">
         <BackButton />
-        <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold text-gray-800">
-          쿠폰함
-        </h2>
+        <h2 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold">쿠폰함</h2>
         <div className="w-8" />
       </div>
 
@@ -44,11 +56,11 @@ const CouponPage = () => {
             <SyncLoading />
           </div>
         ) : (
-          <div className="flex flex-col gap-3 pt-8">
-            {coupons.length === 0 ? (
+          <div className="flex flex-col gap-3 ">
+            {sortedCoupons.length === 0 ? (
               <div className="text-center text-gray-500">보유 중인 쿠폰이 없습니다.</div>
             ) : (
-              coupons.map((coupon, index) => (
+              sortedCoupons.map((coupon, index) => (
                 <div
                   key={`${coupon.couponId}-${index}`}
                   onClick={() => {

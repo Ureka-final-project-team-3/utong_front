@@ -65,7 +65,7 @@ const TradeInfoSection = () => {
   const getPricePrefix = tab === 'sell' ? '최저가:' : tab === 'buy' ? '최고가:' : '';
 
   return (
-    <div className="w-full pt-5">
+    <div className="w-full pt-5 min-h-[225px]">
       {/* 탭 */}
       <div className="flex justify-center gap-x-[30px] w-full border-y-[2px] border-[#D9D9D9] py-2">
         {tabs.map(({ key, label }) => (
