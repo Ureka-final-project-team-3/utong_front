@@ -23,7 +23,7 @@ const StartPage = () => {
       if (currentIndex >= fullText.length) {
         clearInterval(interval);
         setShowRealLogo(true);
-        setTimeout(() => navigate('/login'), 5000);
+        setTimeout(() => navigate('/login'), 4000);
         return;
       }
       setText((prev) => prev + fullText[currentIndex]);
