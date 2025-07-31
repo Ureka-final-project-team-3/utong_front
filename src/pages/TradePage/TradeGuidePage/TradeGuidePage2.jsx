@@ -37,7 +37,7 @@ const slideContents = [
   {
     type: 'text',
     title: '허용 가격 범위',
-    mainText: '현재 평균 가격에서 ±30% 범위 안에서만\n거래할 수 있어요.',
+    mainText: '현재 평균 가격에서 ±30% 범위\n안에서만 거래할 수 있어요.',
     detailText: '너무 싸게 또는 너무 비싸게는 못 팔아요.',
   },
   {
