@@ -18,8 +18,8 @@ const CouponCard = ({ coupon }) => {
       />
 
       {/* 왼쪽: 쿠폰 정보 */}
-      <div className="flex-1 pr-4">
-        <div className="font-medium text-[18px] text-gray-800 mt-2">
+      <div className="flex-1 pr-4 ">
+        <div className="font-medium text-[14px] text-gray-800 mt-2">
           {coupon.couponId === 'discount_test'
             ? '수수료 면제 쿠폰'
             : coupon.name || coupon.gifticonDescription || coupon.couponId || '이름 없는 쿠폰'}
