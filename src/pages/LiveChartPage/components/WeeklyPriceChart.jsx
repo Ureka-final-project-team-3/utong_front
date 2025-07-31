@@ -45,7 +45,11 @@ const WeeklyPriceChart = () => {
     <div className="bg-gradient-to-r from-[#2769F6] to-[#757AD0] rounded-[8px] shadow-md overflow-hidden flex flex-col">
       <div className="h-[165px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={weeklyData} margin={{ top: 20, right: 20, left: 5, bottom: 10 }}>
+          <LineChart
+            key={dataCode}
+            data={weeklyData}
+            margin={{ top: 20, right: 20, left: 5, bottom: 10 }}
+          >
             <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.4} />
             <XAxis
               dataKey="timestamp"
