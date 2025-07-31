@@ -4,7 +4,7 @@ import { confirmTossPayment } from '@/apis/paymentApi';
 import BackButton from '@/components/BackButton/BackButton';
 import questionIcon from '@/assets/icon/question.svg';
 import InfoToastModal from './InfoToastModal';
-
+import { useNavigate } from 'react-router-dom';
 const PointChargePage = () => {
   const [amount, setAmount] = useState('');
   const [currentMileage, setCurrentMileage] = useState(0);
@@ -12,7 +12,7 @@ const PointChargePage = () => {
   const [selectedCouponId, setSelectedCouponId] = useState(null);
   const [customerName, setCustomerName] = useState('홍길동');
   const [modal, setModal] = useState({ open: false, message: '', success: false });
-
+  const navigate = useNavigate(); // 추가
   // ✅ InfoToastModal 관련 상태
   const [infoModalMessage, setInfoModalMessage] = useState('');
   const [infoModalType, setInfoModalType] = useState('info');
@@ -230,18 +230,20 @@ const PointChargePage = () => {
         <div className="absolute inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white w-80 p-6 rounded-xl shadow-md text-center animate-fadeIn">
             <h2 className="text-lg font-bold mb-4">{modal.success ? '충전 성공' : '충전 실패'}</h2>
-            {/* {!modal.success && (
-  <pre className="whitespace-pre-wrap text-base text-center mb-4">
-    {modal.message}
-  </pre>
-)} */}
+
+            {/* 실패 시 에러 메시지 숨김 */}
             {modal.success && <CheckmarkSVG isVisible={isCheckVisible} />}
+
             <button
               onClick={() => {
                 setModal({ open: false, message: '', success: false });
                 const url = new URL(window.location.href);
                 url.search = '';
                 window.history.replaceState({}, '', url.toString());
+
+                if (modal.success) {
+                  navigate('/mypage'); // 성공 시 마이페이지로 이동
+                }
               }}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
             >
