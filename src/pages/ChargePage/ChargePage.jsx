@@ -17,6 +17,9 @@ const PointChargePage = () => {
   const [infoModalMessage, setInfoModalMessage] = useState('');
   const [infoModalType, setInfoModalType] = useState('info');
 
+  // ✅ 체크 애니메이션 트리거 상태
+  const [isCheckVisible, setIsCheckVisible] = useState(false);
+
   const feeRate = 0.025;
   const numericAmount = Number(amount) || 0;
   const fee = selectedCouponId ? 0 : Math.floor(numericAmount * feeRate);
@@ -101,11 +104,7 @@ const PointChargePage = () => {
     confirmTossPayment({ paymentKey, orderId, amount, userCouponId })
       .then((data) => {
         if (data.codeName === 'SUCCESS') {
-          setModal({
-            open: true,
-            success: true,
-            message: ``,
-          });
+          setModal({ open: true, success: true, message: '' });
           setCurrentMileage(data.data.updatedMileage);
           localStorage.removeItem('userCouponId');
         } else {
@@ -116,6 +115,15 @@ const PointChargePage = () => {
         setModal({ open: true, success: false, message: `오류 발생: ${err.message}` });
       });
   }, []);
+
+  // ✅ 체크 애니메이션 트리거
+  useEffect(() => {
+    if (modal.open && modal.success) {
+      setIsCheckVisible(false);
+      const t = setTimeout(() => setIsCheckVisible(true), 100);
+      return () => clearTimeout(t);
+    }
+  }, [modal]);
 
   return (
     <div>
@@ -222,7 +230,12 @@ const PointChargePage = () => {
         <div className="absolute inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white w-80 p-6 rounded-xl shadow-md text-center animate-fadeIn">
             <h2 className="text-lg font-bold mb-4">{modal.success ? '충전 성공' : '충전 실패'}</h2>
-            <pre className="whitespace-pre-wrap text-base text-center mb-4">{modal.message}</pre>
+            {/* {!modal.success && (
+  <pre className="whitespace-pre-wrap text-base text-center mb-4">
+    {modal.message}
+  </pre>
+)} */}
+            {modal.success && <CheckmarkSVG isVisible={isCheckVisible} />}
             <button
               onClick={() => {
                 setModal({ open: false, message: '', success: false });
@@ -241,6 +254,31 @@ const PointChargePage = () => {
       {/* 알림 토스트 모달 */}
       <InfoToastModal message={infoModalMessage} type={infoModalType} />
     </div>
+  );
+};
+
+// ✅ 체크 SVG 애니메이션
+const CheckmarkSVG = ({ isVisible }) => {
+  return (
+    <svg
+      className="w-12 h-12 text-green-500 mx-auto mb-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M5 13l4 4L19 7"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{
+          strokeDasharray: 24,
+          strokeDashoffset: isVisible ? 0 : 24,
+          transition: 'stroke-dashoffset 0.5s ease-out',
+        }}
+      />
+    </svg>
   );
 };
 
