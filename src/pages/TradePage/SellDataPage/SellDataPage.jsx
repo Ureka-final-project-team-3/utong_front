@@ -400,7 +400,7 @@ const SellDataPage = () => {
         </div>
       </div>
       <div className="mt-4 text-[11px] text-[#FF4343] text-center">
-        최고가 보다 양이나 가격이 높으면 구매대기가 됩니다.
+        최고가 보다 양이나 가격이 높으면 판매대기가 됩니다.
       </div>
       <div className="mt-6 border-t border-gray-300 pt-4 space-y-2">
         <div className="flex justify-between text-[16px] text-[#777]">
