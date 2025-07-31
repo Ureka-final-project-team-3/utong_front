@@ -262,7 +262,7 @@ export default function MyPage() {
           >
             {modalType === 'mail' ? (
               <>
-                <h2 className="text-lg font-bold mb-4">백그라운드 알림</h2>
+                <h2 className="text-lg font-bold mb-4">백그라운드 메일</h2>
                 <div className="flex justify-between items-center">
                   <span>수신여부</span>
                   <button
