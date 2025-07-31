@@ -20,28 +20,35 @@ const useAlertStream = (token) => {
 
     const url = `${import.meta.env.VITE_API_BASE_URL}/sse/data/alert`;
     let reader;
+    let buffer = '';
 
     const handleSSEChunk = (chunk) => {
       const lines = chunk.split('\n');
       for (const line of lines) {
         if (line.startsWith('data:')) {
-          const raw = line.replace('data:', '').trim();
-          try {
-            const alert = JSON.parse(raw);
-            addAlert(alert);
+          const dataPart = line.slice(5).trim();
+          buffer += dataPart;
+        } else if (line.trim() === '') {
+          if (buffer.length > 0) {
+            try {
+              const alert = JSON.parse(buffer);
+              addAlert(alert);
 
-            const networkName = dataCodeMap[alert.dataCode] || alert.dataCode;
-            const requestTypeName = requestTypeMap[alert.requestType] || alert.requestType;
-            const toastMsg = `[${requestTypeName}] ${networkName} | ${alert.quantity}GB | ${alert.price.toLocaleString()}P`;
+              const networkName = dataCodeMap[alert.dataCode] || alert.dataCode;
+              const requestTypeName = requestTypeMap[alert.requestType] || alert.requestType;
+              const toastMsg = `[${requestTypeName}] ${networkName} | ${alert.quantity}GB | ${alert.price.toLocaleString()}P`;
 
-            console.log('[SSE 알림]', toastMsg);
-            toast(toastMsg, {
-              position: 'top-right',
-              autoClose: 5000,
-            });
-          } catch {
-            console.log('[SSE 일반 메시지]', raw);
-            toast(`📎 일반 메시지: ${raw}`, { position: 'top-right' });
+              console.log('[SSE 알림]', toastMsg);
+              toast(toastMsg, {
+                position: 'top-right',
+                autoClose: 5000,
+              });
+            } catch (err) {
+              console.warn('[SSE 파싱 실패]', buffer, err);
+              toast(`📎 일반 메시지: ${buffer}`, { position: 'top-right' });
+            } finally {
+              buffer = '';
+            }
           }
         }
       }
