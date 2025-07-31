@@ -67,7 +67,7 @@ const SellDataPage = () => {
       setIsLoading(false);
 
       toast.info('거래중개 등 제반 서비스 이용료가 포함됩니다.', {
-        autoClose: 3000,
+        autoClose: 2000,
         position: 'top-center',
         toastId: 'welcome-toast',
       });
@@ -140,7 +140,7 @@ const SellDataPage = () => {
   useEffect(() => {
     if (dataAmountNum > canSale && data !== 0) {
       toast.error(`보유 데이터보다 많은 양 혹은 무제한 데이터를 판매할 수 없어요.`, {
-        autoClose: 3000,
+        autoClose: 2000,
         toastId: 'data-amount-error-toast',
         onOpen: () => setIsBlockingInput(true),
         onClose: () => {
@@ -228,7 +228,7 @@ const SellDataPage = () => {
 
   const handleFeeInfoClick = () => {
     toast.info('거래중개 등 제반 서비스 이용료가 포함됩니다.', {
-      autoClose: 3000,
+      autoClose: 2000,
       position: 'top-center',
       toastId: 'fee-info-toast',
     });
@@ -342,7 +342,7 @@ const SellDataPage = () => {
 
               if (rounded < minPrice) {
                 toast.error(`최소 거래 가격은 ${minPrice.toLocaleString()}P입니다.`, {
-                  autoClose: 3000,
+                  autoClose: 2000,
                   toastId: 'price-min-error',
                 });
                 setPrice(String(highestPrice));

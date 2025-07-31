@@ -298,7 +298,7 @@ const BuyDataPage = () => {
 
               if (rounded < priceFloor) {
                 toast.error(`가격은 ${priceFloor.toLocaleString()}P 이상이어야 합니다.`, {
-                  autoClose: 3000,
+                  autoClose: 2000,
                   toastId: 'buy-price-error',
                 });
                 setBuyPrice(String(minPrice));
