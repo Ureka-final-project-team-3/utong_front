@@ -41,7 +41,7 @@ const useAlertStream = (token) => {
               console.log('[SSE 알림]', toastMsg);
               toast(toastMsg, {
                 position: 'top-right',
-                autoClose: 5000,
+                autoClose: 2000,
               });
             } catch (err) {
               console.warn('[SSE 파싱 실패]', buffer, err);

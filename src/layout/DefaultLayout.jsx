@@ -84,7 +84,7 @@ const DefaultLayout = () => {
           {/* Toast */}
           <ToastContainer
             position="top-center"
-            autoClose={3000}
+            autoClose={2000}
             style={{
               position: 'absolute',
               top: 20,
