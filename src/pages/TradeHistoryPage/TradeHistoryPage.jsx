@@ -169,21 +169,26 @@ const TradeHistoryPage = () => {
         )}
       </div>
 
-      <div className="flex justify-between items-center mb-2 px-1 text-[14px] text-gray-400">
-        <div className="flex gap-2">
+      <div className="flex justify-between items-center text-[14px] text-gray-400">
+        {/* 왼쪽 탭 버튼들 */}
+        <div className="flex gap-4">
           {subTabs.map((label) => (
             <button
               key={label}
               onClick={() => setSubTab(label)}
-              className={`pb-1 ${subTab === label ? 'text-gray-600 font-semibold' : ''}`}
+              className={`h-8  transition-colors duration-150 ${
+                subTab === label ? 'text-gray-600 font-semibold' : ''
+              }`}
             >
               {label}
             </button>
           ))}
         </div>
+
+        {/* 오른쪽 필터 버튼 */}
         <button
           onClick={() => setShowNetworkModal(true)}
-          className="text-sm border border-gray-300 px-3 py-1 rounded-full text-gray-600"
+          className="h-8 px-3 rounded-full border border-gray-300 text-gray-600"
         >
           {networkFilter === 'ALL' ? '전체' : networkFilter}
         </button>

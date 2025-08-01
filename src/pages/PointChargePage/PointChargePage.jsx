@@ -22,10 +22,10 @@ const PointChargePage = () => {
 
   const categories = [
     { value: '', label: '전체' },
-    { value: '푸드', label: '푸드' },
-    { value: '영화', label: '영화' },
-    { value: '카페', label: '카페' },
-    { value: '쇼핑', label: '쇼핑' },
+    { value: '001', label: '푸드' },
+    { value: '002', label: '영화' },
+    { value: '003', label: '카페' },
+    { value: '004', label: '쇼핑' },
   ];
 
   const fetchGifticons = useCallback(async (category = '', page = 1, size = 10) => {
