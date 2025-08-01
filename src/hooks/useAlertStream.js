@@ -18,7 +18,7 @@ const useAlertStream = (token) => {
   useEffect(() => {
     if (!token) return;
 
-    const url = `${import.meta.env.VITE_API_BASE_URL}/sse/data/alert`;
+    const url = `${import.meta.env.VITE_API_BASE_URL}/sse/alert`;
     let reader;
     let buffer = '';
 
