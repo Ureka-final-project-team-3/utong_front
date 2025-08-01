@@ -10,7 +10,7 @@ const useLivePriceSSE = (token) => {
   useEffect(() => {
     if (!token) return;
 
-    const url = `${import.meta.env.VITE_API_BASE_URL}/sse/data/current-prices/stream?token=${token}`;
+    const url = `${import.meta.env.VITE_API_BASE_URL}/sse/chart?token=${token}`;
     const source = new EventSource(url);
 
     source.onopen = () => {
