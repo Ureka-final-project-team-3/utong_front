@@ -120,7 +120,7 @@ const SellDataPage = () => {
   const dataAmountNum = useMemo(() => (dataAmount === '' ? 0 : Number(dataAmount)), [dataAmount]);
 
   const totalPrice = useMemo(() => priceNum * dataAmountNum, [priceNum, dataAmountNum]);
-  const totalFee = useMemo(() => Math.floor(totalPrice * 0.025), [totalPrice]);
+  const totalFee = useMemo(() => Math.round(totalPrice * 0.025), [totalPrice]);
   const totalAfterPoint = useMemo(() => totalPrice - totalFee, [totalPrice, totalFee]);
 
   const isPriceValid = useMemo(() => {
