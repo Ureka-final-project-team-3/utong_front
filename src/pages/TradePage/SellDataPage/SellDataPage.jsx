@@ -254,7 +254,7 @@ const SellDataPage = () => {
   }
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div>
       <SellDataHeader />
 
       <SellSuccessModal
@@ -277,166 +277,169 @@ const SellDataPage = () => {
         message={failMessage}
         onClose={() => setShowFailModal(false)}
       />
+      <div style={{ position: 'relative' }}>
+        <div className="mt-6 text-[20px] font-bold text-[#2C2C2C]">{userName}님</div>
+        <div className="text-[#565656] text-[12px] text-right">(1GB)</div>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex-1 space-y-2 text-[14px] text-[#5D5D5D]">
+            <div className="flex justify-between">
+              <span>보유 포인트</span>
+              <span className="text-[#2C2C2C]">
+                {point} <span className="text-[#565656]">P</span>
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>보유 데이터</span>
+              <span className="text-[#2C2C2C]">
+                {canSale === -1 ? '무제한' : `${data} `}
+                {canSale !== -1 && <span className="text-[#565656]">GB</span>}
+              </span>
+            </div>
+          </div>
+          <div className="w-px h-[35px] bg-[#D9D9D9]" />
+          <div className="flex-1 space-y-2 text-[14px]">
+            <div className="flex justify-between">
+              {buyBids.reduce((sum, b) => sum + b.quantity, 0) === 0 ? (
+                <span className="text-[#FF4343] font-semibold">현재 매물이 없습니다</span>
+              ) : (
+                <>
+                  <span>구매 평균가</span>
+                  <span className="text-[#2C2C2C]">
+                    {avgPrice.toLocaleString()}
+                    <span className="text-[#565656]"> P</span>
+                  </span>
+                </>
+              )}
+            </div>
 
-      <div className="mt-6 text-[20px] font-bold text-[#2C2C2C]">{userName}님</div>
-      <div className="text-[#565656] text-[12px] text-right">(1GB)</div>
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex-1 space-y-2 text-[14px] text-[#5D5D5D]">
-          <div className="flex justify-between">
-            <span>보유 포인트</span>
-            <span className="text-[#2C2C2C]">
-              {point} <span className="text-[#565656]">P</span>
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span>보유 데이터</span>
-            <span className="text-[#2C2C2C]">
-              {canSale === -1 ? '무제한' : `${data} `}
-              {canSale !== -1 && <span className="text-[#565656]">GB</span>}
-            </span>
+            <div className="flex justify-between">
+              <span className="text-[#5D5D5D]">구매 최고가</span>
+              <span className="text-[#2C2C2C]">
+                {highestPrice.toLocaleString()}
+                <span className="text-[#565656]"> P</span>
+              </span>
+            </div>
           </div>
         </div>
-        <div className="w-px h-[35px] bg-[#D9D9D9]" />
-        <div className="flex-1 space-y-2 text-[14px]">
-          <div className="flex justify-between">
-            {buyBids.reduce((sum, b) => sum + b.quantity, 0) === 0 ? (
-              <span className="text-[#FF4343] font-semibold">현재 매물이 없습니다</span>
-            ) : (
-              <>
-                <span>구매 평균가</span>
-                <span className="text-[#2C2C2C]">
-                  {avgPrice.toLocaleString()}
-                  <span className="text-[#565656]"> P</span>
-                </span>
-              </>
-            )}
+        <div className="mt-6 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
+          <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between items-center">
+            <div>판매할 가격</div>
           </div>
-
-          <div className="flex justify-between">
-            <span className="text-[#5D5D5D]">구매 최고가</span>
-            <span className="text-[#2C2C2C]">
-              {highestPrice.toLocaleString()}
-              <span className="text-[#565656]"> P</span>
-            </span>
-          </div>
-        </div>
-      </div>
-      <div className="mt-6 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
-        <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between items-center">
-          <div>판매할 가격</div>
-        </div>
-        <div className="flex justify-end items-center">
-          <input
-            type="text"
-            inputMode="numeric"
-            value={price}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (!/^\d*$/.test(val)) return;
-              setPrice(val);
-            }}
-            onBlur={() => {
-              if (price === '') return;
-              const numeric = Number(price);
-              const rounded = Math.round(numeric / 100) * 100;
-
-              if (rounded < minPrice) {
-                toast.error(`최소 거래 가격은 ${minPrice.toLocaleString()}P입니다.`, {
-                  autoClose: 2000,
-                  toastId: 'price-min-error',
-                });
-                setPrice(String(highestPrice));
-              } else {
-                setPrice(String(rounded));
-              }
-            }}
-            className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
-          />
-          <span className="ml-1 text-[20px] text-[#2C2C2C]">P</span>
-        </div>
-      </div>
-      <div className="mt-4 text-[11px] text-[#FF4343] text-center">
-        현재 평균 가격에서 ±30% 범위 안에서만 거래할 수 있어요.
-      </div>
-      <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
-        <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between items-center">
-          <div>데이터</div>
-          <div>판매가능 데이터 : {canSale === -1 ? '무제한' : `${canSale}GB`}</div>
-        </div>
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-[12px] text-[#B1B1B1] w-full">얼마나 판매할까요?</span>
-          <div className="flex items-center">
+          <div className="flex justify-end items-center">
             <input
               type="text"
               inputMode="numeric"
-              value={dataAmount}
-              disabled={isBlockingInput}
+              value={price}
               onChange={(e) => {
                 const val = e.target.value;
                 if (!/^\d*$/.test(val)) return;
-                if (val === '') {
-                  setDataAmount('');
-                  return;
+                setPrice(val);
+              }}
+              onBlur={() => {
+                if (price === '') return;
+                const numeric = Number(price);
+                const rounded = Math.round(numeric / 100) * 100;
+
+                if (rounded < minPrice) {
+                  toast.error(`최소 거래 가격은 ${minPrice.toLocaleString()}P입니다.`, {
+                    autoClose: 2000,
+                    toastId: 'price-min-error',
+                  });
+                  setPrice(String(highestPrice));
+                } else {
+                  setPrice(String(rounded));
                 }
-                setDataAmount(String(Number(val)));
               }}
               className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
             />
-            <span className="ml-1 text-[20px] text-[#2C2C2C]">GB</span>
+            <span className="ml-1 text-[20px] text-[#2C2C2C]">P</span>
           </div>
         </div>
-        <div className="flex gap-2 mt-2">
-          {dataOptions.map((option) => (
-            <button
-              key={option}
-              onClick={() => handleSelectData(option)}
-              disabled={isBlockingInput}
-              className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center
+        <div className="mt-4 text-[11px] text-[#FF4343] text-center">
+          현재 평균 가격에서 ±30% 범위 안에서만 거래할 수 있어요.
+        </div>
+        <div className="mt-4 border border-[#B1B1B1] rounded-[8px] bg-white p-4">
+          <div className="text-[15px] text-[#2C2C2C] mb-2 flex justify-between items-center">
+            <div>데이터</div>
+            <div>판매가능 데이터 : {canSale === -1 ? '무제한' : `${canSale}GB`}</div>
+          </div>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[12px] text-[#B1B1B1] w-full">얼마나 판매할까요?</span>
+            <div className="flex items-center">
+              <input
+                type="text"
+                inputMode="numeric"
+                value={dataAmount}
+                disabled={isBlockingInput}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (!/^\d*$/.test(val)) return;
+                  if (val === '') {
+                    setDataAmount('');
+                    return;
+                  }
+                  setDataAmount(String(Number(val)));
+                }}
+                className="text-[20px] font-medium text-right w-full bg-transparent outline-none"
+              />
+              <span className="ml-1 text-[20px] text-[#2C2C2C]">GB</span>
+            </div>
+          </div>
+          <div className="flex gap-2 mt-2">
+            {dataOptions.map((option) => (
+              <button
+                key={option}
+                onClick={() => handleSelectData(option)}
+                disabled={isBlockingInput}
+                className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center
                 hover:border-[#FF4343] hover:bg-[#FFEEEE] hover:text-[#FF4343]"
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="mt-4 text-[11px] text-[#FF4343] text-center">
-        최고가 보다 양이나 가격이 높으면 판매대기가 됩니다.
-      </div>
-      <div className="mt-6 border-t border-gray-300 pt-4 space-y-2">
-        <div className="flex justify-between text-[16px] text-[#777]">
-          <div className="flex items-center gap-1">
-            <span>수수료 2.5%</span>
-            <button
-              type="button"
-              onClick={handleFeeInfoClick}
-              className="w-4 h-4"
-              aria-label="수수료 안내"
-            >
-              <img src={questionIcon} alt="수수료 안내" className="w-full h-full" />
-            </button>
+              >
+                {option}
+              </button>
+            ))}
           </div>
-          <span className="text-[#2C2C2C] font-medium">{totalFee.toLocaleString()} P</span>
         </div>
+        <div className="mt-4 text-[11px] text-[#FF4343] text-center">
+          최고가 보다 양이나 가격이 높으면 판매대기가 됩니다.
+        </div>
+        <div className="mt-6 border-t border-gray-300 pt-4 space-y-2">
+          <div className="flex justify-between text-[16px] text-[#777]">
+            <div className="flex items-center gap-1">
+              <span>수수료 2.5%</span>
+              <button
+                type="button"
+                onClick={handleFeeInfoClick}
+                className="w-4 h-4"
+                aria-label="수수료 안내"
+              >
+                <img src={questionIcon} alt="수수료 안내" className="w-full h-full" />
+              </button>
+            </div>
+            <span className="text-[#2C2C2C] font-medium">{totalFee.toLocaleString()} P</span>
+          </div>
 
-        <div className="flex justify-between text-[16px] text-[#5D5D5D]">
-          <span>총 판매 포인트</span>
-          <span className="text-[20px] text-[#2C2C2C] font-medium">
-            {totalAfterPoint.toLocaleString()} P
-          </span>
+          <div className="flex justify-between text-[16px] text-[#5D5D5D]">
+            <span>총 판매 포인트</span>
+            <span className="text-[20px] text-[#2C2C2C] font-medium">
+              {totalAfterPoint.toLocaleString()} P
+            </span>
+          </div>
         </div>
-      </div>
-      <div className="mt-auto pt-2">
-        <Button
-          disabled={!isButtonEnabled}
-          onClick={handleSellClick}
-          className={`w-full ${
-            isButtonEnabled ? 'bg-[#FF4343] hover:bg-[#e63a3a]' : 'bg-[#949494] cursor-not-allowed'
-          }`}
-        >
-          {normalizedUserPlanNetwork === normalizedSelectedNetwork
-            ? '판매하기'
-            : '사용 회선이 다릅니다'}
-        </Button>
+        <div className="mt-auto pt-2">
+          <Button
+            disabled={!isButtonEnabled}
+            onClick={handleSellClick}
+            className={`w-full ${
+              isButtonEnabled
+                ? 'bg-[#FF4343] hover:bg-[#e63a3a]'
+                : 'bg-[#949494] cursor-not-allowed'
+            }`}
+          >
+            {normalizedUserPlanNetwork === normalizedSelectedNetwork
+              ? '판매하기'
+              : '사용 회선이 다릅니다'}
+          </Button>
+        </div>
       </div>
     </div>
   );

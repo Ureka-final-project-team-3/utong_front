@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const SellReservationModal = ({ onClose }) => {
   const navigate = useNavigate();
+
   const handleClose = () => {
     onClose();
     navigate('/chart');
   };
+
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center">
-      <div className="w-[284px] bg-[#F6F6F6] rounded-[10.1px] flex flex-col items-center p-5 ">
+    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div className="w-[284px] bg-[#F6F6F6] rounded-[10.1px] flex flex-col items-center p-5">
         {/* 상단 안내 텍스트 */}
         <p className="text-[#FF4343] text-[20px] font-bold leading-[17px] text-center mb-5">
           예약 판매

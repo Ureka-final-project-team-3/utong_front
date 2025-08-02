@@ -11,7 +11,7 @@ const PointRechargeModal = ({ show, onClose }) => {
   };
 
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center">
+    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
       <div className="w-[284px] h-[147px] bg-[#F6F6F6] rounded-[10px] p-5 flex flex-col items-center shadow-lg">
         <div
           className="text-[#2C2C2C] opacity-60 font-bold text-[20px] leading-[24px] text-center mb-3 font-inter"
