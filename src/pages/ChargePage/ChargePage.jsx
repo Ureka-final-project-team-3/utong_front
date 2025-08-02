@@ -22,7 +22,7 @@ const PointChargePage = () => {
 
   const feeRate = 0.025;
   const numericAmount = Number(amount) || 0;
-  const fee = selectedCouponId ? 0 : Math.floor(numericAmount * feeRate);
+  const fee = selectedCouponId ? 0 : Math.round(numericAmount * feeRate);
 
   const showInfoModal = (message, type = 'info') => {
     setInfoModalMessage(message);
