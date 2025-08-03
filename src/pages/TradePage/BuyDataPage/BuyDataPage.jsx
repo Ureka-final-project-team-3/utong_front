@@ -212,7 +212,7 @@ const BuyDataPage = () => {
   }
 
   return (
-    <div className="relative h-full">
+    <div>
       <div style={{ position: 'relative' }}>
         <BuyDataHeader />
       </div>

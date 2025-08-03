@@ -10,7 +10,7 @@ const SellPaymentCompleteModal = ({ point = 1000, onClose }) => {
   };
 
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center">
+    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
       <div className="w-[284px] bg-[#F6F6F6] rounded-[10px] p-5 shadow-lg flex flex-col gap-4 text-center">
         {/* 제목 */}
         <p className="text-[#2C2C2C] opacity-60 font-bold text-[18px]">분할 판매 완료</p>
