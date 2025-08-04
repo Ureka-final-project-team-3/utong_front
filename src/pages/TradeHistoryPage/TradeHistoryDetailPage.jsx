@@ -23,6 +23,29 @@ const TradeHistoryDetailPage = () => {
   const tradedGb = item.quantity - (item.remaining ?? 0);
   const tradeDate = new Date(item.requestDate);
 
+  // 거래 상태와 색상 처리
+  let status = '';
+  let statusColor = '';
+
+  if (item.statusType === 'waiting') {
+    status = '거래 대기';
+    statusColor = 'text-gray-400';
+  } else if (item.statusType === 'partial') {
+    status = '분할 거래';
+    statusColor = 'text-[#5732A1]';
+  } else if (item.statusType === 'canceled') {
+    status = '거래 취소';
+    statusColor = 'text-gray-300';
+  } else if (tab === '구매 내역') {
+    status = '구매 완료';
+    statusColor = 'text-blue-600';
+  } else {
+    status = '판매 완료';
+    statusColor = 'text-[#FF4343]';
+  }
+
+  const totalPriceColor = tab === '구매 내역' ? 'text-blue-600' : 'text-red-500';
+
   const handleCancelTrade = async () => {
     const type = tab === '구매 내역' ? 'purchase' : 'sale';
     const id = item.purchaseId || item.saleId;
@@ -47,7 +70,6 @@ const TradeHistoryDetailPage = () => {
           <BackButton />
         </div>
         <h2 className="text-lg font-bold text-center text-gray-800">
-          {' '}
           {tab === '구매 내역' ? '구매 상세 내역' : '판매 상세 내역'}
         </h2>
       </div>
@@ -56,16 +78,7 @@ const TradeHistoryDetailPage = () => {
       <div className="space-y-3 text-[18px] text-gray-800 px-4 py-6">
         {[
           ['데이터 회선', item.dataCode === '001' ? 'LTE 데이터' : '5G 데이터'],
-          [
-            '거래 상태',
-            {
-              canceled: '거래 취소',
-              waiting: '거래 대기',
-              complete: tab === '구매 내역' ? '구매 완료' : '판매 완료',
-              partial: '분할 거래',
-            }[item.statusType] ?? item.status,
-          ],
-
+          ['거래 상태', <span className={`font-medium ${statusColor}`}>{status}</span>],
           ['요청량', `${item.quantity} GB`],
           ['완료 수량', `${tradedGb} / ${item.quantity} GB`],
           ['남은 수량', `${item.remaining ?? 0} / ${item.quantity} GB`],
@@ -73,18 +86,22 @@ const TradeHistoryDetailPage = () => {
           ['1GB 당 가격', item.pricePerGb != null ? `${item.pricePerGb.toLocaleString()}P` : '-'],
           [
             '총 가격',
-            item.pricePerGb && item.quantity
-              ? `${(item.pricePerGb * item.quantity).toLocaleString()} P`
-              : '-',
+            item.pricePerGb && item.quantity ? (
+              <span className={`font-medium ${totalPriceColor}`}>
+                {(item.pricePerGb * item.quantity).toLocaleString()} P
+              </span>
+            ) : (
+              '-'
+            ),
           ],
           [
             '요청일',
             item.requestDate ? new Date(item.requestDate).toLocaleString() : '날짜 정보 없음',
           ],
         ].map(([label, value], idx) => (
-          <div key={idx} className="flex justify-between  pb-1 text-[15px]">
+          <div key={idx} className="flex justify-between pb-1 text-[15px]">
             <span className="text-gray-800">{label}</span>
-            <span className={label === '상태' ? 'font-medium text-blue-600' : ''}>{value}</span>
+            <span>{value}</span>
           </div>
         ))}
       </div>
@@ -115,7 +132,6 @@ const TradeHistoryDetailPage = () => {
                 <div className="text-xs italic text-gray-400 mt-1">{timingInfo}</div>
               </div>
 
-              {/* 첫 줄: 체결일시, 수량 */}
               <div className="flex justify-between mb-1">
                 <span className="text-gray-500 font-medium text-sm">
                   {contractDate.toLocaleString()}
@@ -125,7 +141,6 @@ const TradeHistoryDetailPage = () => {
                 </span>
               </div>
 
-              {/* 둘째 줄: 단가, 금액 */}
               <div className="flex justify-between">
                 <span className="text-gray-900 font-medium text-sm">
                   {contract.pricePerUnit.toLocaleString()}원 / GB
@@ -149,14 +164,14 @@ const TradeHistoryDetailPage = () => {
         <div className="mt-8 text-center">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="w-full px-6 py-3 mb-5 rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 text-sm font-medium"
+            className="w-full px-6 py-3 mb-5 rounded-md bg-[#ff4343] text-white hover:bg-[#e63636] text-sm font-medium"
           >
             거래 취소하기
           </button>
         </div>
       )}
-      {/* 취소 확인 모달 */}
 
+      {/* 취소 확인 모달 */}
       {isModalOpen && (
         <div className="absolute inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white w-72 p-6 rounded-xl shadow-md text-center animate-fadeIn">
