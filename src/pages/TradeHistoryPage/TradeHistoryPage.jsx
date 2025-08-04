@@ -27,7 +27,7 @@ const getDateLabelByRange = (range) => {
 };
 
 const tabs = ['구매 내역', '판매 내역'];
-const subTabs = ['전체', '거래완료', '대기중'];
+const subTabs = ['전체', '완료', '분할 거래', '대기중', '취소'];
 const ranges = [
   { label: '전체', value: 'ALL' },
   { label: '오늘', value: 'TODAY' },
@@ -43,7 +43,12 @@ const TradeHistoryPage = () => {
   const [showRangeModal, setShowRangeModal] = useState(false);
   const [showNetworkModal, setShowNetworkModal] = useState(false);
   const [networkFilter, setNetworkFilter] = useState('ALL');
-  const [data, setData] = useState({ complete: [], waiting: [] });
+  const [data, setData] = useState({
+    complete: [],
+    partial: [],
+    waiting: [],
+    canceled: [],
+  });
   const [totalData, setTotalData] = useState(0);
   const [totalMileage, setTotalMileage] = useState(0);
   const [mounted, setMounted] = useState(false);
@@ -54,28 +59,40 @@ const TradeHistoryPage = () => {
         const res =
           tab === '구매 내역' ? await fetchPurchaseData(range) : await fetchSaleData(range);
 
-        let complete = tab === '구매 내역' ? res.completePurchases : res.completeSales;
-        let waiting = tab === '구매 내역' ? res.waitingPurchases : res.waitingSales;
+        // 상태별로 나누기
+        let complete = res.filter((item) => item.status === '001');
+        let partial = res.filter((item) => item.status === '002');
+        let waiting = res.filter((item) => item.status === '003');
+        let canceled = res.filter((item) => item.status === '004');
 
-        // 회선 필터링 적용
-        if (networkFilter === 'LTE') {
-          complete = complete.filter((item) => item.dataCode === '001');
-          waiting = waiting.filter((item) => item.dataCode === '001');
-        } else if (networkFilter === '5G') {
-          complete = complete.filter((item) => item.dataCode === '002');
-          waiting = waiting.filter((item) => item.dataCode === '002');
-        }
+        // 네트워크 필터 적용
+        const filterByNetwork = (list) => {
+          if (networkFilter === 'LTE') return list.filter((i) => i.dataCode === '001');
+          if (networkFilter === '5G') return list.filter((i) => i.dataCode === '002');
+          return list;
+        };
 
-        setData({ complete, waiting });
+        complete = filterByNetwork(complete);
+        partial = filterByNetwork(partial);
+        waiting = filterByNetwork(waiting);
+        canceled = filterByNetwork(canceled);
 
-        const sumData = complete.reduce((acc, item) => acc + item.quantity, 0);
-        const sumMileage = complete.reduce((acc, item) => acc + item.quantity * item.pricePerGb, 0);
+        setData({ complete, partial, waiting, canceled });
+
+        const totalDataList = [...complete, ...partial];
+        const sumData = totalDataList.reduce((acc, item) => acc + item.quantity, 0);
+        const sumMileage = totalDataList.reduce(
+          (acc, item) => acc + item.quantity * item.pricePerGb,
+          0
+        );
+
         setTotalData(sumData);
         setTotalMileage(sumMileage);
       } catch (err) {
         console.error('거래 내역 불러오기 실패:', err);
       }
     };
+
     fetchData();
   }, [tab, range, networkFilter]);
 
@@ -85,19 +102,18 @@ const TradeHistoryPage = () => {
   }, []);
 
   const filteredData = {
-    complete: subTab === '전체' || subTab === '거래완료' ? data.complete : [],
+    complete: subTab === '전체' || subTab === '완료' ? data.complete : [],
+    partial: subTab === '전체' || subTab === '분할 거래' ? data.partial : [],
     waiting: subTab === '전체' || subTab === '대기중' ? data.waiting : [],
+    canceled: subTab === '전체' || subTab === '취소' ? data.canceled : [],
   };
 
   return (
     <div className="h-full overflow-y-auto scrollbar-hide text-sm text-black">
       <div className="relative mb-2 flex items-center justify-center">
-        {/* 좌측 백버튼 */}
         <div className="absolute left-0">
           <BackButton />
         </div>
-
-        {/* 가운데 타이틀 */}
         <h2 className="text-center text-lg font-bold">거래 내역</h2>
       </div>
 
@@ -132,72 +148,70 @@ const TradeHistoryPage = () => {
         <hr className="border-gray-300 mt-[10px]" />
         <div className="flex justify-between text-gray-600 mt-3">
           <span>대기중인 거래</span>
-          <span className="text-black font-medium">{data.waiting.length}건</span>
+          <span className="text-black font-medium">
+            {Array.isArray(data.waiting) ? data.waiting.length : 0}건
+          </span>
         </div>
       </div>
 
-      <div className="relative border-b border-gray-300 mb-2 text-[16px] font-bold flex gap-6 pt-[10px]">
-        {tabs.map((label) => (
-          <button
-            key={label}
-            onClick={() => {
-              setTab(label);
-              setSubTab('전체');
-            }}
-            className={`pb-2 transition-all duration-200 z-10 ${
-              tab === label
-                ? label === '판매 내역'
-                  ? 'text-[#FF4343]'
-                  : 'text-blue-600'
-                : 'text-gray-500'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-        {mounted && (
-          <motion.div
-            className="absolute bottom-0 h-[2px]"
-            initial={false}
-            animate={{
-              x: tab === '판매 내역' ? 94 : 0,
-              backgroundColor: tab === '판매 내역' ? '#FF4343' : '#2563EB',
-            }}
-            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            style={{ width: '70px' }}
-          />
-        )}
-      </div>
-
-      <div className="flex justify-between items-center text-[14px] text-gray-400">
-        {/* 왼쪽 탭 버튼들 */}
-        <div className="flex gap-4">
-          {subTabs.map((label) => (
+      <div className=" w-full flex justify-between border-b border-gray-300 mb-2">
+        <div className="relative  text-[16px] font-bold flex gap-6 pt-[10px]">
+          {tabs.map((label) => (
             <button
               key={label}
-              onClick={() => setSubTab(label)}
-              className={`h-8  transition-colors duration-150 ${
-                subTab === label ? 'text-gray-600 font-semibold' : ''
+              onClick={() => {
+                setTab(label);
+                setSubTab('전체');
+              }}
+              className={`pb-2 transition-all duration-200 z-10 ${
+                tab === label
+                  ? label === '판매 내역'
+                    ? 'text-[#FF4343]'
+                    : 'text-blue-600'
+                  : 'text-gray-500'
               }`}
             >
               {label}
             </button>
           ))}
+          {mounted && (
+            <motion.div
+              className="absolute bottom-0 h-[2px]"
+              initial={false}
+              animate={{
+                x: tab === '판매 내역' ? 94 : 0,
+                backgroundColor: tab === '판매 내역' ? '#FF4343' : '#2563EB',
+              }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              style={{ width: '70px' }}
+            />
+          )}
         </div>
-
-        {/* 오른쪽 필터 버튼 */}
-        <button
-          onClick={() => setShowNetworkModal(true)}
-          className="h-8 px-3 rounded-full border border-gray-300 text-gray-600"
-        >
+        <button onClick={() => setShowNetworkModal(true)} className="h-8 px-3  text-gray-600">
           {networkFilter === 'ALL' ? '전체' : networkFilter}
         </button>
+      </div>
+
+      <div className="flex justify-between items-center text-[14px] text-gray-400">
+        {subTabs.map((label) => (
+          <button
+            key={label}
+            onClick={() => setSubTab(label)}
+            className={`h-8 transition-colors duration-150 ${
+              subTab === label ? 'text-gray-600 font-semibold' : ''
+            }`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       <TradeItemList
         tab={tab}
         completeList={filteredData.complete}
+        partialList={filteredData.partial}
         waitingList={filteredData.waiting}
+        canceledList={filteredData.canceled}
         networkFilter={networkFilter}
       />
 

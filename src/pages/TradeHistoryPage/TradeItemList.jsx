@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import loadingIcon from '@/assets/image/loading.png';
-import checkIcon from '@/assets/image/check.png';
-import redcheckIcon from '@/assets/icon/redcheck.svg';
 import { deletePendingTrade } from '@/apis/purchaseApi';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const TradeItemList = ({ tab, completeList, waitingList }) => {
+const TradeItemList = ({ tab, completeList, partialList, waitingList, canceledList }) => {
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
@@ -16,12 +13,14 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
   };
 
   const allItems = [
-    ...waitingList.map((i) => ({ ...i, isWaiting: true })),
-    ...completeList.map((i) => ({ ...i, isWaiting: false })),
+    ...waitingList.map((i) => ({ ...i, statusType: 'waiting', isWaiting: true })),
+    ...canceledList.map((i) => ({ ...i, statusType: 'canceled', isWaiting: true })),
+    ...completeList.map((i) => ({ ...i, statusType: 'complete', isWaiting: false })),
+    ...partialList.map((i) => ({ ...i, statusType: 'partial', isWaiting: false })),
   ];
 
   const grouped = allItems.reduce((acc, item) => {
-    const date = formatDate(item.tradeDate);
+    const date = formatDate(item.requestDate);
     if (!acc[date]) acc[date] = [];
     acc[date].push(item);
     return acc;
@@ -57,24 +56,32 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
               {list
                 .sort((a, b) => (a.isWaiting === b.isWaiting ? 0 : a.isWaiting ? -1 : 1))
                 .map((item, idx) => {
-                  const icon = item.isWaiting
-                    ? loadingIcon
-                    : tab === '판매 내역'
-                      ? redcheckIcon
-                      : checkIcon;
-                  const status = item.isWaiting
-                    ? '거래 대기중'
-                    : tab === '구매 내역'
-                      ? '구매 완료'
-                      : '판매 완료';
+                  // 상태 텍스트 및 색상 처리
+                  let status;
+                  let statusColor;
 
-                  const statusColor = item.isWaiting
-                    ? 'text-gray-400'
-                    : tab === '판매 내역'
-                      ? 'text-[#FF4343]'
-                      : 'text-blue-600';
+                  if (item.statusType === 'canceled') {
+                    status = '거래 취소';
+                    statusColor = 'text-[#2C2C2C]';
+                  } else if (item.statusType === 'waiting') {
+                    status = '거래 대기';
+                    statusColor = 'text-gray-400';
+                  } else if (item.statusType === 'partial') {
+                    status = '분할 거래';
+                    statusColor = 'text-[#5732A1]';
+                  } else if (tab === '구매 내역') {
+                    status = '구매 완료';
+                    statusColor = 'text-blue-600';
+                  } else {
+                    status = '판매 완료';
+                    statusColor = 'text-[#FF4343]';
+                  }
+
                   const key = `${item.purchaseId || item.saleId}-${idx}`;
                   const isExpanded = expandedIndex === key;
+
+                  // 체결된 GB 계산 (요청량 - 남은량)
+                  const tradedGb = item.quantity - (item.remaining ?? 0);
 
                   return (
                     <div
@@ -82,19 +89,24 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
                       className="py-2 px-2 rounded-md cursor-pointer"
                       onClick={() => setExpandedIndex(isExpanded ? null : key)}
                     >
-                      <div className="flex justify-between items-start text-sm">
-                        <div className="flex items-center gap-2 w-[40%]">
-                          <img src={icon} alt="status" className="w-6 h-6" />
-                          <span className={`${statusColor} font-bold`}>{status}</span>
+                      {/* 상단 라인: 상태, 네트워크, 거래량, 단가 */}
+                      <div className="flex justify-between items-center text-gray-800">
+                        {/* 상태 텍스트 */}
+                        <div className={`${statusColor} font-bold`}>{status}</div>
+
+                        {/* 네트워크 */}
+                        <div>{item.dataCode === '001' ? 'LTE' : '5G'}</div>
+
+                        {/* 거래량 (체결된 GB / 요청 GB) */}
+                        <div>
+                          {tradedGb}/{item.quantity}GB
                         </div>
-                        <span className="text-gray-700 font-semibold">
-                          {item.dataCode === '001' ? 'LTE 데이터' : '5G 데이터'}
-                        </span>
-                        <div className="flex flex-col text-right text-base text-gray-600 w-[20%]">
-                          <span>{(item.pricePerGb * item.quantity).toLocaleString()}P</span>
-                        </div>
+
+                        {/* 단가 */}
+                        <div>{item.pricePerGb.toLocaleString()}P/1GB</div>
                       </div>
 
+                      {/* 상세 내용 펼침 영역 */}
                       <AnimatePresence initial={false}>
                         {isExpanded && (
                           <motion.div
@@ -111,7 +123,7 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
                               </span>
                             </div>
 
-                            {item.isWaiting && (
+                            {item.isWaiting && item.statusType !== 'canceled' && (
                               <div className="flex justify-center">
                                 <button
                                   className="text-base px-4 py-1 border border-gray-400 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200 mb-3"
@@ -136,7 +148,6 @@ const TradeItemList = ({ tab, completeList, waitingList }) => {
         ))
       )}
 
-      {/* 취소 확인 모달 */}
       {isModalOpen && (
         <div className="absolute top-0 left-0 right-0 bottom-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white w-72 p-6 rounded-xl shadow-md text-center animate-fadeIn">
