@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // ← 추가
 import { deletePendingTrade } from '@/apis/purchaseApi';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -6,6 +7,7 @@ const TradeItemList = ({ tab, completeList, partialList, waitingList, canceledLi
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const navigate = useNavigate(); // ← 추가
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -44,6 +46,12 @@ const TradeItemList = ({ tab, completeList, partialList, waitingList, canceledLi
     }
   };
 
+  // 상세 페이지 이동 함수
+  const onItemClick = (item) => {
+    const id = item.purchaseId || item.saleId;
+    navigate(`/tradehistory/detail/${id}`, { state: { item, tab } });
+  };
+
   return (
     <>
       {allItems.length === 0 ? (
@@ -56,7 +64,6 @@ const TradeItemList = ({ tab, completeList, partialList, waitingList, canceledLi
               {list
                 .sort((a, b) => (a.isWaiting === b.isWaiting ? 0 : a.isWaiting ? -1 : 1))
                 .map((item, idx) => {
-                  // 상태 텍스트 및 색상 처리
                   let status;
                   let statusColor;
 
@@ -80,33 +87,23 @@ const TradeItemList = ({ tab, completeList, partialList, waitingList, canceledLi
                   const key = `${item.purchaseId || item.saleId}-${idx}`;
                   const isExpanded = expandedIndex === key;
 
-                  // 체결된 GB 계산 (요청량 - 남은량)
                   const tradedGb = item.quantity - (item.remaining ?? 0);
 
                   return (
                     <div
                       key={key}
                       className="py-2 px-2 rounded-md cursor-pointer"
-                      onClick={() => setExpandedIndex(isExpanded ? null : key)}
+                      onClick={() => onItemClick(item)} // ← 수정: 클릭 시 상세페이지로 이동
                     >
-                      {/* 상단 라인: 상태, 네트워크, 거래량, 단가 */}
                       <div className="flex justify-between items-center text-gray-800">
-                        {/* 상태 텍스트 */}
                         <div className={`${statusColor} font-bold`}>{status}</div>
-
-                        {/* 네트워크 */}
                         <div>{item.dataCode === '001' ? 'LTE' : '5G'}</div>
-
-                        {/* 거래량 (체결된 GB / 요청 GB) */}
                         <div>
                           {tradedGb}/{item.quantity}GB
                         </div>
-
-                        {/* 단가 */}
                         <div>{item.pricePerGb.toLocaleString()}P/1GB</div>
                       </div>
 
-                      {/* 상세 내용 펼침 영역 */}
                       <AnimatePresence initial={false}>
                         {isExpanded && (
                           <motion.div
@@ -115,6 +112,7 @@ const TradeItemList = ({ tab, completeList, partialList, waitingList, canceledLi
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.3, ease: 'easeInOut' }}
                             className="mt-2 pl-8 text-sm text-gray-700 overflow-hidden border-b border-gray-300"
+                            onClick={(e) => e.stopPropagation()} // 내부 클릭 이벤트 버블링 방지
                           >
                             <div className="flex justify-between items-center mb-3 text-[13px]">
                               <span className="font-medium">{item.phoneNumber}</span>
