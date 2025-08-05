@@ -52,7 +52,7 @@ const ServiceGuidePage = () => {
   };
 
   const handleClose = () => {
-    navigate('/mypage');
+    navigate(-1);
   };
 
   const handleDragStart = (clientX) => {

@@ -1,4 +1,3 @@
-// 📁 src/pages/LiveChartPage/components/ChartHeader.jsx
 import React from 'react';
 import BackButton from '../../../components/BackButton/BackButton';
 
@@ -23,7 +22,7 @@ const ChartHeader = () => {
         alt="TradeGuide"
         draggable={false}
         onClick={goTotradeguide}
-        className="cursor-pointer"
+        className="cursor-pointer transition-transform duration-200 ease-in-out hover:scale-110 active:scale-90"
       />
     </div>
   );
