@@ -25,7 +25,7 @@ const ReservationModal = ({ onClose }) => {
         {/* 닫기 버튼 */}
         <button
           onClick={handleClose}
-          className="w-full text-white font-semibold py-2 rounded-[6px] text-sm bg-[#386DEE]"
+          className="w-full text-white font-semibold py-2 rounded-[6px] text-sm bg-[#386DEE] cursor-pointer"
         >
           닫기
         </button>
