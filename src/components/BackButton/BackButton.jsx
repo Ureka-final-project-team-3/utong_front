@@ -9,7 +9,7 @@ const BackButton = ({ className = '', to = -1 }) => {
   return (
     <button
       onClick={() => navigate(to)}
-      className={`flex items-center z-10 ${className}`}
+      className={`flex items-center z-10 cursor-pointer ${className}`}
       aria-label="뒤로가기"
     >
       <img src={backIcon} alt="뒤로가기" className="w-[20px] h-[14px]" draggable={false} />
