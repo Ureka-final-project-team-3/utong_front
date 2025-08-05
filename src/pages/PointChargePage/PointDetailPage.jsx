@@ -96,7 +96,7 @@ const PointDetailPage = () => {
       {/* 교환 버튼 */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="w-full mt-2 py-3 bg-[#386DEE] text-white text-base font-semibold rounded-xl hover:bg-blue-700"
+        className="w-full mt-2 py-3 bg-[#386DEE] text-white text-base font-semibold rounded-xl hover:bg-blue-700 cursor-pointer"
       >
         포인트로 교환하기
       </button>
@@ -113,7 +113,7 @@ const PointDetailPage = () => {
             <div className="flex justify-center gap-4">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 rounded bg-gray-200 text-gray-600 text-sm"
+                className="px-4 py-2 rounded bg-gray-200 text-gray-600 text-sm cursor-pointer"
               >
                 취소
               </button>
@@ -122,7 +122,7 @@ const PointDetailPage = () => {
                   setIsModalOpen(false);
                   handleExchange();
                 }}
-                className="px-4 py-2 rounded bg-blue-600 text-white text-sm font-semibold"
+                className="px-4 py-2 rounded bg-blue-600 text-white text-sm font-semibold cursor-pointer"
               >
                 확인
               </button>
@@ -141,7 +141,7 @@ const PointDetailPage = () => {
                 setIsSuccessModalOpen(false);
                 navigate('/shop');
               }}
-              className="mt-2 px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+              className="mt-2 px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 cursor-pointer"
             >
               확인
             </button>
@@ -160,7 +160,7 @@ const PointDetailPage = () => {
             </p>
             <button
               onClick={() => setIsInsufficientModalOpen(false)}
-              className="mt-2 px-4 py-2 bg-gray-300 text-gray-700 text-sm rounded-lg"
+              className="mt-2 px-4 py-2 bg-gray-300 text-gray-700 text-sm rounded-lg cursor-pointer"
             >
               확인
             </button>

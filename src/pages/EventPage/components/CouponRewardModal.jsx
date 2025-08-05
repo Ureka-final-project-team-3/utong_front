@@ -34,7 +34,7 @@ const CouponRewardModal = ({ coupon, onClose }) => {
         </p>
         <CouponCard coupon={coupon} />
         <button
-          className="mt-6 w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600"
+          className="mt-6 w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 cursor-pointer"
           onClick={onClose}
         >
           확인

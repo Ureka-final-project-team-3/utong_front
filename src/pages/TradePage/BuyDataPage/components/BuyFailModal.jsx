@@ -11,7 +11,7 @@ const BuyFailModal = ({ show, message, onClose }) => {
         <p className="text-[18px] font-bold text-blue-500">구매 실패</p>
         <p className="text-[14px] text-[#555] whitespace-pre-line">{message}</p>
         <button
-          className="mt-4 w-full text-white font-semibold py-2 rounded-[6px] text-sm bg-[#386DEE]"
+          className="mt-4 w-full text-white font-semibold py-2 rounded-[6px] text-sm bg-[#386DEE] cursor-pointer"
           onClick={onClose}
         >
           닫기

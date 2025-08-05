@@ -19,7 +19,7 @@ const BuySuccessModal = ({ show, onClose }) => {
           모두 거래되었습니다.
         </p>
         <button
-          className="mt-4 w-full text-white font-semibold py-2 rounded-[6px] text-sm bg-[#386DEE]"
+          className="mt-4 w-full text-white font-semibold py-2 rounded-[6px] text-sm bg-[#386DEE] cursor-pointer"
           onClick={handleClose}
         >
           닫기

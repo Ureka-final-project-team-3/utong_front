@@ -11,7 +11,7 @@ const SellFailModal = ({ show, message, onClose }) => {
         <p className="text-[18px] font-bold text-red-500">판매 실패</p>
         <p className="text-[14px] text-[#555] whitespace-pre-line">{message}</p>
         <button
-          className="w-full bg-[#FF4343] text-white font-semibold py-2 rounded-md text-sm"
+          className="w-full bg-[#FF4343] text-white font-semibold py-2 rounded-md text-sm cursor-pointer"
           onClick={onClose}
         >
           닫기

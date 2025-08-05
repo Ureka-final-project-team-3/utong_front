@@ -119,9 +119,9 @@ const TradeHistoryPage = () => {
 
       <button
         onClick={() => setShowRangeModal(true)}
-        className="flex items-center justify-center text-base text-gray-600 rounded-full px-3 mb-2 mx-auto"
+        className="flex items-center justify-center text-base text-gray-600 rounded-full px-3 mb-2 mx-auto cursor-pointer"
       >
-        <span className="mr-1">{ranges.find((r) => r.value === range)?.label}</span>
+        <span className="mr-1 ">{ranges.find((r) => r.value === range)?.label}</span>
         <img src={bottomToggleIcon} alt="열기" className="w-3 h-3" />
       </button>
 
@@ -169,7 +169,7 @@ const TradeHistoryPage = () => {
                     ? 'text-[#FF4343]'
                     : 'text-blue-600'
                   : 'text-gray-500'
-              }`}
+              } cursor-pointer`}
             >
               {label}
             </button>
@@ -187,7 +187,10 @@ const TradeHistoryPage = () => {
             />
           )}
         </div>
-        <button onClick={() => setShowNetworkModal(true)} className="h-8 px-3  text-gray-600">
+        <button
+          onClick={() => setShowNetworkModal(true)}
+          className="h-8 px-3 text-gray-600 cursor-pointer"
+        >
           {networkFilter === 'ALL' ? '전체' : networkFilter}
         </button>
       </div>
@@ -199,7 +202,7 @@ const TradeHistoryPage = () => {
             onClick={() => setSubTab(label)}
             className={`h-8 transition-colors duration-150 ${
               subTab === label ? 'text-gray-600 font-semibold' : ''
-            }`}
+            } cursor-pointer`}
           >
             {label}
           </button>

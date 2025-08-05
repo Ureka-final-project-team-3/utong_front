@@ -201,12 +201,12 @@ export default function MyPage() {
 
         <div className="flex justify-between gap-2 mb-3">
           <Link to="/chart" className="flex-1">
-            <button className="w-full bg-[#1355E0] text-base text-white py-1 rounded-md hover:brightness-90 hover:scale-105 transition-all duration-300">
+            <button className="w-full bg-[#1355E0] text-base text-white py-1 rounded-md hover:brightness-90 hover:scale-105 transition-all duration-300 cursor-pointer">
               거래하기
             </button>
           </Link>
           <Link to="/chargePage" className="flex-1">
-            <button className="w-full bg-[#1355E0] text-base text-white py-1 rounded-md hover:brightness-90 hover:scale-105 transition-all duration-300">
+            <button className="w-full bg-[#1355E0] text-base text-white py-1 rounded-md hover:brightness-90 hover:scale-105 transition-all duration-300 cursor-pointer">
               충전하기
             </button>
           </Link>
@@ -267,12 +267,12 @@ export default function MyPage() {
                   <span>수신여부</span>
                   <button
                     onClick={handleToggle}
-                    className={`w-14 h-7 rounded-full p-1 transition-all duration-300 ${
+                    className={`cursor-pointer w-14 h-7 rounded-full p-1 transition-all duration-300 ${
                       isMail ? 'bg-blue-500' : 'bg-gray-300'
                     }`}
                   >
                     <div
-                      className={`bg-white w-5 h-5 rounded-full shadow transform transition-all duration-300 ${
+                      className={`cursor-pointer bg-white w-5 h-5 rounded-full shadow transform transition-all duration-300 ${
                         isMail ? 'translate-x-7' : ''
                       }`}
                     />
@@ -317,7 +317,7 @@ export default function MyPage() {
       {/* 로그아웃 */}
       <div className="mt-20 text-center">
         <button
-          className="text-blue-600 hover:underline"
+          className="text-blue-600 hover:underline cursor-pointer"
           onClick={() => {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('account');

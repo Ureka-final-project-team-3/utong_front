@@ -19,7 +19,7 @@ const DateRangeModal = ({ show, range, onSelect, onClose, ranges }) => {
             <button
               key={r.value}
               onClick={() => onSelect(r.value)}
-              className="flex items-center justify-between px-5 py-3 text-sm text-gray-800"
+              className="flex items-center justify-between px-5 py-3 text-sm text-gray-800 cursor-pointer"
             >
               <span>{r.label}</span>
               {range === r.value && <img src={checkIcon} alt="선택됨" className="w-6 h-6" />}
