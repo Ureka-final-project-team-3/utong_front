@@ -24,7 +24,7 @@ const PaymentCompleteModal = ({ point = 1000, onClose }) => {
         {/* 포인트 및 버튼 */}
         <p className="text-[#555] text-sm font-medium">결제 후 보유 포인트 : {point}P</p>
         <button
-          className="w-full bg-[#386DEE] text-white font-semibold py-2 rounded-md text-sm"
+          className="w-full bg-[#386DEE] text-white font-semibold py-2 rounded-md text-sm cursor-pointer"
           onClick={handleClose}
         >
           닫기

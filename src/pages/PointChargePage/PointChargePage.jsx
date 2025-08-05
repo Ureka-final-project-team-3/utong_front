@@ -107,7 +107,7 @@ const PointChargePage = () => {
         </span>
       </motion.div>
 
-      <div className="flex gap-6 mb-6 overflow-x-auto">
+      <div className="flex justify-between mb-6 overflow-x-auto">
         {categories.map((cat, idx) => (
           <motion.button
             key={cat.value}
@@ -115,7 +115,7 @@ const PointChargePage = () => {
               setSelectedCategory(cat.value);
               setCurrentPage(1);
             }}
-            className={`text-base whitespace-nowrap px-1 py-2 border-b-2 transition-colors ${
+            className={`cursor-pointer text-base whitespace-nowrap px-1 py-2 border-b-2 transition-colors ${
               selectedCategory === cat.value
                 ? 'border-blue-500 text-blue-600 font-semibold'
                 : 'border-transparent text-gray-500 hover:text-gray-700'

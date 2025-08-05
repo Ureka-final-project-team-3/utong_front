@@ -30,7 +30,7 @@ const NetworkFilterModal = ({ show, selected, onSelect, onClose }) => {
             <button
               key={opt.value}
               onClick={() => onSelect(opt.value)}
-              className="flex items-center justify-between px-5 py-3 text-sm text-gray-800"
+              className="flex items-center justify-between px-5 py-3 text-sm text-gray-800 cursor-pointer"
             >
               <span>{opt.label}</span>
               {selected === opt.value && <img src={checkIcon} alt="선택됨" className="w-6 h-6" />}
