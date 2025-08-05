@@ -391,7 +391,7 @@ const SellDataPage = () => {
                 key={option}
                 onClick={() => handleSelectData(option)}
                 disabled={isBlockingInput}
-                className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center
+                className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center cursor-pointer
                 hover:border-[#FF4343] hover:bg-[#FFEEEE] hover:text-[#FF4343]"
               >
                 {option}
@@ -429,7 +429,7 @@ const SellDataPage = () => {
           <Button
             disabled={!isButtonEnabled}
             onClick={handleSellClick}
-            className={`w-full ${
+            className={`w-full cursor-pointer ${
               isButtonEnabled
                 ? 'bg-[#FF4343] hover:bg-[#e63a3a]'
                 : 'bg-[#949494] cursor-not-allowed'

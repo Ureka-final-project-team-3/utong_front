@@ -344,7 +344,7 @@ const BuyDataPage = () => {
             <button
               key={option}
               onClick={() => addDataGB(option)}
-              className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center
+              className="w-[60px] h-[25px] rounded-[10px] border border-[#B1B1B1] bg-[#F6F7FB] text-[#777] text-[12px] font-medium flex items-center justify-center cursor-pointer
                 hover:border-[#386DEE] hover:bg-[#E6EEFF] hover:text-[#386DEE]"
             >
               {option}
@@ -369,7 +369,7 @@ const BuyDataPage = () => {
       <div className="mt-auto pt-6">
         <Button
           onClick={handleBuyClick}
-          className={`w-full ${
+          className={`w-full cursor-pointer ${
             isButtonEnabled ? 'bg-[#386DEE] hover:bg-[#2f5bd9]' : 'bg-[#949494] cursor-not-allowed'
           }`}
           disabled={!isButtonEnabled}

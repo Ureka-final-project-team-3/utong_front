@@ -1,4 +1,3 @@
-// 📁 src/pages/LiveChartPage/components/ChartHeader.jsx
 import React from 'react';
 import BackButton from '../../../components/BackButton/BackButton';
 
@@ -18,7 +17,13 @@ const ChartHeader = () => {
       <h1 className="text-[length:var(--text-lg)] text-[color:var(--gray-800)] font-bold">
         데이터 거래하기
       </h1>
-      <img src={help} alt="TradeGuide" draggable={false} onClick={goTotradeguide} />
+      <img
+        src={help}
+        alt="TradeGuide"
+        draggable={false}
+        onClick={goTotradeguide}
+        className="cursor-pointer transition-transform duration-200 ease-in-out hover:scale-110 active:scale-90"
+      />
     </div>
   );
 };

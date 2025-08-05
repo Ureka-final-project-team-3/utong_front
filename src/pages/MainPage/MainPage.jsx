@@ -6,6 +6,7 @@ import shop from '@/assets/icon/shop.png';
 import event from '@/assets/icon/event.png';
 import wifi from '@/assets/icon/wifi.png';
 import coin from '@/assets/icon/coin.png';
+import guide from '@/assets/icon/guide.png';
 import { fetchMyInfo } from '@/apis/mypageApi';
 import useAuth from '@/hooks/useAuth';
 import useOrderQueue from '@/hooks/useOrderQueue';
@@ -232,6 +233,15 @@ const MainPage = () => {
             <div className="flex items-center space-x-3">
               <img src={shop} alt="상점" className="w-5 h-5" />
               <span className="font-bold text-[16px] leading-[20px] pl-2">포인트 상점</span>
+            </div>
+            <span className="text-gray-400 pr-4">{'>'}</span>
+          </div>
+        </Link>
+        <Link to="/guide" className="block transition-transform duration-200 hover:-translate-y-1">
+          <div className="flex items-center justify-between pl-6 pr-4 py-4">
+            <div className="flex items-center space-x-3">
+              <img src={guide} alt="서비스 가이드" className="w-5 h-5" />
+              <span className="font-bold text-[16px] leading-[20px] pl-2">서비스 가이드</span>
             </div>
             <span className="text-gray-400 pr-4">{'>'}</span>
           </div>

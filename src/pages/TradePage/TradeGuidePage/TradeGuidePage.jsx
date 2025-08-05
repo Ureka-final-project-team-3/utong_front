@@ -160,7 +160,7 @@ const TradeGuidePage = () => {
     <div className="relative min-h-auto flex flex-col items-center justify-center select-none">
       <button
         onClick={handleClose}
-        className="absolute top-4 right-0 text-gray-400 hover:text-gray-600 text-lg font-light z-10 w-8 h-8 flex items-center justify-center"
+        className="absolute top-4 right-0 text-gray-400 hover:text-gray-600 text-lg font-light z-10 w-8 h-8 flex items-center justify-center cursor-pointer"
       >
         ✕
       </button>
