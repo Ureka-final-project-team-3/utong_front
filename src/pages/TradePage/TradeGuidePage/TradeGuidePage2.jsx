@@ -173,7 +173,7 @@ const TradeGuidePage2 = () => {
       {/* 닫기 버튼 */}
       <button
         onClick={handleClose}
-        className="absolute top-4 right-0 text-gray-400 hover:text-gray-600 text-lg font-light z-10 w-8 h-8 flex items-center justify-center"
+        className="absolute top-4 right-0 text-gray-400 hover:text-gray-600 text-lg font-light z-10 w-8 h-8 flex items-center justify-center cursor-pointer"
       >
         ✕
       </button>

@@ -72,7 +72,7 @@ const TradeInfoSection = () => {
           <button
             key={key}
             onClick={() => handleTabChange(key)}
-            className={`text-[14px] font-medium ${
+            className={`text-[14px] font-medium cursor-pointer ${
               tab === key ? 'text-[#EB008B]' : 'text-[#2C2C2C]'
             }`}
           >

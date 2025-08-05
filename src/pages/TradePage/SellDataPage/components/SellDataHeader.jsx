@@ -24,7 +24,7 @@ const SellDataHeader = () => {
         src={help}
         alt="도움말"
         draggable={false}
-        className="cursor-pointer"
+        className="cursor-pointer transition-transform duration-200 ease-in-out hover:scale-110 active:scale-90"
         onClick={goTotradeguide2}
       />
     </div>
