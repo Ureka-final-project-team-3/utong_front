@@ -30,6 +30,8 @@ import TradeGuidePage from '../pages/TradePage/TradeGuidePage/TradeGuidePage.jsx
 import TradeGuidePage2 from '../pages/TradePage/TradeGuidePage/TradeGuidePage2.jsx';
 import LoginDefaultLayout from '../layout/LoginDefaultLayout.jsx';
 import SellSuccessModalTestPage from '../pages/TradePage/components/SellStatusModalTestPage.jsx';
+import DataTradeHistory from '../pages/TestPage2.jsx';
+import TradeHistoryDetailPage from '../pages/TradeHistoryPage/TradeHistoryDetailPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -153,6 +155,10 @@ const router = createBrowserRouter([
         element: <TradeHistoryPage />,
       },
       {
+        path: '/tradehistory/detail/:tradeId',
+        element: <TradeHistoryDetailPage />,
+      },
+      {
         path: '/modal-test',
         element: <SellSuccessModalTestPage />,
       },
@@ -161,6 +167,10 @@ const router = createBrowserRouter([
   {
     path: '*',
     element: <NotFoundPage />,
+  },
+  {
+    path: '/test2',
+    element: <DataTradeHistory />,
   },
 ]);
 

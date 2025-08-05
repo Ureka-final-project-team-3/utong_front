@@ -90,7 +90,7 @@ const PointChargePage = () => {
   if (!authUser) return null;
 
   return (
-    <div>
+    <div className="pb-2">
       <motion.div
         className="relative flex items-center justify-between mb-6"
         initial={{ opacity: 0, y: -20 }}
@@ -155,7 +155,7 @@ const PointChargePage = () => {
 
       {!loading && !error && (
         <>
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-2 gap-2 mb-4">
             {gifticons.map((item, idx) => (
               <motion.div
                 key={item.id}
@@ -166,11 +166,11 @@ const PointChargePage = () => {
                 transition={{ duration: 0.3, delay: idx * 0.05 }}
               >
                 <div className="flex flex-col items-start">
-                  <div className="w-full h-20 rounded-xl flex items-center justify-center mb-3">
+                  <div className="w-full h-24 rounded-xl flex items-center justify-center mb-2">
                     <img
                       src={item.imageUrl || '/images/default-gifticon.png'}
                       alt={item.brand}
-                      className="w-24 h-24 object-contain"
+                      className="w-24 h-20 object-contain"
                     />
                   </div>
 
@@ -184,33 +184,6 @@ const PointChargePage = () => {
               </motion.div>
             ))}
           </div>
-
-          {totalPages > 1 && (
-            <motion.div
-              className="flex justify-center gap-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
-            >
-              <button
-                onClick={() => setCurrentPage((prev) => prev - 1)}
-                disabled={currentPage === 1}
-                className="text-sm px-4 py-2 border rounded disabled:opacity-40"
-              >
-                이전
-              </button>
-              <span className="text-sm">
-                {currentPage} / {totalPages}
-              </span>
-              <button
-                onClick={() => setCurrentPage((prev) => prev + 1)}
-                disabled={currentPage === totalPages}
-                className="text-sm px-4 py-2 border rounded disabled:opacity-40"
-              >
-                다음
-              </button>
-            </motion.div>
-          )}
         </>
       )}
     </div>
