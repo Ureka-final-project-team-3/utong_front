@@ -164,7 +164,7 @@ const TradeHistoryDetailPage = () => {
         <div className="mt-8 text-center">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="w-full px-6 py-3 mb-5 rounded-md bg-[#ff4343] text-white hover:bg-[#e63636] text-sm font-medium"
+            className="w-full px-6 py-3 mb-5 rounded-md bg-[#ff4343] text-white hover:bg-[#e63636] text-sm font-semibold cursor-pointer"
           >
             거래 취소하기
           </button>
@@ -183,13 +183,13 @@ const TradeHistoryDetailPage = () => {
             <div className="flex justify-center gap-4 mt-4">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 rounded bg-gray-200 text-gray-600 text-sm"
+                className="px-4 py-2 rounded bg-gray-200 text-gray-600 text-sm cursor-pointer"
               >
                 취소
               </button>
               <button
                 onClick={handleCancelTrade}
-                className="px-4 py-2 rounded bg-blue-600 text-white text-sm font-semibold"
+                className="px-4 py-2 rounded bg-blue-600 text-white text-sm font-semibold cursor-pointer"
               >
                 확인
               </button>
