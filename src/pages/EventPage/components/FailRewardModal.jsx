@@ -7,7 +7,7 @@ const FailRewardModal = ({ onClose }) => {
         <h2 className="text-xl font-bold text-[#FF3B30]">꽝!! 아쉬워요!</h2>
         <p className="mt-2 text-gray-600">다음 기회에 꼭 당첨되시길 바랍니다</p>
         <button
-          className="mt-6 w-full py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600"
+          className="mt-6 w-full py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 cursor-pointer"
           onClick={onClose}
         >
           확인
