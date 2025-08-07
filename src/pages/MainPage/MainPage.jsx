@@ -237,6 +237,7 @@ const MainPage = () => {
             <span className="text-gray-400 pr-4">{'>'}</span>
           </div>
         </Link>
+        <div className="border-t border-gray-200" />
         <Link to="/guide" className="block transition-transform duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between pl-6 pr-4 py-4">
             <div className="flex items-center space-x-3">
