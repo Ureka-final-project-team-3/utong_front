@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const TradeItemList = ({ tab, completeList, partialList, waitingList }) => {
+const TradeItemList = ({ tab, completeList, partialList, waitingList, canceledList }) => {
   const navigate = useNavigate();
 
   const formatDate = (dateStr) => {
@@ -13,6 +13,7 @@ const TradeItemList = ({ tab, completeList, partialList, waitingList }) => {
     ...waitingList.map((i) => ({ ...i, statusType: 'waiting', isWaiting: true })),
     ...completeList.map((i) => ({ ...i, statusType: 'complete', isWaiting: false })),
     ...partialList.map((i) => ({ ...i, statusType: 'partial', isWaiting: false })),
+    ...canceledList.map((i) => ({ ...i, statusType: 'canceled', isWaiting: false })),
   ];
 
   const grouped = allItems.reduce((acc, item) => {
@@ -54,6 +55,9 @@ const TradeItemList = ({ tab, completeList, partialList, waitingList }) => {
                   } else if (item.statusType === 'partial') {
                     status = '분할 거래';
                     statusColor = 'text-[#5732A1]';
+                  } else if (item.statusType === 'canceled') {
+                    status = '거래 취소';
+                    statusColor = 'text-gray-400';
                   } else if (tab === '구매 내역') {
                     status = '구매 완료';
                     statusColor = 'text-blue-600';
