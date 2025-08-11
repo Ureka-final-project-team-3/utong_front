@@ -5,7 +5,6 @@ const API = axios.create({
   withCredentials: true,
 });
 
-// 요청 인터셉터 추가
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
   if (token) {
